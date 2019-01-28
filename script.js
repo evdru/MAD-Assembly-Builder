@@ -1,6 +1,9 @@
 var layer = "global";
 var stage = "global";
 let component_count = 0;
+let place_count = 0;
+var component_list = [];
+var place_list = [];
 
 function initialize() {
     var width = window.innerWidth;
@@ -14,30 +17,6 @@ function initialize() {
     
     layer = new Konva.Layer();
     stage.add(layer);
-    
-    // var rect1 = new Konva.Rect({
-    //     x: 60,
-    //     y: 60,
-    //     width: 100,
-    //     height: 90,
-    //     fill: 'red',
-    //     name: 'rect',
-    //     draggable: true
-    // });
-    // layer.add(rect1);
-    // layer.draw();
-    
-    // var rect2 = new Konva.Rect({
-    //     x: 250,
-    //     y: 100,
-    //     width: 150,
-    //     height: 90,
-    //     fill: 'green',
-    //     name: 'rect',
-    //     draggable: true
-    // });
-    // layer.add(rect2);
-    // layer.draw();
     
     stage.on('click tap', function (e) {
         // if click on empty area - remove all transformers
@@ -63,15 +42,13 @@ function initialize() {
 };
 
 function addNewComponent() {
-    console.log("Made it to add new component.");
     var component = new Konva.Rect({
         x: 500,
         y: 500,
         width: 100,
         height: 100,
-        // fill: 'transparent',
         stroke: 'black',
-        strokeWidth: 1,
+        strokeWidth: 0.5,
         name: 'component',
         draggable: true
     });
@@ -79,6 +56,7 @@ function addNewComponent() {
     layer.draw();
 
     component_count++;
+    component_list.push(component)
 
     stage.on('click tap', function (e) {
         // if click on empty area - remove all transformers
@@ -101,4 +79,21 @@ function addNewComponent() {
         tr.attachTo(e.target);
         layer.draw();
     });
+};
+
+function addNewPlace() {
+    var place = new Konva.Circle({
+        x: 500,
+        y: 500,
+        radius: 30,
+        stroke: 'black',
+        strokeWidth: 1,
+        name: 'place',
+        draggable: true
+    });
+    layer.add(place);
+    layer.draw();
+
+    place_count++;
+    place_list.push(place);
 };
