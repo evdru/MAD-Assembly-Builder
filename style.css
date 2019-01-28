@@ -3,7 +3,7 @@
 .component {
     width: 100px;
     height: 100px;
-    backaground-color: transparent;
+    background-color: transparent;
 }
 
 .component:active {
@@ -13,7 +13,7 @@
 .place {
     width: 100px;
     height: 100px;
-    backaground-color: transparent;
+    background-color: transparent;
 }
 
 .place:active {
@@ -23,7 +23,7 @@
 .transition {
     width: 100px;
     height: 100px;
-    backaground-color: transparent;
+    background-color: transparent;
 }
 
 .transition:active {
