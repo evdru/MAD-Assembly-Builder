@@ -9,7 +9,10 @@ let window;
 function boot() {
 	// Create new window
 	window = new BrowserWindow()
+<<<<<<< HEAD
 	window.maximize()
+=======
+>>>>>>> d2a403aa14a985abf330d01f82d3d04a483b7e93
 	window.loadURL(url.format({
 		pathname: path.join(__dirname, 'index.html'),
 		protocol: 'file:',
