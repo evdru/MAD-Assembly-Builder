@@ -1,0 +1,53 @@
+/* Style the sidebar - fixed full height */
+
+.component {
+    width: 100px;
+    height: 100px;
+    backaground-color: transparent;
+}
+
+.component:active {
+    background-color: #add8e6;
+}
+
+.place {
+    width: 100px;
+    height: 100px;
+    backaground-color: transparent;
+}
+
+.place:active {
+    background-color: #add8e6;
+}
+
+.transition {
+    width: 100px;
+    height: 100px;
+    backaground-color: transparent;
+}
+
+.transition:active {
+    background-color: #add8e6;
+}
+
+.sidebar {
+    height: 100%;
+    width: 100px;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: #666666;
+    overflow-x: hidden;
+}
+
+/* Style links on mouse-over */
+    .sidebar a:hover {
+    color: #f1f1f1;
+}
+
+/* Style the main content */
+.main {
+    margin-left: 100px; /* Same as the width of the sidenav */
+    padding: 0px 10px;
+}
