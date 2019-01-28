@@ -1,14 +1,42 @@
-const {app, BrowserWindow} = require('electron')
-const url = require('url')
+const electron = require('electron');
+const url = require('url');
+const path = require('path');
 
-let win = null
+const {app, BrowserWindow, Menu} = electron;
+
+let window;
 
 function boot() {
-	win = new BrowserWindow()
-	win.loadURL(url.format({
-		pathname: 'index.html',
+	// Create new window
+	window = new BrowserWindow()
+	window.loadURL(url.format({
+		pathname: path.join(__dirname, 'index.html'),
+		protocol: 'file:',
 		slashes: true
-	}))
-}
+	}));
 
+	// Build menu from template
+	const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
+	// Insert menu
+	Menu.setApplicationMenu(mainMenu)
+};
+
+const mainMenuTemplate = [
+	{
+		label: 'File',
+		submenu:[
+			{
+				label: 'Quit',
+				// Keyboard shortcuts for quit
+				accelerator: process.platform == 'darwin' ? 'Command+Q' :
+				'Ctrl+Q',
+				click(){
+					app.quit();
+				}
+			}
+		]
+	}
+];
+
+// Listen for app to be ready
 app.on('ready', boot);
