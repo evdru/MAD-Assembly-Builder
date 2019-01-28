@@ -68,7 +68,7 @@ function addNewComponent() {
         x: 500,
         y: 500,
         width: 100,
-        height: 100,
+        height: 150,
         // fill: 'transparent',
         stroke: 'black',
         strokeWidth: 1,
