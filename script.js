@@ -1,5 +1,7 @@
 var layer = "global";
 var stage = "global";
+var mouseX = "global";
+var mouseY = "global";
 let component_count = 0;
 let place_count = 0;
 var component_list = [];
@@ -41,12 +43,12 @@ function initialize() {
     });
 };
 
-function addNewComponent() {
+function addNewComponent(posX, posY) {
     var component = new Konva.Rect({
-        x: 500,
-        y: 500,
-        width: 100,
-        height: 100,
+        x: posX - 200,
+        y: posY - 125,
+        width: 200,
+        height: 250,
         stroke: 'black',
         strokeWidth: 0.5,
         name: 'component',
@@ -81,10 +83,10 @@ function addNewComponent() {
     });
 };
 
-function addNewPlace() {
+function addNewPlace(posX, posY) {
     var place = new Konva.Circle({
-        x: 500,
-        y: 500,
+        x: posX - 115,
+        y: posY,
         radius: 30,
         stroke: 'black',
         strokeWidth: 1,
@@ -96,4 +98,31 @@ function addNewPlace() {
 
     place_count++;
     place_list.push(place);
+};
+
+// Drag N Drop Functions
+
+function allowDrop(ev) {
+    ev.preventDefault();
+    console.log("allow drop");
+};
+
+function drop(ev) {
+    ev.preventDefault();
+    var data = ev.dataTransfer.getData("text");
+    console.log(data)
+    var posX = ev.clientX;
+    var posY = ev.clientY;
+    console.log(ev.clientX)
+    console.log(ev.clientY)
+    if(data == "component"){
+        addNewComponent(posX, posY);
+    } else if (data == "place") {
+        addNewPlace(posX, posY);
+    }
+};
+  
+function drag(ev) {
+    ev.dataTransfer.setData("text", ev.target.id);
+    console.log("drag");
 };

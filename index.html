@@ -9,12 +9,12 @@
 	</head>
 	<body>
 		<div class="sidebar">
-			<div type="button" id="component" class="component" onclick="addNewComponent();">
+			<div id="component" class="component" draggable="true" ondragstart="drag(event)">
 				<svg width="100" height="100">
 					<rect x="10" y="10" width="80" height="80" stroke="black" stroke-width="2" fill-opacity="0" draggable="true" />
 				</svg>
 			</div>
-			<div type="button" id="place" class="place" onClick="addNewPlace();">
+			<div id="place" class="place" draggable="true" ondragstart="drag(event)">
 				<svg width="100" height="100">
 					<circle cx="50" cy="50" r="40" stroke="black" stroke-width="2" fill-opacity="0" draggable="true" />
 				</svg>
@@ -25,7 +25,7 @@
 				</svg>
 			</div>
 		</div>
-		<div id="container" class="main">
+		<div id="container" class="main" ondragover="allowDrop(event)" ondrop="drop(event)">
 			<script>initialize();</script>
 		</div>
 	</body>
