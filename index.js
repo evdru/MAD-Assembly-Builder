@@ -16,6 +16,11 @@ function boot() {
 		slashes: true
 	}));
 
+	//Quit app when closed
+	window.on('closed', function() {
+		app.quit()
+	});
+
 	// Build menu from template
 	const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
 	// Insert menu

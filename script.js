@@ -1,6 +1,8 @@
 const BrowserWindow = require('electron').remote.BrowserWindow;
 const url = require('url');
 const path = require('path');
+const ipcMain = require('electron').remote.ipcMain;
+const remote = require('electron').remote;
 
 var layer = "global";
 var stage = "global";
@@ -123,21 +125,30 @@ function drag(ev) {
     console.log("drag");
 };
 
+// Add place to list functions
+let add_place_window;
+
 function addPlacePopUp() {
-    var add_place_window = new BrowserWindow({width: 300, height: 200});
+    add_place_window = new BrowserWindow({width: 300, height: 200, title: 'Add New Place'});
     add_place_window.loadURL(url.format({
         pathname: path.join(__dirname, 'add_place.html'),
 		protocol: 'file:',
 		slashes: true
-	}));
+    }));
+    //Garbage collection handle
     add_place_window.on('closed', function() {
         add_place_window = null;
     });
 };
 
-function addPlaceToList() {
-    var place_name = document.getElementById('place_name').value;
-    var new_place = new Place('Place', place_name);
-    component_contains.push(new_place);
-    console.log(component_contains[0].name);
-};
+// Catch place:add
+ipcMain.on('place:add', function(e, place) {
+    var place = new Place('Place', place);
+    component_contains.push(place);
+    console.log(component_contains);
+});
+
+function closeAddPlaceWindow() {
+    var window = remote.getCurrentWindow();
+    window.close();
+}
