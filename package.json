@@ -1,11 +1,11 @@
 {
-  "name": "MAB",
-  "version": "1.0.0",
-  "description": "MAD Assembly Builder",
-  "main": "index.js",
-  "scripts": {
-    "start": "electron ."
-  },
-  "author": "Team Amadeus",
-  "license": "ISC"
+	"name": "MAB",
+	"version": "1.0.0",
+	"description": "MAD Assembly Builder",
+	"main": "index.js",
+	"scripts": {
+		"start": "electron ."
+	},	
+	"author": "Team Amadeus",
+	"license": "ISC"
 }
