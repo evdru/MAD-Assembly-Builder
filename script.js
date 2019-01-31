@@ -8,7 +8,15 @@ var layer = "global";
 var stage = "global";
 let component_count = 0;
 let place_count = 0;
-var component_contains = [];
+var component_list = [];
+var mouse_over_component = true;
+
+class Component {
+    constructor(type, name){
+        this.type = type;
+        this.name = name;
+    }
+}
 
 class Place {
     constructor(type, name) {
@@ -41,18 +49,24 @@ function initialize() {
     stage.add(layer);
 };
 
+// Adds a new component to the stage
 function addNewComponent(posX, posY) {
+    // create the konva node
     var component = new Konva.Rect({
         x: posX - 200,
         y: posY - 125,
-        width: 200,
-        height: 250,
+        width: 300,
+        height: 350,
         stroke: 'black',
         strokeWidth: 0.5,
         name: 'component',
         draggable: true
     });
-    layer.add(component);
+
+    // create a new component group every time a component is created
+    var component_group = new Konva.Group({});
+    component_group.add(component);
+    layer.add(component_group);
     layer.draw();
 
     component_count++;
@@ -78,6 +92,30 @@ function addNewComponent(posX, posY) {
         tr.attachTo(e.target);
         layer.draw();
     });
+
+    // if mouse is over a component
+    component.on('mouseenter', function () {
+        //console.log("mouse enter component");
+        mouse_over_component = true;
+    });
+
+    // if double click on component
+    component.on('dblclick', function (){
+        console.log("dbl click on component");
+        // grow component here
+        var posX = component.position().x + 260;
+        var posY = component.position().y + 175;
+        component_group.add(addNewPlace(posX, posY));
+        addPlacePopUp();
+        layer.add(component_group);
+        layer.draw();
+    })
+
+    // if mouse leeaves a component
+    component.on('mouseout', function () {
+        //console.log("mouse out component");
+        mouse_over_component = false;
+    })
 };
 
 function addNewPlace(posX, posY) {
@@ -89,12 +127,11 @@ function addNewPlace(posX, posY) {
         strokeWidth: 1,
         fill: 'white',
         name: 'place',
+        ShadowBlur: 1,
         draggable: true
     });
-    layer.add(place);
-    layer.draw();
-
     place_count++;
+    return place;
 };
 
 // Drag N Drop Functions
@@ -107,22 +144,20 @@ function allowDrop(ev) {
 function drop(ev) {
     ev.preventDefault();
     var data = ev.dataTransfer.getData("text");
-    console.log(data)
     var posX = ev.clientX;
     var posY = ev.clientY;
-    console.log(ev.clientX)
-    console.log(ev.clientY)
     if(data == "component"){
         addNewComponent(posX, posY);
     } else if (data == "place") {
-        addNewPlace(posX, posY);
-        addPlacePopUp();
+        if(mouse_over_component){
+            addNewPlace(posX, posY);
+            addPlacePopUp();
+        }
     }
 };
   
 function drag(ev) {
     ev.dataTransfer.setData("text", ev.target.id);
-    console.log("drag");
 };
 
 // Add place to list functions
@@ -144,11 +179,11 @@ function addPlacePopUp() {
 // Catch place:add
 ipcMain.on('place:add', function(e, place) {
     var place = new Place('Place', place);
-    component_contains.push(place);
-    console.log(component_contains);
+    component_list.push(place);
+    console.log(component_list);
 });
 
 function closeAddPlaceWindow() {
     var window = remote.getCurrentWindow();
     window.close();
-}
+};
