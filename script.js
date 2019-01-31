@@ -6,25 +6,16 @@ const remote = require('electron').remote;
 
 var layer = "global";
 var stage = "global";
-let component_count = 0;
-let place_count = 0;
 var component_list = [];
-var place_list = [];
-var mouse_over_component = true;
 
 class Component {
-
+    
     constructor(type, name){
         this.type = type;
         this.name = name;
-        var places_of_component = [];
-        component_count++;
-    }
-
-    getPlaceList(){
-        console.log(this.name + "has places: " + places_of_component);
-    }
-}
+        this.children_list = [];
+    };
+};
 
 class Place {
     constructor(type, name) {
@@ -66,8 +57,8 @@ function addNewComponent(posX, posY) {
         width: 300,
         height: 350,
         stroke: 'black',
-        strokeWidth: 0.5,
         name: 'component',
+        strokeWidth: 0.5,
         draggable: true
     });
 
@@ -82,28 +73,28 @@ function addNewComponent(posX, posY) {
     layer.add(component_group);
     layer.draw();
 
-    component_count++;
-
-    stage.on('click tap', function (e) {
-        // if click on empty area - remove all transformers
-        if (e.target === stage) {
+    stage.on('click', function (e) {
+        if (e.evt.button === 2) {
+            // if click on empty area - remove all transformers
+            if (e.target === stage) {
+                stage.find('Transformer').destroy();
+                layer.draw();
+                return;
+            }
+            // do nothing if clicked NOT on our rectangles
+            if (!e.target.hasName('component')) {
+                return;
+            }
+            // remove old transformers
+            // TODO: we can skip it if current rect is already selected
             stage.find('Transformer').destroy();
+        
+            // create new transformer
+            var tr = new Konva.Transformer();
+            layer.add(tr);
+            tr.attachTo(e.target);
             layer.draw();
-            return;
-        }
-        // do nothing if clicked NOT on our rectangles
-        if (!e.target.hasName('component')) {
-            return;
-        }
-        // remove old transformers
-        // TODO: we can skip it if current rect is already selected
-        stage.find('Transformer').destroy();
-    
-        // create new transformer
-        var tr = new Konva.Transformer();
-        layer.add(tr);
-        tr.attachTo(e.target);
-        layer.draw();
+          }
     });
 
     // tooltip to display name of object
@@ -148,16 +139,20 @@ function addNewComponent(posX, posY) {
         // grow component here
         var posX = component.position().x + 260;
         var posY = component.position().y + 175;
-        var place = addNewPlace(posX, posY);
+        var place = addNewPlace(posX, posY, component_obj);
         component_group.add(place);
-        addPlacePopUp();
         layer.add(component_group);
         layer.draw();
     })
 };
 
 // Add new place function, should only be called by component
-function addNewPlace(parentX, parentY) {
+function addNewPlace(parentX, parentY, component_obj) {
+    var place_obj = new Place('Place', "Place " + (component_obj.children_list.length + 1));
+    component_obj.children_list.push(place_obj);
+    console.log(component_obj.name + " its places are: ");
+    console.log(component_obj.children_list);
+    
     var place = new Konva.Circle({
         x: parentX - 115,
         y: parentY,
@@ -169,7 +164,6 @@ function addNewPlace(parentX, parentY) {
         ShadowBlur: 1,
         draggable: true
     });
-    place_count++;
 
     // tooltip to display name of object
     var tooltip = new Konva.Text({
@@ -194,7 +188,7 @@ function addNewPlace(parentX, parentY) {
             x : mousePos.x + 10,
             y : mousePos.y + 10
         });
-        tooltip.text("Place");
+        tooltip.text(place_obj.name);
         tooltip.show();
         tooltipLayer.batchDraw();
     });
@@ -247,9 +241,6 @@ function addPlacePopUp() {
 
 // Catch place:add
 ipcMain.on('place:add', function(e, place) {
-    var place_obj = new Place('Place', place);
-    place_list.push(place_obj);
-    console.log(place_list);
 });
 
 function closeAddPlaceWindow() {
