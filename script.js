@@ -9,12 +9,20 @@ var stage = "global";
 let component_count = 0;
 let place_count = 0;
 var component_list = [];
+var place_list = [];
 var mouse_over_component = true;
 
 class Component {
+
     constructor(type, name){
         this.type = type;
         this.name = name;
+        var places_of_component = [];
+        component_count++;
+    }
+
+    getPlaceList(){
+        console.log(this.name + "has places: " + places_of_component);
     }
 }
 
@@ -63,6 +71,11 @@ function addNewComponent(posX, posY) {
         draggable: true
     });
 
+    // create a component object and add it to the global list
+    var component_obj = new Component('Component', "Component " + (component_list.length + 1));
+    component_list.push(component_obj);
+    console.log(component_list);
+
     // create a new component group every time a component is created
     var component_group = new Konva.Group({});
     component_group.add(component);
@@ -93,10 +106,40 @@ function addNewComponent(posX, posY) {
         layer.draw();
     });
 
+    // tooltip to display name of object
+    var tooltip = new Konva.Text({
+        text: "",
+        fontFamily: "Calibri",
+        fontSize: 12,
+        padding: 5,
+        textFill: "white",
+        fill: "black",
+        alpha: 0.75,
+        visible: false
+    });
+
+    var tooltipLayer = new Konva.Layer();
+    tooltipLayer.add(tooltip);
+    stage.add(tooltipLayer);
+
     // if mouse is over a component
-    component.on('mouseenter', function () {
-        //console.log("mouse enter component");
-        mouse_over_component = true;
+    component.on('mousemove', function () {
+        //console.log(component_obj.name + " over");
+        var mousePos = stage.getPointerPosition();
+        tooltip.position({
+            x : mousePos.x + 10,
+            y : mousePos.y + 10
+        });
+        tooltip.text(component_obj.name);
+        tooltip.show();
+        tooltipLayer.batchDraw();
+    });
+
+    // hide the tooltip on mouse out
+    component.on("mouseout", function(){
+        //console.log(component_obj.name + " out");
+        tooltip.hide();
+        tooltipLayer.draw();
     });
 
     // if double click on component
@@ -105,23 +148,19 @@ function addNewComponent(posX, posY) {
         // grow component here
         var posX = component.position().x + 260;
         var posY = component.position().y + 175;
-        component_group.add(addNewPlace(posX, posY));
+        var place = addNewPlace(posX, posY);
+        component_group.add(place);
         addPlacePopUp();
         layer.add(component_group);
         layer.draw();
     })
-
-    // if mouse leeaves a component
-    component.on('mouseout', function () {
-        //console.log("mouse out component");
-        mouse_over_component = false;
-    })
 };
 
-function addNewPlace(posX, posY) {
+// Add new place function, should only be called by component
+function addNewPlace(parentX, parentY) {
     var place = new Konva.Circle({
-        x: posX - 115,
-        y: posY,
+        x: parentX - 115,
+        y: parentY,
         radius: 30,
         stroke: 'black',
         strokeWidth: 1,
@@ -131,6 +170,41 @@ function addNewPlace(posX, posY) {
         draggable: true
     });
     place_count++;
+
+    // tooltip to display name of object
+    var tooltip = new Konva.Text({
+        text: "",
+        fontFamily: "Calibri",
+        fontSize: 12,
+        padding: 5,
+        textFill: "white",
+        fill: "black",
+        alpha: 0.75,
+        visible: false
+    });
+
+    var tooltipLayer = new Konva.Layer();
+    tooltipLayer.add(tooltip);
+    stage.add(tooltipLayer);
+
+    // if mouse is over a place
+    place.on('mousemove', function () {
+        var mousePos = stage.getPointerPosition();
+        tooltip.position({
+            x : mousePos.x + 10,
+            y : mousePos.y + 10
+        });
+        tooltip.text("Place");
+        tooltip.show();
+        tooltipLayer.batchDraw();
+    });
+
+    // hide the tooltip on mouse out
+    place.on("mouseout", function(){
+        tooltip.hide();
+        tooltipLayer.draw();
+    });
+    // return itself back to its parent component
     return place;
 };
 
@@ -148,11 +222,6 @@ function drop(ev) {
     var posY = ev.clientY;
     if(data == "component"){
         addNewComponent(posX, posY);
-    } else if (data == "place") {
-        if(mouse_over_component){
-            addNewPlace(posX, posY);
-            addPlacePopUp();
-        }
     }
 };
   
@@ -178,9 +247,9 @@ function addPlacePopUp() {
 
 // Catch place:add
 ipcMain.on('place:add', function(e, place) {
-    var place = new Place('Place', place);
-    component_list.push(place);
-    console.log(component_list);
+    var place_obj = new Place('Place', place);
+    place_list.push(place_obj);
+    console.log(place_list);
 });
 
 function closeAddPlaceWindow() {
