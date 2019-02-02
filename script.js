@@ -25,12 +25,11 @@ class Place {
 };
 
 class Transition {
-    constructor(type, name, from_place, to_place, function_name) {
+    constructor(type, name, source, dest) {
         this.type = type;
         this.name = name;
-        this.from_place = from_place;
-        this.to_place = to_place;
-        this.function_name = function_name;
+        this.source = source;
+        this.dest = dest;
     };
 };
 
@@ -152,10 +151,12 @@ function addNewPlace(parentX, parentY, component_obj) {
     component_obj.children_list.push(place_obj);
     console.log(component_obj.name + " its places are: ");
     console.log(component_obj.children_list);
-    
+
+    // spawn the place at current pointer position
+    var mousePos = stage.getPointerPosition();
     var place = new Konva.Circle({
-        x: parentX - 115,
-        y: parentY,
+        x: mousePos.x,
+        y: mousePos.y,
         radius: 30,
         stroke: 'black',
         strokeWidth: 1,
@@ -198,9 +199,17 @@ function addNewPlace(parentX, parentY, component_obj) {
         tooltip.hide();
         tooltipLayer.draw();
     });
-    // return itself back to its parent component
+    // return konva object back to its parent component
     return place;
 };
+
+function addNewTransition(source, dest, component_obj){
+
+    var transition_obj = new Place('Transition',"Transition " + (component_obj.children_list.length + 1),source, dest);
+    component_obj.children_list.push(transition_obj);
+    console.log(component_obj.name + " its elements are: ");
+    console.log(component_obj.children_list);
+}
 
 // Drag N Drop Functions
 
