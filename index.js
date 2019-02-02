@@ -1,6 +1,7 @@
 const electron = require('electron');
 const url = require('url');
 const path = require('path');
+const ipc = electron.ipcMain;
 
 const {app, BrowserWindow, Menu} = electron;
 
@@ -38,6 +39,20 @@ const mainMenuTemplate = [
 				'Ctrl+Q',
 				click(){
 					app.quit();
+				}
+			}
+		]
+	},
+	{
+		label: 'Tools',
+		submenu:[
+			{
+				label: 'Generate Code',
+				// Keyboard shortcuts for code generation
+				accelerator: process.platform == 'darwin' ? 'Command+G' :
+				'Ctrl+G',
+				click(){
+					ipc.once('generate_code');
 				}
 			}
 		]

@@ -25,11 +25,12 @@ class Place {
 };
 
 class Transition {
-    constructor(type, name, source, dest) {
+    constructor(type, name, source, dest, func) {
         this.type = type;
         this.name = name;
-        this.source = source;
+        this.src = src;
         this.dest = dest;
+        this.func = func;
     };
 };
 
@@ -62,7 +63,7 @@ function addNewComponent(posX, posY) {
     });
 
     // create a component object and add it to the global list
-    var component_obj = new Component('Component', "Component " + (component_list.length + 1));
+    var component_obj = new Component('Component', "Component_" + (component_list.length + 1));
     component_list.push(component_obj);
     console.log(component_list);
 
@@ -147,7 +148,7 @@ function addNewComponent(posX, posY) {
 
 // Add new place function, should only be called by component
 function addNewPlace(parentX, parentY, component_obj) {
-    var place_obj = new Place('Place', "Place " + (component_obj.children_list.length + 1));
+    var place_obj = new Place('Place', "Place_" + (component_obj.children_list.length + 1));
     component_obj.children_list.push(place_obj);
     console.log(component_obj.name + " its places are: ");
     console.log(component_obj.children_list);
@@ -205,7 +206,7 @@ function addNewPlace(parentX, parentY, component_obj) {
 
 function addNewTransition(source, dest, component_obj){
 
-    var transition_obj = new Place('Transition',"Transition " + (component_obj.children_list.length + 1),source, dest);
+    var transition_obj = new Place('Transition',"Transition_" + (component_obj.children_list.length + 1),source, dest);
     component_obj.children_list.push(transition_obj);
     console.log(component_obj.name + " its elements are: ");
     console.log(component_obj.children_list);

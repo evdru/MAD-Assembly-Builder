@@ -8,7 +8,7 @@ var dialog = app.dialog;
 var comp_list = component_list;
 
 ipc.on('generate_code', function(ev) {
-    console.log(ev);
+    console.log("Made it to Script_2");
 
     /** Loop through the component list, for every component create a new file
      * string, open the dialog box, save that string to the newly chosen file 
