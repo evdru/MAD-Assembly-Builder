@@ -49,16 +49,26 @@ function initialize() {
 
 // Adds a new component to the stage
 function addNewComponent(posX, posY) {
+    
+    // create a new component group every time a component is created
+    var component_group = new Konva.Group({
+        x: posX,
+        y: posY,
+        width: 300,
+        height: 350,
+        draggable: true,
+        name: 'component_group'
+    });
+
     // create the konva node
     var component = new Konva.Rect({
-        x: posX - 200,
-        y: posY - 125,
+        x: 0,
+        y: 0,
         width: 300,
         height: 350,
         stroke: 'black',
         name: 'component',
-        strokeWidth: 0.5,
-        draggable: true
+        strokeWidth: 0.5
     });
 
     // create a component object and add it to the global list
@@ -66,8 +76,7 @@ function addNewComponent(posX, posY) {
     component_list.push(component_obj);
     console.log(component_list);
 
-    // create a new component group every time a component is created
-    var component_group = new Konva.Group({});
+    
     component_group.add(component);
     layer.add(component_group);
     layer.draw();
@@ -90,7 +99,7 @@ function addNewComponent(posX, posY) {
         
             // create new transformer
             var tr = new Konva.Transformer();
-            layer.add(tr);
+            component_group.add(tr);
             tr.attachTo(e.target);
             layer.draw();
           }
@@ -133,30 +142,33 @@ function addNewComponent(posX, posY) {
     });
 
     // if double click on component
-    component.on('dblclick', function (){
-        console.log("dbl click on component");
+    component.on('dblclick', function (e){
+        console.log("dbl click on component click");
+        // what is transform of parent element?
+        var transform = component.getParent().getAbsoluteTransform().copy();
+        // to detect relative position we need to invert transform
+        transform.invert();
+        // now we find relative point
+        var pos = stage.getPointerPosition();
+        var placePos = transform.point(pos);
         // grow component here
-        var posX = component.position().x + 260;
-        var posY = component.position().y + 175;
-        var place = addNewPlace(posX, posY, component_obj);
+        var place = addNewPlace(placePos, component_obj);
         component_group.add(place);
-        layer.add(component_group);
+        //layer.add(component_group);
         layer.draw();
-    })
+    });
 };
 
 // Add new place function, should only be called by component
-function addNewPlace(parentX, parentY, component_obj) {
+function addNewPlace(placePos, component_obj) {
     var place_obj = new Place('Place', "Place " + (component_obj.children_list.length + 1));
     component_obj.children_list.push(place_obj);
     console.log(component_obj.name + " its places are: ");
     console.log(component_obj.children_list);
 
-    // spawn the place at current pointer position
-    var mousePos = stage.getPointerPosition();
     var place = new Konva.Circle({
-        x: mousePos.x,
-        y: mousePos.y,
+        x: placePos.x,
+        y: placePos.y,
         radius: 30,
         stroke: 'black',
         strokeWidth: 1,
@@ -194,6 +206,14 @@ function addNewPlace(parentX, parentY, component_obj) {
         tooltipLayer.batchDraw();
     });
 
+    // if a click over place occurs
+    place.on("click", function(e){
+        if (e.evt.button === 2) {
+            // first right click set source
+            console.log("Right clicked place: ", place_obj.name);
+        }
+    });
+
     // hide the tooltip on mouse out
     place.on("mouseout", function(){
         tooltip.hide();
@@ -203,13 +223,17 @@ function addNewPlace(parentX, parentY, component_obj) {
     return place;
 };
 
+// function that adds new transition obj and konva arrow
 function addNewTransition(source, dest, component_obj){
 
-    var transition_obj = new Place('Transition',"Transition " + (component_obj.children_list.length + 1),source, dest);
+    var transition_obj = new Place('Transition',"Transition " + (component_obj.children_list.length + 1), source, dest);
     component_obj.children_list.push(transition_obj);
     console.log(component_obj.name + " its elements are: ");
     console.log(component_obj.children_list);
 }
+
+
+
 
 // Drag N Drop Functions
 
@@ -221,8 +245,8 @@ function allowDrop(ev) {
 function drop(ev) {
     ev.preventDefault();
     var data = ev.dataTransfer.getData("text");
-    var posX = ev.clientX;
-    var posY = ev.clientY;
+    var posX = ev.clientX - 270;
+    var posY = ev.clientY - 180;
     if(data == "component"){
         addNewComponent(posX, posY);
     }
