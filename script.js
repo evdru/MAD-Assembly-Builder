@@ -99,7 +99,7 @@ function addNewComponent(posX, posY) {
         
             // create new transformer
             var tr = new Konva.Transformer();
-            component_group.add(tr);
+            e.target.getParent().add(tr);
             tr.attachTo(e.target);
             layer.draw();
           }
@@ -201,7 +201,7 @@ function addNewPlace(placePos, component_obj) {
             x : mousePos.x + 10,
             y : mousePos.y + 10
         });
-        tooltip.text(place_obj.name);
+        tooltip.text(component_obj.name + " - " + place_obj.name);
         tooltip.show();
         tooltipLayer.batchDraw();
     });
