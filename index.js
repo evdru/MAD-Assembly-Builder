@@ -1,7 +1,6 @@
 const electron = require('electron');
 const url = require('url');
 const path = require('path');
-const ipcMain = electron.ipcMain;
 
 const {app, BrowserWindow, Menu} = electron;
 
@@ -52,7 +51,7 @@ const mainMenuTemplate = [
 				accelerator: process.platform == 'darwin' ? 'Command+G' :
 				'Ctrl+G',
 				click(){
-					window.webContents.send('generate_code');
+					window.webContents.send("generate_code");
 				}
 			}
 		]

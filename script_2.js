@@ -1,5 +1,5 @@
 const electron = require('electron');
-const ipc = electron.ipcRenderer;
+const ipcRenderer = electron.ipcRenderer;
 
 var fs = require('fs'); // Load the File System to execute our common tasks (CRUD)
 var app = electron.remote; 
@@ -7,8 +7,8 @@ var dialog = app.dialog;
 
 var comp_list = component_list;
 
-ipc.on('generate_code', function(ev) {
-    console.log("Made it back to Script_2");
+ipcRenderer.on('generate_code', function() {
+    console.log("Made it to Script_2. :D");
 
     /** Loop through the component list, for every component create a new file
      * string, open the dialog box, save that string to the newly chosen file 
