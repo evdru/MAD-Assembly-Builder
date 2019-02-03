@@ -67,24 +67,27 @@ function createString(component) {
     };
 
     //Create the file & write to the file
-    generateCode(content);
+    generateCode(content, component.name);
 };
 
-function generateCode(content) {
-    // You can obviously give a direct path without use the dialog (C:/Program Files/path/myfileexample.txt)
-    dialog.showSaveDialog((fileName) => {
-        if (fileName === undefined) {
-            console.log("You didn't save a file");
-            return;
-        }
-        // fileName is a string that contains the path and filename created in the save file dialog.  
-        fs.writeFile(fileName, content, (err) => {
-            if (err) {
-                alert("An error ocurred creating the file "+ err.message)
-            };  
-            console.log("The file has been succesfully saved");
-        });
-    });
+//Write the content string to a file
+function generateCode(content, component_name) {
+    dialog.showSaveDialog(
+        {defaultPath: "~/" + component_name + ".py"},
+        function (fileName) {
+          // do your stuff here
+            if (fileName === undefined) {
+                console.log("You didn't save a file.");
+                return;
+            }
+            // fileName is a string that contains the path and filename created in the save file dialog.  
+            fs.writeFile(fileName, content, (err) => {
+                if (err) {
+                    alert("An error ocurred creating the file " + err.message)
+                };  
+                console.log(component_name + " has been succesfully saved!");
+            });
+      });
 };
 
 function getRndInteger(min, max) {
