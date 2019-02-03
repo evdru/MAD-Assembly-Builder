@@ -7,6 +7,7 @@ const remote = require('electron').remote;
 var layer = "global";
 var stage = "global";
 var component_list = [];
+var blockSnapSize = 30;
 
 class Component {
     
@@ -45,6 +46,7 @@ function initialize() {
     
     layer = new Konva.Layer();
     stage.add(layer);
+    var container = stage.container();
 };
 
 // Adds a new component to the stage
@@ -152,7 +154,7 @@ function addNewComponent(posX, posY) {
         var pos = stage.getPointerPosition();
         var placePos = transform.point(pos);
         // grow component here
-        var place = addNewPlace(placePos, component_obj);
+        var place = addNewPlace(component, placePos, component_obj);
         component_group.add(place);
         //layer.add(component_group);
         layer.draw();
@@ -160,7 +162,7 @@ function addNewComponent(posX, posY) {
 };
 
 // Add new place function, should only be called by component
-function addNewPlace(placePos, component_obj) {
+function addNewPlace(component, placePos, component_obj) {
     var place_obj = new Place('Place', "Place " + (component_obj.children_list.length + 1));
     component_obj.children_list.push(place_obj);
     console.log(component_obj.name + " its places are: ");
@@ -194,6 +196,19 @@ function addNewPlace(placePos, component_obj) {
     tooltipLayer.add(tooltip);
     stage.add(tooltipLayer);
 
+    place.on('dragend', (e) => {
+        place.position({
+          x: Math.round(place.x() / blockSnapSize) * blockSnapSize,
+          y: Math.round(place.y() / blockSnapSize) * blockSnapSize
+        });
+        layer.batchDraw();
+    });
+
+    // when place is being dragged
+    place.on('dragmove', (e) => {
+        tooltip.hide();
+    });
+
     // if mouse is over a place
     place.on('mousemove', function () {
         var mousePos = stage.getPointerPosition();
@@ -219,6 +234,7 @@ function addNewPlace(placePos, component_obj) {
         tooltip.hide();
         tooltipLayer.draw();
     });
+    
     // return konva object back to its parent component
     return place;
 };
