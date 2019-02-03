@@ -41,6 +41,20 @@ const mainMenuTemplate = [
 				}
 			}
 		]
+	},
+	{
+		label: 'Tools',
+		submenu:[
+			{
+				label: 'Generate Code',
+				// Keyboard shortcuts for code generation
+				accelerator: process.platform == 'darwin' ? 'Command+G' :
+				'Ctrl+G',
+				click(){
+					window.webContents.send("generate_code");
+				}
+			}
+		]
 	}
 ];
 
