@@ -16,6 +16,7 @@ ipcRenderer.on('generate_code', function() {
     for (var i = 0; i < comp_list.length; i++) {
         createString(comp_list[i]);
     };
+    createAssemblyString(comp_list);
 });
 
 function createString(component) {
@@ -73,7 +74,7 @@ function createString(component) {
 //Write the content string to a file
 function generateCode(content, component_name) {
     dialog.showSaveDialog(
-        {defaultPath: "~/" + component_name + ".py"},
+        {defaultPath: "~/" + component_name.toLowerCase() + ".py"},
         function (fileName) {
           // do your stuff here
             if (fileName === undefined) {
@@ -92,4 +93,56 @@ function generateCode(content, component_name) {
 
 function getRndInteger(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
+};
+
+function createAssemblyString(comp_list) {
+    var content = "";
+    //Import MAD
+    content += "from mad import *\n\n";
+    //Import component files and classes
+    for (var i = 0; i < comp_list.length; i++) {
+        content += "from " + comp_list[i].name.toLowerCase() + " import " + comp_list[i].name + "\n";
+        if (i == comp_list.length - 1) {
+            content += "\n";
+        }
+    }
+    //Add actual functionality
+    content += "if __name__ == '__main__':\n";
+    //Create new classes of imported types
+    for (var j = 0; j < comp_list.length; j++) {
+        content += "\t" + comp_list[j].name.toLowerCase() + " = " + comp_list[j].name + "()\n\n";
+    }
+    //Create and add to the assembly
+    content += "\tassembly = Assembly()\n";
+    for (var k = 0; k < comp_list.length; k++) {
+        content += "\tassembly.addComponent('" + comp_list[k].name.toLowerCase() + "', " + comp_list[k].name.toLowerCase() + ")\n";
+        if (k == comp_list.length - 1) {
+            content += "\n";
+        }
+    }
+
+    content += "\tmad = Mad(assembly)\n";
+    content += "\tmad.run()\n";
+
+    generateAssemblyCode(content);
+}
+
+//Write the content string to a file
+function generateAssemblyCode(content) {
+    dialog.showSaveDialog(
+        {defaultPath: "~/assembly.py"},
+        function (fileName) {
+          // do your stuff here
+            if (fileName === undefined) {
+                console.log("You didn't save a file.");
+                return;
+            }
+            // fileName is a string that contains the path and filename created in the save file dialog.  
+            fs.writeFile(fileName, content, (err) => {
+                if (err) {
+                    alert("An error ocurred creating the file " + err.message)
+                };  
+                console.log("The assembly has been succesfully saved!");
+            });
+      });
 };
