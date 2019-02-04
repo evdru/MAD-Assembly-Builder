@@ -8,6 +8,11 @@ var layer = "global";
 var stage = "global";
 var component_list = [];
 var blockSnapSize = 30;
+var transition_count = 1;
+var source_transition = null;
+var dest_transition = null;
+var source_obj = null;
+var dest_obj = null;
 
 class Component {
     
@@ -19,9 +24,10 @@ class Component {
 };
 
 class Place {
-    constructor(type, name) {
+    constructor(type, name, index) {
         this.type = type;
         this.name = name;
+        this.index = index;
     };
 };
 
@@ -156,7 +162,6 @@ function addNewComponent(posX, posY) {
         var placePos = transform.point(pos);
         // grow component here
         var place = addNewPlace(component_group, component, placePos, component_obj);
-        component_group.add(place);
         //layer.add(component_group);
         layer.draw();
     });
@@ -164,7 +169,8 @@ function addNewComponent(posX, posY) {
 
 // Add new place function, should only be called by component
 function addNewPlace(component_group, component, placePos, component_obj) {
-    var place_obj = new Place('Place', "Place_" + (component_obj.children_list.length + 1));
+    var index = component_obj.children_list.length;
+    var place_obj = new Place('Place', "Place_" + (index + 1), index);
     component_obj.children_list.push(place_obj);
     console.log(component_obj.name + " its places are: ");
     console.log(component_obj.children_list);
@@ -205,6 +211,8 @@ function addNewPlace(component_group, component, placePos, component_obj) {
             });
         }
     });
+
+    component_group.add(place);
 
     // tooltip to display name of object
     var tooltip = new Konva.Text({
@@ -250,12 +258,24 @@ function addNewPlace(component_group, component, placePos, component_obj) {
     // if a click over place occurs
     place.on("click", function(e){
         if (e.evt.button === 0){
-            // first right click set source
+            // first left click set source
             console.log("Left clicked place: ", place_obj.name);
+            source_transition = place;
+            source_obj = place_obj;
         }
         if (e.evt.button === 2) {
-            // first right click set source
+            // first right click set dest
             console.log("Right clicked place: ", place_obj.name);
+            dest_transition = place;
+            dest_obj = place_obj;
+            if(source_transition != null & source_obj.index < dest_obj.index){
+                console.log("Source was assigned prior");
+                console.log("Source has a lower index than dest");
+                transition = addNewTransition(source_transition, dest_transition, source_obj, dest_obj, component_obj, component_group);
+                // move transition below its source and dest
+                transition.moveToBottom();
+                layer.draw();
+            }
         }
     });
 
@@ -270,14 +290,22 @@ function addNewPlace(component_group, component, placePos, component_obj) {
 };
 
 // function that adds new transition obj and konva arrow
-function addNewTransition(source, dest, component_obj){
-
-    var transition_obj = new Place('Transition',"Transition_" + (component_obj.children_list.length + 1), source, dest);
+function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, component_obj, component_group){
+    var transition_obj = new Transition('Transition', "Transition_" + transition_count, source_obj, dest_obj, "default function");
     component_obj.children_list.push(transition_obj);
+    transition_count++;
     console.log(component_obj.name + " its elements are: ");
     console.log(component_obj.children_list);
 
+    var transition = new Konva.Line({
+        points: [source_konva.getX(), source_konva.getY(), dest_konva.getX(), dest_konva.getY()],
+        stroke: 'black',
+        strokeWidth: 1
+      });
 
+    // add transition konva obj to component group
+    component_group.add(transition);
+    return transition;
 }
 
 // Drag N Drop Functions
