@@ -155,7 +155,7 @@ function addNewComponent(posX, posY) {
         var pos = stage.getPointerPosition();
         var placePos = transform.point(pos);
         // grow component here
-        var place = addNewPlace(component, placePos, component_obj);
+        var place = addNewPlace(component_group, component, placePos, component_obj);
         component_group.add(place);
         //layer.add(component_group);
         layer.draw();
@@ -163,11 +163,13 @@ function addNewComponent(posX, posY) {
 };
 
 // Add new place function, should only be called by component
-function addNewPlace(component, placePos, component_obj) {
+function addNewPlace(component_group, component, placePos, component_obj) {
     var place_obj = new Place('Place', "Place_" + (component_obj.children_list.length + 1));
     component_obj.children_list.push(place_obj);
     console.log(component_obj.name + " its places are: ");
     console.log(component_obj.children_list);
+
+
 
     var place = new Konva.Circle({
         x: placePos.x,
@@ -178,7 +180,32 @@ function addNewPlace(component, placePos, component_obj) {
         fill: 'white',
         name: 'place',
         ShadowBlur: 1,
-        draggable: true
+        draggable: true,
+        dragBoundFunc: function(pos) {
+            var X = pos.x;
+            var Y = pos.y;
+            // get min and max based on its parent component
+            var minX = component.getAbsolutePosition().x;
+            var maxX = minX + component.getWidth();
+            var minY = component.getAbsolutePosition().y;
+            var maxY = minY + component.getHeight();
+            if (X < minX) {
+                X = minX;
+              }
+            if (X > maxX) {
+                X = maxX;
+            }
+            if (Y < minY) {
+                Y = minY;
+            }
+            if (Y > maxY) {
+                Y = maxY;
+            }
+            return ({
+                x: X,
+                y: Y
+            });
+        }
     });
 
     // tooltip to display name of object
