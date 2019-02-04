@@ -15,11 +15,11 @@ var source_obj = null;
 var dest_obj = null;
 
 class Component {
-    
     constructor(type, name){
         this.type = type;
         this.name = name;
-        this.children_list = [];
+        this.place_list = [];
+        this.transition_list = [];
     };
 };
 
@@ -169,11 +169,11 @@ function addNewComponent(posX, posY) {
 
 // Add new place function, should only be called by component
 function addNewPlace(component_group, component, placePos, component_obj) {
-    var index = component_obj.children_list.length;
+    var index = component_obj.place_list.length;
     var place_obj = new Place('Place', "Place_" + (index + 1), index);
-    component_obj.children_list.push(place_obj);
+    component_obj.place_list.push(place_obj);
     console.log(component_obj.name + " its places are: ");
-    console.log(component_obj.children_list);
+    console.log(component_obj.place_list);
 
     var place = new Konva.Circle({
         x: placePos.x,
@@ -280,12 +280,6 @@ function addNewPlace(component_group, component, placePos, component_obj) {
     // when place is being dragged
     place.on('dragmove', (e) => {
         tooltip.hide();
-        if(place = dest_transition){
-            adjustPoint(e);
-        }
-        else if (place = source_transition){
-            adjustPoint(e);
-        }
     });
 
     // hide the tooltip on mouse out
@@ -293,12 +287,6 @@ function addNewPlace(component_group, component, placePos, component_obj) {
         tooltip.hide();
         tooltipLayer.draw();
     });
-
-    function adjustPoint(e){
-        var p=[source_transition.getX(), source_transition.getY(), dest_transition.getX(), dest_transition.getY()];
-        transition.setPoints(p);
-        layer.draw();
-    }
   
     // return konva object back to its parent component
     return place;
@@ -306,11 +294,11 @@ function addNewPlace(component_group, component, placePos, component_obj) {
 
 // function that adds new transition obj and konva arrow
 function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, component_obj, component_group){
-    var transition_obj = new Transition('Transition', "Transition_" + transition_count, source_obj, dest_obj, "default function");
-    component_obj.children_list.push(transition_obj);
+    var transition_obj = new Transition('Transition', "Transition_" + transition_count, source_obj, dest_obj, "default_function");
+    component_obj.transition_list.push(transition_obj);
     transition_count++;
-    console.log(component_obj.name + " its elements are: ");
-    console.log(component_obj.children_list);
+    console.log(component_obj.name + " its transitions are: ");
+    console.log(component_obj.transition_list);
 
     var transition = new Konva.Line({
         points: [source_konva.getX(), source_konva.getY(), dest_konva.getX(), dest_konva.getY()],
@@ -320,6 +308,16 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
 
     // add transition konva obj to component group
     component_group.add(transition);
+
+    source_konva.on('dragmove', (e) => {
+        transition.setPoints([source_transition.getX(), source_transition.getY(), dest_transition.getX(), dest_transition.getY()]);
+        layer.draw();
+    });
+
+    dest_konva.on('dragmove', (e) => {
+        transition.setPoints([source_transition.getX(), source_transition.getY(), dest_transition.getX(), dest_transition.getY()]);
+        layer.draw();
+    });
 
     return transition;
 }
