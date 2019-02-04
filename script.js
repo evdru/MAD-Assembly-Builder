@@ -101,7 +101,7 @@ function addNewComponent(posX, posY) {
             stage.find('Transformer').destroy();
         
             // create new transformer
-            var tr = new Konva.Transformer();
+            var tr = new Konva.Transformer({rotateEnabled: false});
             e.target.getParent().add(tr);
             tr.attachTo(e.target);
             layer.draw();
@@ -155,7 +155,7 @@ function addNewComponent(posX, posY) {
         var pos = stage.getPointerPosition();
         var placePos = transform.point(pos);
         // grow component here
-        var place = addNewPlace(component, placePos, component_obj);
+        var place = addNewPlace(component_group, component, placePos, component_obj);
         component_group.add(place);
         //layer.add(component_group);
         layer.draw();
@@ -163,7 +163,7 @@ function addNewComponent(posX, posY) {
 };
 
 // Add new place function, should only be called by component
-function addNewPlace(component, placePos, component_obj) {
+function addNewPlace(component_group, component, placePos, component_obj) {
     var place_obj = new Place('Place', "Place_" + (component_obj.children_list.length + 1));
     component_obj.children_list.push(place_obj);
     console.log(component_obj.name + " its places are: ");
@@ -178,7 +178,32 @@ function addNewPlace(component, placePos, component_obj) {
         fill: 'white',
         name: 'place',
         ShadowBlur: 1,
-        draggable: true
+        draggable: true,
+        dragBoundFunc: function(pos) {
+            var X = pos.x;
+            var Y = pos.y;
+            // get min and max based on its parent component
+            var minX = component.getAbsolutePosition().x;
+            var maxX = minX + (component.getWidth() * component.scaleX());
+            var minY = component.getAbsolutePosition().y;
+            var maxY = minY + (component.getHeight() * component.scaleY());
+            if (X < minX) {
+                X = minX;
+              }
+            if (X > maxX) {
+                X = maxX;
+            }
+            if (Y < minY) {
+                Y = minY;
+            }
+            if (Y > maxY) {
+                Y = maxY;
+            }
+            return ({
+                x: X,
+                y: Y
+            });
+        }
     });
 
     // tooltip to display name of object
@@ -224,6 +249,10 @@ function addNewPlace(component, placePos, component_obj) {
 
     // if a click over place occurs
     place.on("click", function(e){
+        if (e.evt.button === 0){
+            // first right click set source
+            console.log("Left clicked place: ", place_obj.name);
+        }
         if (e.evt.button === 2) {
             // first right click set source
             console.log("Right clicked place: ", place_obj.name);
@@ -243,14 +272,13 @@ function addNewPlace(component, placePos, component_obj) {
 // function that adds new transition obj and konva arrow
 function addNewTransition(source, dest, component_obj){
 
-    var transition_obj = new Place('Transition',"Transition_" + (component_obj.children_list.length + 1),source, dest);
+    var transition_obj = new Place('Transition',"Transition_" + (component_obj.children_list.length + 1), source, dest);
     component_obj.children_list.push(transition_obj);
     console.log(component_obj.name + " its elements are: ");
     console.log(component_obj.children_list);
+
+
 }
-
-
-
 
 // Drag N Drop Functions
 
