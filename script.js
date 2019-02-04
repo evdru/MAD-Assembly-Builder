@@ -249,6 +249,10 @@ function addNewPlace(component_group, component, placePos, component_obj) {
 
     // if a click over place occurs
     place.on("click", function(e){
+        if (e.evt.button === 0){
+            // first right click set source
+            console.log("Left clicked place: ", place_obj.name);
+        }
         if (e.evt.button === 2) {
             // first right click set source
             console.log("Right clicked place: ", place_obj.name);
@@ -268,14 +272,13 @@ function addNewPlace(component_group, component, placePos, component_obj) {
 // function that adds new transition obj and konva arrow
 function addNewTransition(source, dest, component_obj){
 
-    var transition_obj = new Place('Transition',"Transition_" + (component_obj.children_list.length + 1),source, dest);
+    var transition_obj = new Place('Transition',"Transition_" + (component_obj.children_list.length + 1), source, dest);
     component_obj.children_list.push(transition_obj);
     console.log(component_obj.name + " its elements are: ");
     console.log(component_obj.children_list);
+
+
 }
-
-
-
 
 // Drag N Drop Functions
 
