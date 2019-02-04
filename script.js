@@ -169,8 +169,6 @@ function addNewPlace(component_group, component, placePos, component_obj) {
     console.log(component_obj.name + " its places are: ");
     console.log(component_obj.children_list);
 
-
-
     var place = new Konva.Circle({
         x: placePos.x,
         y: placePos.y,
@@ -186,9 +184,9 @@ function addNewPlace(component_group, component, placePos, component_obj) {
             var Y = pos.y;
             // get min and max based on its parent component
             var minX = component.getAbsolutePosition().x;
-            var maxX = minX + component.getWidth();
+            var maxX = minX + (component.getWidth() * component.scaleX());
             var minY = component.getAbsolutePosition().y;
-            var maxY = minY + component.getHeight();
+            var maxY = minY + (component.getHeight() * component.scaleY());
             if (X < minX) {
                 X = minX;
               }
