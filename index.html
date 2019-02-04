@@ -5,27 +5,18 @@
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 		<link rel="stylesheet" href="./style.css">
 		<script src="./script.js"></script>
+		<script src="./generate_code.js"></script>
 		<script src="https://unpkg.com/konva@2.4.2/konva.min.js"></script>
 	</head>
 	<body>
 		<div class="sidebar">
-			<div type="button" id="component" class="component" onclick="addNewComponent();">
+			<div id="component" class="component" draggable="true" ondragstart="drag(event)">
 				<svg width="100" height="100">
 					<rect x="10" y="10" width="80" height="80" stroke="black" stroke-width="2" fill-opacity="0" draggable="true" />
 				</svg>
 			</div>
-			<div type="button" id="place" class="place" onClick="addNewPlace();">
-				<svg width="100" height="100">
-					<circle cx="50" cy="50" r="40" stroke="black" stroke-width="2" fill-opacity="0" draggable="true" />
-				</svg>
-			</div>
-			<div type="button" id="transition" class="transition">
-				<svg height="100" width="100">
-					<line x1="50" y1="10" x2="50" y2="90" stroke="black" stroke-width="2" />
-				</svg>
-			</div>
 		</div>
-		<div id="container" class="main">
+		<div id="container" class="main" ondragover="allowDrop(event)" ondrop="drop(event)">
 			<script>initialize();</script>
 		</div>
 	</body>

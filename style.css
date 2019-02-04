@@ -3,7 +3,9 @@
 .component {
     width: 100px;
     height: 100px;
+    top: 5px;
     background-color: transparent;
+    cursor: pointer;
 }
 
 .component:active {
@@ -14,6 +16,7 @@
     width: 100px;
     height: 100px;
     background-color: transparent;
+    cursor: pointer;
 }
 
 .place:active {
@@ -24,6 +27,7 @@
     width: 100px;
     height: 100px;
     background-color: transparent;
+    cursor: pointer;
 }
 
 .transition:active {
