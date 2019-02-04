@@ -1,5 +1,6 @@
 const {app, BrowserWindow} = require('electron');
 const url = require('url');
+const plugin_manager = require('./plugin_manager.js');
 
 let win = null;
 
