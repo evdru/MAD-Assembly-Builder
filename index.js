@@ -1,5 +1,6 @@
 const electron = require('electron');
 const url = require('url');
+const plugin_manager = require('./plugin_manager.js');
 const path = require('path');
 
 const {app, BrowserWindow, Menu} = electron;
