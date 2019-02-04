@@ -309,13 +309,15 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
     // add transition konva obj to component group
     component_group.add(transition);
 
+    // source place is moved update the transitions that are connected to it
     source_konva.on('dragmove', (e) => {
-        transition.setPoints([source_transition.getX(), source_transition.getY(), dest_transition.getX(), dest_transition.getY()]);
+        transition.setPoints([source_konva.getX(), source_konva.getY(), dest_konva.getX(), dest_konva.getY()]);
         layer.draw();
     });
 
+    // destination place is moved update the transitions that are connected to it
     dest_konva.on('dragmove', (e) => {
-        transition.setPoints([source_transition.getX(), source_transition.getY(), dest_transition.getX(), dest_transition.getY()]);
+        transition.setPoints([source_konva.getX(), source_konva.getY(), dest_konva.getX(), dest_konva.getY()]);
         layer.draw();
     });
 
