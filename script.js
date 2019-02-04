@@ -238,11 +238,6 @@ function addNewPlace(component_group, component, placePos, component_obj) {
         layer.batchDraw();
     });
 
-    // when place is being dragged
-    place.on('dragmove', (e) => {
-        tooltip.hide();
-    });
-
     // if mouse is over a place
     place.on('mousemove', function () {
         var mousePos = stage.getPointerPosition();
@@ -275,7 +270,21 @@ function addNewPlace(component_group, component, placePos, component_obj) {
                 // move transition below its source and dest
                 transition.moveToBottom();
                 layer.draw();
+            } else {
+                source_transition = null;
+                dest_transition = null;
             }
+        }
+    });
+
+    // when place is being dragged
+    place.on('dragmove', (e) => {
+        tooltip.hide();
+        if(place = dest_transition){
+            adjustPoint(e);
+        }
+        else if (place = source_transition){
+            adjustPoint(e);
         }
     });
 
@@ -284,7 +293,13 @@ function addNewPlace(component_group, component, placePos, component_obj) {
         tooltip.hide();
         tooltipLayer.draw();
     });
-    
+
+    function adjustPoint(e){
+        var p=[source_transition.getX(), source_transition.getY(), dest_transition.getX(), dest_transition.getY()];
+        transition.setPoints(p);
+        layer.draw();
+    }
+  
     // return konva object back to its parent component
     return place;
 };
@@ -305,6 +320,7 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
 
     // add transition konva obj to component group
     component_group.add(transition);
+
     return transition;
 }
 
