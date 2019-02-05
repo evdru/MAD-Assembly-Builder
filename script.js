@@ -8,7 +8,6 @@ var layer = "global";
 var stage = "global";
 var component_list = [];
 var blockSnapSize = 10;
-var transition_count = 1;
 var source_transition = null;
 var dest_transition = null;
 var source_obj = null;
@@ -279,7 +278,7 @@ function addNewPlace(component_group, component, placePos, component_obj) {
                     transition.moveToBottom();
                     layer.draw();   
                 } 
-            } 
+            }
             source_transition = null;
             dest_transition = null;
         }
@@ -302,9 +301,8 @@ function addNewPlace(component_group, component, placePos, component_obj) {
 
 // function that adds new transition obj and konva arrow
 function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, component_obj, component_group){
-    var transition_obj = new Transition('Transition', "Transition_" + transition_count, source_obj, dest_obj, "defaultFunction_" + transition_count);
+    var transition_obj = new Transition('Transition', "Transition_" + (component_obj.transition_list.length + 1), source_obj, dest_obj, "defaultFunction_" + (component_obj.transition_list.length + 1));
     component_obj.transition_list.push(transition_obj);
-    transition_count++;
     console.log(component_obj.name + " its transitions are: ");
     console.log(component_obj.transition_list);
 
