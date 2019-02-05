@@ -289,6 +289,16 @@ function addNewPlace(component_group, component, placePos, component_obj) {
         tooltip.hide();
     });
 
+    // changes the cursor to hand pointer
+    place.on("mouseenter", function(){
+        stage.container().style.cursor = 'pointer';
+    });
+
+    // changes the cursor back to default
+    place.on('mouseleave', function () {
+        stage.container().style.cursor = 'default';
+    });
+
     // hide the tooltip on mouse out
     place.on("mouseout", function(){
         tooltip.hide();
