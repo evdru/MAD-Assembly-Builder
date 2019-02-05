@@ -134,6 +134,12 @@ function addNewComponent(posX, posY) {
     tooltipLayer.add(tooltip);
     stage.add(tooltipLayer);
 
+    // when component is being dragged
+    component_group.on('dragmove', (e) => {
+        tooltip.hide();
+        tooltipLayer.draw();
+    });
+
     // if mouse is over a component
     component.on('mousemove', function () {
         //console.log(component_obj.name + " over");
@@ -302,7 +308,7 @@ function addNewPlace(component_group, component, placePos, component_obj) {
             place.stroke('green');
             place.strokeWidth(5);
             layer.draw();
-        } else if (source_transition != null && source_obj.index > place_obj.index && source_component == component_obj){
+        } else if (source_transition != null && source_obj.index >= place_obj.index && source_component == component_obj){
             highlighted = true;
             place.stroke('red');
             place.strokeWidth(5);
