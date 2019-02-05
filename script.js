@@ -87,8 +87,6 @@ function addNewComponent(posX, posY) {
     // create a component object and add it to the global list
     var component_obj = new Component('Component', "Component_" + (component_list.length + 1));
     component_list.push(component_obj);
-    console.log(component_list);
-
     
     component_group.add(component);
     layer.add(component_group);
@@ -271,6 +269,11 @@ function addNewPlace(component_group, component, placePos, component_obj) {
             source_component = component_obj;
             source_transition = place;
             source_obj = place_obj;
+            // highlight selection
+            highlighted = true;
+            place.stroke('blue');
+            place.strokeWidth(5);
+            place.draw();
         }
         if (e.evt.button === 2) {
             // first right click set dest
@@ -307,12 +310,12 @@ function addNewPlace(component_group, component, placePos, component_obj) {
             highlighted = true;
             place.stroke('green');
             place.strokeWidth(5);
-            layer.draw();
+            place.draw();
         } else if (source_transition != null && source_obj.index >= place_obj.index && source_component == component_obj){
             highlighted = true;
             place.stroke('red');
             place.strokeWidth(5);
-            layer.draw();
+            place.draw();
         }
     });
 
@@ -345,10 +348,12 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
     console.log(component_obj.name + " its transitions are: ");
     console.log(component_obj.transition_list);
 
-    var transition = new Konva.Line({
+    var transition = new Konva.Arrow({
         points: [source_konva.getX(), source_konva.getY(), dest_konva.getX(), dest_konva.getY()],
         stroke: 'black',
-        strokeWidth: 1
+        strokeWidth: 1,
+        pointerLength : 15,
+        pointerWidth : 10
       });
 
     // add transition konva obj to component group
@@ -371,6 +376,27 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
                               snapToGrid(dest_konva.getY())]);
         layer.draw();
     });
+
+    // helper function get offsets 
+    function getTransitionOffset(source_konva, dest_konva) {
+        var offsets = [];
+        // Quadrant 1
+        if (source_konva.x > dest_konva.x && source_konva.y < dest_konva.y) {
+            // x2+30, y2-30, x1-30, y1+30
+            return offsets = [-30, 30, 30, -30];
+        }
+        // Quadrant 3
+        if (source_konva.x > dest_konva.x && source_konva.y < dest_konva.y) {
+            // x1-30, y1-30, x2+30, y2+30
+            return offsets = [-30, -30, 30, 30];
+        }
+        if (Y < minY) {
+            Y = minY;
+        }
+        if (Y > maxY) {
+            Y = maxY;
+        }
+    };
 
     return transition;
 }
