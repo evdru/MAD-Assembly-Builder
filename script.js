@@ -7,21 +7,27 @@ const remote = require('electron').remote;
 var layer = "global";
 var stage = "global";
 var component_list = [];
-var blockSnapSize = 30;
+var blockSnapSize = 10;
+var source_transition = null;
+var dest_transition = null;
+var source_obj = null;
+var dest_obj = null;
+var highlighted = false;
 
 class Component {
-    
     constructor(type, name){
         this.type = type;
         this.name = name;
-        this.children_list = [];
+        this.place_list = [];
+        this.transition_list = [];
     };
 };
 
 class Place {
-    constructor(type, name) {
+    constructor(type, name, index) {
         this.type = type;
         this.name = name;
+        this.index = index;
     };
 };
 
@@ -33,6 +39,10 @@ class Transition {
         this.dest = dest;
         this.func = func;
     };
+};
+
+function snapToGrid(pos){
+    return Math.round(pos / blockSnapSize) * blockSnapSize;
 };
 
 function initialize() {
@@ -77,8 +87,6 @@ function addNewComponent(posX, posY) {
     // create a component object and add it to the global list
     var component_obj = new Component('Component', "Component_" + (component_list.length + 1));
     component_list.push(component_obj);
-    console.log(component_list);
-
     
     component_group.add(component);
     layer.add(component_group);
@@ -105,7 +113,7 @@ function addNewComponent(posX, posY) {
             e.target.getParent().add(tr);
             tr.attachTo(e.target);
             layer.draw();
-          }
+        }
     });
 
     // tooltip to display name of object
@@ -123,6 +131,12 @@ function addNewComponent(posX, posY) {
     var tooltipLayer = new Konva.Layer();
     tooltipLayer.add(tooltip);
     stage.add(tooltipLayer);
+
+    // when component is being dragged
+    component_group.on('dragmove', (e) => {
+        tooltip.hide();
+        tooltipLayer.draw();
+    });
 
     // if mouse is over a component
     component.on('mousemove', function () {
@@ -146,28 +160,30 @@ function addNewComponent(posX, posY) {
 
     // if double click on component
     component.on('dblclick', function (e){
-        console.log("dbl click on component click");
-        // what is transform of parent element?
-        var transform = component.getParent().getAbsoluteTransform().copy();
-        // to detect relative position we need to invert transform
-        transform.invert();
-        // now we find relative point
-        var pos = stage.getPointerPosition();
-        var placePos = transform.point(pos);
-        // grow component here
-        var place = addNewPlace(component_group, component, placePos, component_obj);
-        component_group.add(place);
-        //layer.add(component_group);
-        layer.draw();
+        if (e.evt.button === 0){
+            console.log("dbl left click on component click");
+            // what is transform of parent element?
+            var transform = component.getParent().getAbsoluteTransform().copy();
+            // to detect relative position we need to invert transform
+            transform.invert();
+            // now we find relative point
+            var pos = stage.getPointerPosition();
+            var placePos = transform.point(pos);
+            // grow component here
+            var place = addNewPlace(component_group, component, placePos, component_obj);
+            //layer.add(component_group);
+            layer.draw();
+        }
     });
 };
 
 // Add new place function, should only be called by component
 function addNewPlace(component_group, component, placePos, component_obj) {
-    var place_obj = new Place('Place', "Place_" + (component_obj.children_list.length + 1));
-    component_obj.children_list.push(place_obj);
+    var index = component_obj.place_list.length;
+    var place_obj = new Place('Place', "Place_" + (index + 1), index);
+    component_obj.place_list.push(place_obj);
     console.log(component_obj.name + " its places are: ");
-    console.log(component_obj.children_list);
+    console.log(component_obj.place_list);
 
     var place = new Konva.Circle({
         x: placePos.x,
@@ -206,6 +222,8 @@ function addNewPlace(component_group, component, placePos, component_obj) {
         }
     });
 
+    component_group.add(place);
+
     // tooltip to display name of object
     var tooltip = new Konva.Text({
         text: "",
@@ -224,15 +242,10 @@ function addNewPlace(component_group, component, placePos, component_obj) {
 
     place.on('dragend', (e) => {
         place.position({
-          x: Math.round(place.x() / blockSnapSize) * blockSnapSize,
-          y: Math.round(place.y() / blockSnapSize) * blockSnapSize
+          x: snapToGrid(place.x()),
+          y: snapToGrid(place.y())
         });
         layer.batchDraw();
-    });
-
-    // when place is being dragged
-    place.on('dragmove', (e) => {
-        tooltip.hide();
     });
 
     // if mouse is over a place
@@ -250,13 +263,72 @@ function addNewPlace(component_group, component, placePos, component_obj) {
     // if a click over place occurs
     place.on("click", function(e){
         if (e.evt.button === 0){
-            // first right click set source
+            // first left click set source
             console.log("Left clicked place: ", place_obj.name);
+            // get its component parent
+            source_component = component_obj;
+            source_transition = place;
+            source_obj = place_obj;
+            // highlight selection
+            highlighted = true;
+            place.stroke('blue');
+            place.strokeWidth(5);
+            place.draw();
         }
         if (e.evt.button === 2) {
-            // first right click set source
+            // first right click set dest
             console.log("Right clicked place: ", place_obj.name);
+            dest_component = component_obj;
+            dest_transition = place;
+            dest_obj = place_obj;
+            console.log("Source was assigned prior");
+            if(source_transition != null && source_obj != null){
+                // check the index
+                if(source_obj.index < dest_obj.index && source_component == dest_component){
+                    console.log("Source has a lower index than dest");
+                    transition = addNewTransition(source_transition, dest_transition, source_obj, dest_obj, component_obj, component_group);
+                    // move transition below its source and dest
+                    transition.moveToBottom();
+                    layer.draw();   
+                } 
+            }
+            source_transition = null;
+            dest_transition = null;
         }
+    });
+
+    // when place is being dragged
+    place.on('dragmove', (e) => {
+        tooltip.hide();
+    });
+
+    // changes the cursor to hand pointer
+    place.on("mouseenter", function(){
+        stage.container().style.cursor = 'pointer';
+        // checks if this place is valid
+        if(source_transition != null && source_obj.index < place_obj.index && source_component == component_obj){
+            highlighted = true;
+            place.stroke('green');
+            place.strokeWidth(5);
+            place.draw();
+        } else if (source_transition != null && source_obj.index >= place_obj.index && source_component == component_obj){
+            highlighted = true;
+            place.stroke('red');
+            place.strokeWidth(5);
+            place.draw();
+        }
+    });
+
+    // changes the cursor back to default
+    place.on('mouseleave', function () {
+        stage.container().style.cursor = 'default';
+        // changes the stroke and stroke width back to default if highlighted
+        if(highlighted == true){
+            place.stroke('black');
+            place.strokeWidth(1);
+            layer.draw();
+            highlighted = false;
+        } 
     });
 
     // hide the tooltip on mouse out
@@ -264,20 +336,69 @@ function addNewPlace(component_group, component, placePos, component_obj) {
         tooltip.hide();
         tooltipLayer.draw();
     });
-    
+  
     // return konva object back to its parent component
     return place;
 };
 
 // function that adds new transition obj and konva arrow
-function addNewTransition(source, dest, component_obj){
+function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, component_obj, component_group){
+    var transition_obj = new Transition('Transition', "Transition_" + (component_obj.transition_list.length + 1), source_obj, dest_obj, "defaultFunction_" + (component_obj.transition_list.length + 1));
+    component_obj.transition_list.push(transition_obj);
+    console.log(component_obj.name + " its transitions are: ");
+    console.log(component_obj.transition_list);
 
-    var transition_obj = new Place('Transition',"Transition_" + (component_obj.children_list.length + 1), source, dest);
-    component_obj.children_list.push(transition_obj);
-    console.log(component_obj.name + " its elements are: ");
-    console.log(component_obj.children_list);
+    var transition = new Konva.Arrow({
+        points: [source_konva.getX(), source_konva.getY(), dest_konva.getX(), dest_konva.getY()],
+        stroke: 'black',
+        strokeWidth: 1,
+        pointerLength : 15,
+        pointerWidth : 10
+      });
 
+    // add transition konva obj to component group
+    component_group.add(transition);
 
+    // source place is moved update the transitions that are connected to it
+    source_konva.on('dragmove', (e) => {
+        transition.setPoints([snapToGrid(source_konva.getX()), 
+                              snapToGrid(source_konva.getY()), 
+                              snapToGrid(dest_konva.getX()), 
+                              snapToGrid(dest_konva.getY())]);
+        layer.draw();
+    });
+
+    // destination place is moved update the transitions that are connected to it
+    dest_konva.on('dragmove', (e) => {
+        transition.setPoints([snapToGrid(source_konva.getX()), 
+                              snapToGrid(source_konva.getY()), 
+                              snapToGrid(dest_konva.getX()),
+                              snapToGrid(dest_konva.getY())]);
+        layer.draw();
+    });
+
+    // helper function get offsets 
+    function getTransitionOffset(source_konva, dest_konva) {
+        var offsets = [];
+        // Quadrant 1
+        if (source_konva.x > dest_konva.x && source_konva.y < dest_konva.y) {
+            // x2+30, y2-30, x1-30, y1+30
+            return offsets = [-30, 30, 30, -30];
+        }
+        // Quadrant 3
+        if (source_konva.x > dest_konva.x && source_konva.y < dest_konva.y) {
+            // x1-30, y1-30, x2+30, y2+30
+            return offsets = [-30, -30, 30, 30];
+        }
+        if (Y < minY) {
+            Y = minY;
+        }
+        if (Y > maxY) {
+            Y = maxY;
+        }
+    };
+
+    return transition;
 }
 
 // Drag N Drop Functions

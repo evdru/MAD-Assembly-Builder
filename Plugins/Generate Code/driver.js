@@ -32,12 +32,12 @@ function createString(component) {
     //Create places list
     content += "\tdef create(self):\n";
     content += "\t\tself.places = [\n";
-    for (var i = 0; i < component.children_list.length; i++) {
-        if (component.children_list[i].type === "Place") {
-            if (i == component.children_list.length - 1) {
-                content += "\t\t\t'" + component.children_list[i].name + "'\n";
+    for (var i = 0; i < component.place_list.length; i++) {
+        if (component.place_list[i].type === "Place") {
+            if (i == component.place_list.length - 1) {
+                content += "\t\t\t'" + component.place_list[i].name + "'\n";
             } else {
-                content += "\t\t\t'" + component.children_list[i].name + "',\n";
+                content += "\t\t\t'" + component.place_list[i].name + "',\n";
             };
         };
     };
@@ -45,12 +45,12 @@ function createString(component) {
 
     //Create transitions dictionary
     content += "\t\tself.transitions = {\n";
-    for (var j = 0; j < component.children_list.length; j++) {
-        if (component.children_list[j].type === "Transition") {
-            if (j == component.children_list.length - 1) {
-                content += "\t\t\t'" + component.children_list[j].name + "': ('" + component.children_list[j].src + "', '" + component.children_list[j].dest + "', self." + component.children_list[j].func + ")\n";
+    for (var j = 0; j < component.transition_list.length; j++) {
+        if (component.transition_list[j].type === "Transition") {
+            if (j == component.transition_list.length - 1) {
+                content += "\t\t\t'" + component.transition_list[j].name + "': ('" + component.transition_list[j].src.name + "', '" + component.transition_list[j].dest.name + "', self." + component.transition_list[j].func + ")\n";
             } else {
-                content += "\t\t\t'" + component.children_list[j].name + "': ('" + component.children_list[j].src + "', '" + component.children_list[j].dest + "', self." + component.children_list[j].func + "),\n";
+                content += "\t\t\t'" + component.transition_list[j].name + "': ('" + component.transition_list[j].src.name + "', '" + component.transition_list[j].dest.name + "', self." + component.transition_list[j].func + "),\n";
             };
         };
     };
@@ -60,9 +60,9 @@ function createString(component) {
     content += "\t\tself.dependencies = {}\n\n";
 
     //Create functions
-    for (var k = 0; k < component.children_list.length; k++) {
-        if (component.children_list[k].type === "Transition") {
-            content += "\tdef " + component.children_list[k].func + "(self):\n";
+    for (var k = 0; k < component.transition_list.length; k++) {
+        if (component.transition_list[k].type === "Transition") {
+            content += "\tdef " + component.transition_list[k].func + "(self):\n";
             content += "\t\ttime.sleep(" + getRndInteger(0, 11) + ")\n\n";
         };
     };
