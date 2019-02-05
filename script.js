@@ -7,7 +7,7 @@ const remote = require('electron').remote;
 var layer = "global";
 var stage = "global";
 var component_list = [];
-var blockSnapSize = 30;
+var blockSnapSize = 10;
 var transition_count = 1;
 var source_transition = null;
 var dest_transition = null;
@@ -39,6 +39,10 @@ class Transition {
         this.dest = dest;
         this.func = func;
     };
+};
+
+function snapToGrid(pos){
+    return Math.round(pos / blockSnapSize) * blockSnapSize;
 };
 
 function initialize() {
@@ -152,18 +156,20 @@ function addNewComponent(posX, posY) {
 
     // if double click on component
     component.on('dblclick', function (e){
-        console.log("dbl click on component click");
-        // what is transform of parent element?
-        var transform = component.getParent().getAbsoluteTransform().copy();
-        // to detect relative position we need to invert transform
-        transform.invert();
-        // now we find relative point
-        var pos = stage.getPointerPosition();
-        var placePos = transform.point(pos);
-        // grow component here
-        var place = addNewPlace(component_group, component, placePos, component_obj);
-        //layer.add(component_group);
-        layer.draw();
+        if (e.evt.button === 0){
+            console.log("dbl left click on component click");
+            // what is transform of parent element?
+            var transform = component.getParent().getAbsoluteTransform().copy();
+            // to detect relative position we need to invert transform
+            transform.invert();
+            // now we find relative point
+            var pos = stage.getPointerPosition();
+            var placePos = transform.point(pos);
+            // grow component here
+            var place = addNewPlace(component_group, component, placePos, component_obj);
+            //layer.add(component_group);
+            layer.draw();
+        }
     });
 };
 
@@ -232,8 +238,8 @@ function addNewPlace(component_group, component, placePos, component_obj) {
 
     place.on('dragend', (e) => {
         place.position({
-          x: Math.round(place.x() / blockSnapSize) * blockSnapSize,
-          y: Math.round(place.y() / blockSnapSize) * blockSnapSize
+          x: snapToGrid(place.x()),
+          y: snapToGrid(place.y())
         });
         layer.batchDraw();
     });
@@ -263,17 +269,19 @@ function addNewPlace(component_group, component, placePos, component_obj) {
             console.log("Right clicked place: ", place_obj.name);
             dest_transition = place;
             dest_obj = place_obj;
-            if(source_transition != null & source_obj.index < dest_obj.index){
-                console.log("Source was assigned prior");
-                console.log("Source has a lower index than dest");
-                transition = addNewTransition(source_transition, dest_transition, source_obj, dest_obj, component_obj, component_group);
-                // move transition below its source and dest
-                transition.moveToBottom();
-                layer.draw();
-            } else {
-                source_transition = null;
-                dest_transition = null;
-            }
+            if(source_transition != null && source_obj != null){
+                // check the index
+                if(source_obj.index < dest_obj.index){
+                    console.log("Source was assigned prior");
+                    console.log("Source has a lower index than dest");
+                    transition = addNewTransition(source_transition, dest_transition, source_obj, dest_obj, component_obj, component_group);
+                    // move transition below its source and dest
+                    transition.moveToBottom();
+                    layer.draw();   
+                } 
+            } 
+            source_transition = null;
+            dest_transition = null;
         }
     });
 
@@ -311,13 +319,19 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
 
     // source place is moved update the transitions that are connected to it
     source_konva.on('dragmove', (e) => {
-        transition.setPoints([source_konva.getX(), source_konva.getY(), dest_konva.getX(), dest_konva.getY()]);
+        transition.setPoints([snapToGrid(source_konva.getX()), 
+                              snapToGrid(source_konva.getY()), 
+                              snapToGrid(dest_konva.getX()), 
+                              snapToGrid(dest_konva.getY())]);
         layer.draw();
     });
 
     // destination place is moved update the transitions that are connected to it
     dest_konva.on('dragmove', (e) => {
-        transition.setPoints([source_konva.getX(), source_konva.getY(), dest_konva.getX(), dest_konva.getY()]);
+        transition.setPoints([snapToGrid(source_konva.getX()), 
+                              snapToGrid(source_konva.getY()), 
+                              snapToGrid(dest_konva.getX()),
+                              snapToGrid(dest_konva.getY())]);
         layer.draw();
     });
 
