@@ -17,6 +17,9 @@ function boot() {
 		slashes: true
 	}));
 
+	// Populate Plugins Dropdown with valid Plugins
+	populate_plugins();
+
 	//Quit app when closed
 	window.on('closed', function() {
 		app.quit()
@@ -27,6 +30,33 @@ function boot() {
 	// Insert menu
 	Menu.setApplicationMenu(mainMenu)
 };
+
+function populate_plugins() {
+	// Add all valid plugins to the Plugins menu
+	for (var menu = 0; menu < mainMenuTemplate.length; menu++) {
+		// Ensuring the location of Plugins menu
+		if (mainMenuTemplate[menu].label == 'Plugins') {
+			for (var index = 0; index < plugin_manager[0].length; index++) {
+
+				// New Plugin Constructed
+				const new_plugin = {
+					label: plugin_manager[0][index],
+					accelerator: 'CmdOrCtrl+' + index,
+					driver_path: plugin_manager[1][index],
+					plugin_number: index,
+					message: plugin_manager[0][index].toLocaleLowerCase().replace(' ', '_'),
+					click(MenuItem){			
+						window.webContents.send(MenuItem.message);
+						console.log('The following Plugin has been activated: ' + MenuItem.label);
+					}
+				}
+
+				// Adding New Plugin to the Plugins menu
+				mainMenuTemplate[menu].submenu.push(new_plugin);
+			}
+		}
+	}
+}
 
 const mainMenuTemplate = [
 	{
@@ -44,18 +74,8 @@ const mainMenuTemplate = [
 		]
 	},
 	{
-		label: 'Tools',
-		submenu:[
-			{
-				label: 'Generate Code',
-				// Keyboard shortcuts for code generation
-				accelerator: process.platform == 'darwin' ? 'Command+G' :
-				'Ctrl+G',
-				click(){
-					window.webContents.send("generate_code");
-				}
-			}
-		]
+		label: 'Plugins',
+		submenu:[]
 	}
 ];
 
