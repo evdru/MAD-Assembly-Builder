@@ -17,7 +17,7 @@ function boot() {
 		slashes: true
 	}));
 
-	// Populate Tools Dropdown with valid Plugins
+	// Populate Plugins Dropdown with valid Plugins
 	populate_plugins();
 
 	//Quit app when closed
@@ -32,10 +32,10 @@ function boot() {
 };
 
 function populate_plugins() {
-	// Add all valid plugins to the tools menu
+	// Add all valid plugins to the Plugins menu
 	for (var menu = 0; menu < mainMenuTemplate.length; menu++) {
-		// Ensuring the location of Tools menu
-		if (mainMenuTemplate[menu].label == 'Tools') {
+		// Ensuring the location of Plugins menu
+		if (mainMenuTemplate[menu].label == 'Plugins') {
 			for (var index = 0; index < plugin_manager[0].length; index++) {
 
 				// New Plugin Constructed
@@ -51,7 +51,7 @@ function populate_plugins() {
 					}
 				}
 
-				// Adding New Plugin to the Tools menu
+				// Adding New Plugin to the Plugins menu
 				mainMenuTemplate[menu].submenu.push(new_plugin);
 			}
 		}
@@ -74,7 +74,7 @@ const mainMenuTemplate = [
 		]
 	},
 	{
-		label: 'Tools',
+		label: 'Plugins',
 		submenu:[]
 	}
 ];
