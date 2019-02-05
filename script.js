@@ -294,7 +294,7 @@ function addNewPlace(component_group, component, placePos, component_obj) {
 
 // function that adds new transition obj and konva arrow
 function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, component_obj, component_group){
-    var transition_obj = new Transition('Transition', "Transition_" + transition_count, source_obj, dest_obj, "default_function");
+    var transition_obj = new Transition('Transition', "Transition_" + transition_count, source_obj, dest_obj, "defaultFunction_" + transition_count);
     component_obj.transition_list.push(transition_obj);
     transition_count++;
     console.log(component_obj.name + " its transitions are: ");
