@@ -12,6 +12,7 @@ var source_transition = null;
 var dest_transition = null;
 var source_obj = null;
 var dest_obj = null;
+var highlighted = false;
 
 class Component {
     constructor(type, name){
@@ -114,7 +115,7 @@ function addNewComponent(posX, posY) {
             e.target.getParent().add(tr);
             tr.attachTo(e.target);
             layer.draw();
-          }
+        }
     });
 
     // tooltip to display name of object
@@ -260,18 +261,21 @@ function addNewPlace(component_group, component, placePos, component_obj) {
         if (e.evt.button === 0){
             // first left click set source
             console.log("Left clicked place: ", place_obj.name);
+            // get its component parent
+            source_component = component_obj;
             source_transition = place;
             source_obj = place_obj;
         }
         if (e.evt.button === 2) {
             // first right click set dest
             console.log("Right clicked place: ", place_obj.name);
+            dest_component = component_obj;
             dest_transition = place;
             dest_obj = place_obj;
+            console.log("Source was assigned prior");
             if(source_transition != null && source_obj != null){
                 // check the index
-                if(source_obj.index < dest_obj.index){
-                    console.log("Source was assigned prior");
+                if(source_obj.index < dest_obj.index && source_component == dest_component){
                     console.log("Source has a lower index than dest");
                     transition = addNewTransition(source_transition, dest_transition, source_obj, dest_obj, component_obj, component_group);
                     // move transition below its source and dest
@@ -292,11 +296,30 @@ function addNewPlace(component_group, component, placePos, component_obj) {
     // changes the cursor to hand pointer
     place.on("mouseenter", function(){
         stage.container().style.cursor = 'pointer';
+        // checks if this place is valid
+        if(source_transition != null && source_obj.index < place_obj.index && source_component == component_obj){
+            highlighted = true;
+            place.stroke('green');
+            place.strokeWidth(5);
+            layer.draw();
+        } else if (source_transition != null && source_obj.index > place_obj.index && source_component == component_obj){
+            highlighted = true;
+            place.stroke('red');
+            place.strokeWidth(5);
+            layer.draw();
+        }
     });
 
     // changes the cursor back to default
     place.on('mouseleave', function () {
         stage.container().style.cursor = 'default';
+        // changes the stroke and stroke width back to default if highlighted
+        if(highlighted == true){
+            place.stroke('black');
+            place.strokeWidth(1);
+            layer.draw();
+            highlighted = false;
+        } 
     });
 
     // hide the tooltip on mouse out
