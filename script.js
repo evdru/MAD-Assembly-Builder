@@ -354,12 +354,10 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
     console.log(component_obj.name + " its transitions are: ");
     console.log(component_obj.transition_list);
 
-    var transition = new Konva.Arrow({
+    var transition = new Konva.Line({
         points: [source_konva.getX(), source_konva.getY(), dest_konva.getX(), dest_konva.getY()],
         stroke: 'black',
-        strokeWidth: 1,
-        pointerLength : 15,
-        pointerWidth : 10
+        strokeWidth: 1
       });
 
     // add transition konva obj to component group
