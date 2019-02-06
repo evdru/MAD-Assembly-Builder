@@ -106,5 +106,20 @@ if(process.env.NODE_ENV !== 'production'){
 	});
 }
 
+// Catch place right click
+ipcMain.on("change_place_details", function() {
+	console.log("Logging: change_place_details from main thread");
+});
+
+// Catch component right click
+ipcMain.on("change_component_details", function() {
+	console.log("Logging: change_component_details from main thread");
+});
+
+// Catch transition right click
+ipcMain.on("change_transition_details", function() {
+	console.log("Logging: change_transition_details from main thread");
+});
+
 // Listen for app to be ready
 app.on('ready', boot);

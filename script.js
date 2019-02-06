@@ -181,8 +181,8 @@ function addNewComponent(posX, posY) {
     component.on("click", function(e){
         if (e.evt.button === 2){
             // open window for editing
-            console.log("Open window for editing component");
-            ipcRenderer.send("change_component_name");
+            console.log("Open window for editing component details");
+            ipcRenderer.send("change_component_details");
         };
     });
 };
@@ -303,8 +303,8 @@ function addNewPlace(component_group, component, placePos, component_obj) {
                 } 
             } else {
                 // right clk source was not selected, open window for editing
-                console.log("Open window for editing place");
-                ipcRenderer.send("change_place_name");
+                console.log("Open window for editing place details");
+                ipcRenderer.send("change_place_details");
             }
             source_transition = null;
             dest_transition = null;
@@ -450,8 +450,8 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
     transition_selection_area.on("click", function(e){
         if (e.evt.button === 2){
             //open window for editing transition
-            console.log("Open window for editing transition");
-            ipcRenderer.send("change_transition_name");
+            console.log("Open window for editing transition details");
+            ipcRenderer.send("change_transition_details");
         };
     });
 
