@@ -441,10 +441,18 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
     });
 
     // hide the tooltip on mouse out
-    transition_selection_area.on("mouseout", function(){
+    transition_selection_area.on('mouseout', function(){
         stage.container().style.cursor = 'default';
         tooltip.hide();
         tooltipLayer.draw();
+    });
+
+    transition_selection_area.on("click", function(e){
+        if (e.evt.button === 2){
+            //open window for editing transition
+            console.log("Open window for editing transition");
+            ipcRenderer.send("change_transition_name");
+        };
     });
 
     return transition;
