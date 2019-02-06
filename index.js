@@ -45,7 +45,7 @@ function populate_plugins() {
 					accelerator: 'CmdOrCtrl+' + index,
 					driver_path: plugin_manager[1][index],
 					plugin_number: index,
-					message: plugin_manager[0][index].toLocaleLowerCase().replace(' ', '_'),
+					message: plugin_manager[0][index].toLocaleLowerCase().replace(/ /g,"_"),
 					click(MenuItem){			
 						window.webContents.send(MenuItem.message);
 						console.log('The following Plugin has been activated: ' + MenuItem.label);
@@ -105,25 +105,6 @@ if(process.env.NODE_ENV !== 'production'){
 		]
 	});
 }
-
-// IPC Test
-ipcMain.on('change_place_name', function () {
-	console.log("Logging from main");
-	// Create new window
-	var place_window = new BrowserWindow({
-		width: 400,
-		height: 300
-	})
-	place_window.loadURL(url.format({
-		pathname: path.join(__dirname, 'change_place_name.html'),
-		protocol: 'file:',
-		slashes: true
-	}));
-	//Quit app when closed
-	place_window.on('closed', function() {
-		place_window = null;
-	});
-})
 
 // Listen for app to be ready
 app.on('ready', boot);
