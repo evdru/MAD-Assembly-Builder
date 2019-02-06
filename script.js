@@ -176,6 +176,14 @@ function addNewComponent(posX, posY) {
             layer.draw();
         }
     });
+
+    component.on("click", function(e){
+        if (e.evt.button === 2){
+            // right clk source was not selected, open window for editing
+            console.log("Open window for editing");
+            ipcRenderer.send("change_component_name");
+        };
+    });
 };
 
 // Add new place function, should only be called by component
@@ -282,13 +290,8 @@ function addNewPlace(component_group, component, placePos, component_obj) {
             dest_component = component_obj;
             dest_transition = place;
             dest_obj = place_obj;
-            console.log("Source was assigned prior");
-            //If any solo right click, open window for editing
-            if(source_transition == null || source_obj == null){
-                console.log("Open window for editing");
-                ipcRenderer.send("change_place_name");
-            }
-            if(source_transition != null && source_obj != null){
+            console.log("Source has been selected");
+            if(source_transition != null){
                 // check the index
                 if(source_obj.index < dest_obj.index && source_component == dest_component){
                     console.log("Source has a lower index than dest");
@@ -297,6 +300,10 @@ function addNewPlace(component_group, component, placePos, component_obj) {
                     transition.moveToBottom();
                     layer.draw();   
                 } 
+            } else {
+                // right clk source was not selected, open window for editing
+                console.log("Open window for editing");
+                ipcRenderer.send("change_place_name");
             }
             source_transition = null;
             dest_transition = null;
@@ -357,11 +364,38 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
     var transition = new Konva.Line({
         points: [source_konva.getX(), source_konva.getY(), dest_konva.getX(), dest_konva.getY()],
         stroke: 'black',
-        strokeWidth: 1
-      });
+        strokeWidth: 1,
+        name: transition_obj.name
+    });
+
+    var transition_selection_area = new Konva.Circle({
+        x: (source_konva.getX() + dest_konva.getX()) / 2,
+        y: (source_konva.getY() + dest_konva.getY()) / 2,
+        radius: 15,
+        opacity: 0,
+        text: transition.name,
+        name: 'transition_hover'
+    });
 
     // add transition konva obj to component group
     component_group.add(transition);
+    component_group.add(transition_selection_area);
+
+    // tooltip to display name of object
+    var tooltip = new Konva.Text({
+        text: "",
+        fontFamily: "Calibri",
+        fontSize: 12,
+        padding: 5,
+        textFill: "white",
+        fill: "black",
+        alpha: 0.75,
+        visible: false
+    });
+
+    var tooltipLayer = new Konva.Layer();
+    tooltipLayer.add(tooltip);
+    stage.add(tooltipLayer);
 
     // source place is moved update the transitions that are connected to it
     source_konva.on('dragmove', (e) => {
@@ -369,6 +403,10 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
                               snapToGrid(source_konva.getY()), 
                               snapToGrid(dest_konva.getX()), 
                               snapToGrid(dest_konva.getY())]);
+        transition_selection_area.position({
+            x: snapToGrid((source_konva.getX() + dest_konva.getX()) / 2),
+            y: snapToGrid((source_konva.getY() + dest_konva.getY()) / 2)
+        });
         layer.draw();
     });
 
@@ -378,29 +416,35 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
                               snapToGrid(source_konva.getY()), 
                               snapToGrid(dest_konva.getX()),
                               snapToGrid(dest_konva.getY())]);
+        transition_selection_area.position({
+            x: snapToGrid((source_konva.getX() + dest_konva.getX()) / 2),
+            y: snapToGrid((source_konva.getY() + dest_konva.getY()) / 2)
+        });
         layer.draw();
     });
 
-    // helper function get offsets 
-    function getTransitionOffset(source_konva, dest_konva) {
-        var offsets = [];
-        // Quadrant 1
-        if (source_konva.x > dest_konva.x && source_konva.y < dest_konva.y) {
-            // x2+30, y2-30, x1-30, y1+30
-            return offsets = [-30, 30, 30, -30];
-        }
-        // Quadrant 3
-        if (source_konva.x > dest_konva.x && source_konva.y < dest_konva.y) {
-            // x1-30, y1-30, x2+30, y2+30
-            return offsets = [-30, -30, 30, 30];
-        }
-        if (Y < minY) {
-            Y = minY;
-        }
-        if (Y > maxY) {
-            Y = maxY;
-        }
-    };
+    transition_selection_area.on('moveenter', function(){
+        stage.container().style.cursor = 'pointer';
+    });
+
+    // if mouse is over a place
+    transition_selection_area.on('mousemove', function () {
+        var mousePos = stage.getPointerPosition();
+        tooltip.position({
+            x : mousePos.x + 10,
+            y : mousePos.y + 10
+        });
+        tooltip.text(component_obj.name + " - " + transition_obj.name);
+        tooltip.show();
+        tooltipLayer.batchDraw();
+    });
+
+    // hide the tooltip on mouse out
+    transition_selection_area.on("mouseout", function(){
+        stage.container().style.cursor = 'default';
+        tooltip.hide();
+        tooltipLayer.draw();
+    });
 
     return transition;
 }
