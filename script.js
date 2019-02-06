@@ -3,6 +3,7 @@ const url = require('url');
 const path = require('path');
 const ipcMain = require('electron').remote.ipcMain;
 const remote = require('electron').remote;
+const ipcElectron = require('electron').ipcRenderer;
 
 var layer = "global";
 var stage = "global";
@@ -282,6 +283,11 @@ function addNewPlace(component_group, component, placePos, component_obj) {
             dest_transition = place;
             dest_obj = place_obj;
             console.log("Source was assigned prior");
+            //If any solo right click, open window for editing
+            if(source_transition == null || source_obj == null){
+                console.log("Open window for editing");
+                ipcRenderer.send("change_place_name");
+            }
             if(source_transition != null && source_obj != null){
                 // check the index
                 if(source_obj.index < dest_obj.index && source_component == dest_component){
@@ -336,7 +342,7 @@ function addNewPlace(component_group, component, placePos, component_obj) {
         tooltip.hide();
         tooltipLayer.draw();
     });
-  
+
     // return konva object back to its parent component
     return place;
 };
@@ -422,27 +428,8 @@ function drag(ev) {
     ev.dataTransfer.setData("text", ev.target.id);
 };
 
-// Add place to list functions
-let add_place_window;
-
-function addPlacePopUp() {
-    add_place_window = new BrowserWindow({width: 300, height: 200, title: 'Add New Place'});
-    add_place_window.loadURL(url.format({
-        pathname: path.join(__dirname, 'add_place.html'),
-		protocol: 'file:',
-		slashes: true
-    }));
-    //Garbage collection handle
-    add_place_window.on('closed', function() {
-        add_place_window = null;
-    });
-};
-
-// Catch place:add
-ipcMain.on('place:add', function(e, place) {
-});
-
-function closeAddPlaceWindow() {
+// Function to close new windows
+function closeNewWindow() {
     var window = remote.getCurrentWindow();
     window.close();
 };

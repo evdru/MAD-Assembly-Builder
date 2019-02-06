@@ -2,6 +2,7 @@ const electron = require('electron');
 const url = require('url');
 const plugin_manager = require('./plugin_manager.js');
 const path = require('path');
+const ipcMain = electron.ipcMain;
 
 const {app, BrowserWindow, Menu} = electron;
 
@@ -104,6 +105,25 @@ if(process.env.NODE_ENV !== 'production'){
 		]
 	});
 }
+
+// IPC Test
+ipcMain.on('change_place_name', function () {
+	console.log("Logging from main");
+	// Create new window
+	var place_window = new BrowserWindow({
+		width: 400,
+		height: 300
+	})
+	place_window.loadURL(url.format({
+		pathname: path.join(__dirname, 'change_place_name.html'),
+		protocol: 'file:',
+		slashes: true
+	}));
+	//Quit app when closed
+	place_window.on('closed', function() {
+		place_window = null;
+	});
+})
 
 // Listen for app to be ready
 app.on('ready', boot);

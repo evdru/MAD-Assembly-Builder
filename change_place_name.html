@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta name="Add New Place" charset="utf-8">
+        <meta name="Change Places Name" charset="utf-8">
         <script src="./script.js"></script>
     </head>
 
     <body>
-        <p>Please enter the place's name below:</p>
+        <p>Please enter the place's new name below: (DO NOT use spaces, only "-" and "_")</p>
         <form>
-            Place Name: <input type="text" name="place_name" id="place_name" autofocus><br>
-            <button type="submit">Add Place</button>
+            New Place Name: <input type="text" name="place_name" id="place_name" autofocus><br><br>
+            <button type="submit">Change Name</button>
         </form>
 
         <script>
@@ -24,7 +24,7 @@
                 const place = document.querySelector('#place_name').value;
                 ipcRenderer.send('place:add', place);
 
-                closeAddPlaceWindow();
+                closeNewWindow();
             };
         </script>
 
