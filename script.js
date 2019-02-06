@@ -14,6 +14,7 @@ var dest_transition = null;
 var source_obj = null;
 var dest_obj = null;
 var highlighted = false;
+var tran_highlighted = false;
 
 class Component {
     constructor(type, name){
@@ -94,7 +95,7 @@ function addNewComponent(posX, posY) {
     layer.draw();
 
     stage.on('click', function (e) {
-        if (e.evt.button === 2) {
+        if (e.evt.button === 0) {
             // if click on empty area - remove all transformers
             if (e.target === stage) {
                 stage.find('Transformer').destroy();
@@ -179,8 +180,8 @@ function addNewComponent(posX, posY) {
 
     component.on("click", function(e){
         if (e.evt.button === 2){
-            // right clk source was not selected, open window for editing
-            console.log("Open window for editing");
+            // open window for editing
+            console.log("Open window for editing component");
             ipcRenderer.send("change_component_name");
         };
     });
@@ -302,7 +303,7 @@ function addNewPlace(component_group, component, placePos, component_obj) {
                 } 
             } else {
                 // right clk source was not selected, open window for editing
-                console.log("Open window for editing");
+                console.log("Open window for editing place");
                 ipcRenderer.send("change_place_name");
             }
             source_transition = null;
