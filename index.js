@@ -109,6 +109,21 @@ if(process.env.NODE_ENV !== 'production'){
 // Catch place right click
 ipcMain.on("change_place_details", function() {
 	console.log("Logging: change_place_details from main thread");
+	// Create new window
+	var place_window = new BrowserWindow({
+		width: 350,
+		height: 200
+	})
+	place_window.loadURL(url.format({
+		pathname: path.join(__dirname, 'change_place_details.html'),
+		protocol: 'file:',
+		slashes: true
+	}));
+});
+
+ipcMain.on("place->main", function(event, args) {
+	console.log(args.name);
+	window.webContents.send("place->renderer", args.name);
 });
 
 // Catch component right click
