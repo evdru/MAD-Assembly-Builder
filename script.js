@@ -351,6 +351,11 @@ function addNewPlace(component_group, component, placePos, component_obj) {
         tooltipLayer.draw();
     });
 
+    // Catch new name from ipcMain
+    ipcRenderer.on("place->renderer", function(event, args) {
+        changePlaceName(component_obj.name, place_obj.name, args);
+    });
+
     // return konva object back to its parent component
     return place;
 };
@@ -483,4 +488,17 @@ function drag(ev) {
 function closeNewWindow() {
     var window = remote.getCurrentWindow();
     window.close();
+};
+
+// Function to change place name
+function changePlaceName(component, place, new_place) {
+    for (var i = 0; i < component_list.length; i++) {
+        if (component_list[i].name == component) {
+            for (var j = 0; j < component_list[i].place_list.length; j++) {
+                if (component_list[i].place_list[j].name == place) {
+                    component_list[i].place_list[j].name = new_place;
+                }
+            }
+        }
+    }
 };
