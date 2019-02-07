@@ -7,6 +7,7 @@ const ipcMain = electron.ipcMain;
 const {app, BrowserWindow, Menu} = electron;
 
 let window;
+var place_args = 'global';
 
 function boot() {
 	// Create new window
@@ -107,8 +108,9 @@ if(process.env.NODE_ENV !== 'production'){
 }
 
 // Catch place right click
-ipcMain.on("change_place_details", function() {
+ipcMain.on("change_place_details", function(e, args) {
 	console.log("Logging: change_place_details from main thread");
+	place_args = args;
 	// Create new window
 	var place_window = new BrowserWindow({
 		width: 350,
@@ -122,8 +124,10 @@ ipcMain.on("change_place_details", function() {
 });
 
 ipcMain.on("place->main", function(event, args) {
+	console.log(place_args.component);
+	console.log(place_args.place);
 	console.log(args.name);
-	window.webContents.send("place->renderer", args.name);
+	window.webContents.send("place->renderer", {component: place_args.component, place: place_args.place, name: args.name});
 });
 
 // Catch component right click

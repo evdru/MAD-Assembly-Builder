@@ -304,7 +304,7 @@ function addNewPlace(component_group, component, placePos, component_obj) {
             } else {
                 // right clk source was not selected, open window for editing
                 console.log("Open window for editing place details");
-                ipcRenderer.send("change_place_details");
+                ipcRenderer.send("change_place_details", {component: component_obj.name, place: place_obj.name});
             }
             source_transition = null;
             dest_transition = null;
@@ -353,7 +353,7 @@ function addNewPlace(component_group, component, placePos, component_obj) {
 
     // Catch new name from ipcMain
     ipcRenderer.on("place->renderer", function(event, args) {
-        changePlaceName(component_obj.name, place_obj.name, args);
+        changePlaceName(args.component, args.place, args.name);
     });
 
     // return konva object back to its parent component
