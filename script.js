@@ -14,7 +14,6 @@ var dest_transition = null;
 var source_obj = null;
 var dest_obj = null;
 var highlighted = false;
-var tran_highlighted = false;
 
 class Component {
     constructor(type, name){
@@ -22,6 +21,7 @@ class Component {
         this.name = name;
         this.place_list = [];
         this.transition_list = [];
+        this.transition_dictionary = {};
     };
 };
 
@@ -30,6 +30,7 @@ class Place {
         this.type = type;
         this.name = name;
         this.index = index;
+        this.transition_count = 0;
     };
 };
 
@@ -192,8 +193,6 @@ function addNewPlace(component_group, component, placePos, component_obj) {
     var index = component_obj.place_list.length;
     var place_obj = new Place('Place', "Place_" + (index + 1), index);
     component_obj.place_list.push(place_obj);
-    console.log(component_obj.name + " its places are: ");
-    console.log(component_obj.place_list);
 
     var place = new Konva.Circle({
         x: placePos.x,
@@ -293,13 +292,24 @@ function addNewPlace(component_group, component, placePos, component_obj) {
             dest_obj = place_obj;
             console.log("Source has been selected");
             if(source_transition != null){
-                // check the index
+                // check the index and both places are in same component
                 if(source_obj.index < dest_obj.index && source_component == dest_component){
                     console.log("Source has a lower index than dest");
-                    transition = addNewTransition(source_transition, dest_transition, source_obj, dest_obj, component_obj, component_group);
-                    // move transition below its source and dest
-                    transition.moveToBottom();
-                    layer.draw();   
+                    var offset = 0;
+                    // check if this source -> dest combo has been added prior
+                    if(source_component.transition_dictionary[source_obj.name] == dest_obj.name){
+                        console.log("This src and dest combo existed before");
+                        if(source_obj.transition_count == 1){
+                            offset = 30;
+                        } else if (source_obj.transition_count == 2){
+                            offset = -30;
+                        }
+                    }
+                    console.log("The offset is: ", offset);
+                    // add the source -> dest combo into the global dictionary
+                    source_component.transition_dictionary[source_obj.name] = dest_obj.name;
+                    console.log("Source place transition out count: ", source_obj.transition_count);
+                    transition = addNewTransition(offset, source_transition, dest_transition, source_obj, dest_obj, component_obj, component_group);
                 } 
             } else {
                 // right clk source was not selected, open window for editing
@@ -356,21 +366,27 @@ function addNewPlace(component_group, component, placePos, component_obj) {
 };
 
 // function that adds new transition obj and konva arrow
-function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, component_obj, component_group){
+function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj, component_obj, component_group){
+
+    // max number of transitions out of the same source = 3
+    if(source_obj.transition_count >= 3){
+        alert("Cant create more than 3 transitions here!")
+        return;
+    }
+
     var transition_obj = new Transition('Transition', "Transition_" + (component_obj.transition_list.length + 1), source_obj, dest_obj, "defaultFunction_" + (component_obj.transition_list.length + 1));
     component_obj.transition_list.push(transition_obj);
-    console.log(component_obj.name + " its transitions are: ");
-    console.log(component_obj.transition_list);
-
+    
     var transition = new Konva.Line({
-        points: [source_konva.getX(), source_konva.getY(), dest_konva.getX(), dest_konva.getY()],
+        points: [source_konva.getX(), source_konva.getY(), ((source_konva.getX() + dest_konva.getX()) / 2) + offset, (source_konva.getY() + dest_konva.getY()) / 2, dest_konva.getX(), dest_konva.getY()],
         stroke: 'black',
         strokeWidth: 1,
-        name: transition_obj.name
+        name: transition_obj.name,
+        tension: 1
     });
 
     var transition_selection_area = new Konva.Circle({
-        x: (source_konva.getX() + dest_konva.getX()) / 2,
+        x: ((source_konva.getX() + dest_konva.getX()) / 2) + offset,
         y: (source_konva.getY() + dest_konva.getY()) / 2,
         radius: 15,
         opacity: 0,
@@ -401,11 +417,13 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
     // source place is moved update the transitions that are connected to it
     source_konva.on('dragmove', (e) => {
         transition.setPoints([snapToGrid(source_konva.getX()), 
-                              snapToGrid(source_konva.getY()), 
+                              snapToGrid(source_konva.getY()),
+                              snapToGrid(((source_konva.getX() + dest_konva.getX()) / 2) + offset),
+                              snapToGrid(source_konva.getY() + dest_konva.getY()) / 2,
                               snapToGrid(dest_konva.getX()), 
                               snapToGrid(dest_konva.getY())]);
         transition_selection_area.position({
-            x: snapToGrid((source_konva.getX() + dest_konva.getX()) / 2),
+            x: snapToGrid(((source_konva.getX() + dest_konva.getX()) / 2) + offset),
             y: snapToGrid((source_konva.getY() + dest_konva.getY()) / 2)
         });
         layer.draw();
@@ -414,11 +432,13 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
     // destination place is moved update the transitions that are connected to it
     dest_konva.on('dragmove', (e) => {
         transition.setPoints([snapToGrid(source_konva.getX()), 
-                              snapToGrid(source_konva.getY()), 
+                              snapToGrid(source_konva.getY()),
+                              snapToGrid(((source_konva.getX() + dest_konva.getX()) / 2) + offset),
+                              snapToGrid(source_konva.getY() + dest_konva.getY()) / 2,
                               snapToGrid(dest_konva.getX()),
                               snapToGrid(dest_konva.getY())]);
         transition_selection_area.position({
-            x: snapToGrid((source_konva.getX() + dest_konva.getX()) / 2),
+            x: snapToGrid(((source_konva.getX() + dest_konva.getX()) / 2) + offset),
             y: snapToGrid((source_konva.getY() + dest_konva.getY()) / 2)
         });
         layer.draw();
@@ -455,6 +475,10 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
         };
     });
 
+    // move transition below its source and dest
+    transition.moveToBottom();
+    source_obj.transition_count++;
+    layer.draw();   
     return transition;
 }
 
