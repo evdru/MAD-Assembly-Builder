@@ -137,11 +137,11 @@ ipcMain.on("change_component_details", function(event, args) {
 	console.log("Logging: change_component_details from main thread");
 	component_args = args;
 	// Create new window
-	var place_window = new BrowserWindow({
+	var component_window = new BrowserWindow({
 		width: 350,
 		height: 200
 	})
-	place_window.loadURL(url.format({
+	component_window.loadURL(url.format({
 		pathname: path.join(__dirname, 'change_component_details.html'),
 		protocol: 'file:',
 		slashes: true
