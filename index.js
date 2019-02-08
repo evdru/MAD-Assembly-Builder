@@ -8,6 +8,8 @@ const {app, BrowserWindow, Menu} = electron;
 
 let window;
 var place_args = 'global';
+var component_args = 'global';
+var transition_args = 'global';
 
 function boot() {
 	// Create new window
@@ -108,7 +110,7 @@ if(process.env.NODE_ENV !== 'production'){
 }
 
 // Catch place right click
-ipcMain.on("change_place_details", function(e, args) {
+ipcMain.on("change_place_details", function(event, args) {
 	console.log("Logging: change_place_details from main thread");
 	place_args = args;
 	// Create new window
@@ -131,8 +133,25 @@ ipcMain.on("place->main", function(event, args) {
 });
 
 // Catch component right click
-ipcMain.on("change_component_details", function() {
+ipcMain.on("change_component_details", function(event, args) {
 	console.log("Logging: change_component_details from main thread");
+	component_args = args;
+	// Create new window
+	var place_window = new BrowserWindow({
+		width: 350,
+		height: 200
+	})
+	place_window.loadURL(url.format({
+		pathname: path.join(__dirname, 'change_component_details.html'),
+		protocol: 'file:',
+		slashes: true
+	}));
+});
+
+ipcMain.on("component->main", function(event, args) {
+	console.log(component_args.component);
+	console.log(args.name);
+	window.webContents.send("component->renderer", {component: component_args.component, name: args.name});
 });
 
 // Catch transition right click

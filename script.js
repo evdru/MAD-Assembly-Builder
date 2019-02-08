@@ -182,8 +182,13 @@ function addNewComponent(posX, posY) {
         if (e.evt.button === 2){
             // open window for editing
             console.log("Open window for editing component details");
-            ipcRenderer.send("change_component_details");
+            ipcRenderer.send("change_component_details", {component: component_obj.name});
         };
+    });
+
+    // Catch new component name from ipcMain
+    ipcRenderer.on("component->renderer", function(event, args) {
+        changeComponentName(args.component, args.name);
     });
 };
 
@@ -351,7 +356,7 @@ function addNewPlace(component_group, component, placePos, component_obj) {
         tooltipLayer.draw();
     });
 
-    // Catch new name from ipcMain
+    // Catch new place name from ipcMain
     ipcRenderer.on("place->renderer", function(event, args) {
         changePlaceName(args.component, args.place, args.name);
     });
@@ -491,14 +496,23 @@ function closeNewWindow() {
 };
 
 // Function to change place name
-function changePlaceName(component, place, new_place) {
+function changePlaceName(component, place, new_place_name) {
     for (var i = 0; i < component_list.length; i++) {
         if (component_list[i].name == component) {
             for (var j = 0; j < component_list[i].place_list.length; j++) {
                 if (component_list[i].place_list[j].name == place) {
-                    component_list[i].place_list[j].name = new_place;
+                    component_list[i].place_list[j].name = new_place_name;
                 }
             }
+        }
+    }
+};
+
+//Function to change component name
+function changeComponentName(component, new_comp_name) {
+    for (var i = 0; i < component_list.length; i++) {
+        if (component_list[i].name == component) {
+            component_list[i].name = new_comp_name;
         }
     }
 };
