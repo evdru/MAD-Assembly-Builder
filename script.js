@@ -31,6 +31,8 @@ class Place {
         this.name = name;
         this.index = index;
         this.transition_count = 0;
+        this.dependency = false;
+        this.dependency_type;
     };
 };
 
@@ -41,6 +43,8 @@ class Transition {
         this.src = src;
         this.dest = dest;
         this.func = func;
+        this.dependency = false;
+        this.dependency_type;
     };
 };
 
@@ -96,7 +100,7 @@ function addNewComponent(posX, posY) {
     layer.draw();
 
     stage.on('click', function (e) {
-        if (e.evt.button === 1) {
+        if (e.evt.button === 2) {
             // if click on empty area - remove all transformers
             if (e.target === stage) {
                 stage.find('Transformer').destroy();
@@ -385,6 +389,11 @@ function addNewPlace(component_group, component, placePos, component_obj) {
         changePlaceName(args.component, args.place, args.name);
     });
 
+    // create dependency here
+    if(place_obj.dependency == true){
+        console.log("Creating dependency");
+        dependency = addNewDependency(component, place, component_obj, place_obj, component_group);
+    }
     // return konva object back to its parent component
     return place;
 };
@@ -394,7 +403,7 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
 
     // max number of transitions out of the same source = 3
     if(source_obj.transition_count >= 3){
-        alert("Cant create more than 3 transitions here!")
+        alert("Cant create more than 3 transitions from " + source_obj.name);
         return;
     }
 
@@ -511,6 +520,32 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
     source_obj.transition_count++;
     layer.draw();   
     return transition;
+}
+
+
+// Add new dependency function, should only be called by place and transition
+function addNewDependency(component, source_element, component_obj, place_obj, component_group) {
+
+    var dependency = new Konva.Line({
+        points: [source_element.getX(), source_element.getY(), (component.getX() * component.scaleX() + component.getWidth()), source_element.getY()],
+        stroke: 'black',
+        strokeWidth: 1,
+        name: "provide_dependency",
+        tension: 0,
+        dash: [10, 5]
+    });
+
+    source_element.on('dragmove', (e) => {
+        dependency.setPoints([snapToGrid(source_element.getX()),
+                              snapToGrid(source_element.getY()),
+                              snapToGrid((component.getX() * component.scaleX() + component.getWidth())),
+                              snapToGrid(source_element.getY())]);
+        layer.draw();
+    });
+
+    component_group.add(dependency);
+    dependency.moveToBottom();
+    layer.draw();
 }
 
 // Drag N Drop Functions
