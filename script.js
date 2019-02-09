@@ -302,17 +302,20 @@ function addNewPlace(component_group, component, placePos, component_obj) {
                     console.log("Source has a lower index than dest");
                     var offset = 0;
                     // check if this source -> dest combo has been added prior
-                    if(source_component.transition_dictionary[source_obj.name] == dest_obj.name){
-                        console.log("This src and dest combo existed before");
-                        if(source_obj.transition_count == 1){
+                    if(source_component.transition_dictionary[source_obj.name + dest_obj.name]){
+                        // set offset based on its value in the dictionary
+                        if(source_component.transition_dictionary[source_obj.name + dest_obj.name] == 1){
                             offset = 30;
-                        } else if (source_obj.transition_count == 2){
+                            // iterate the count for this transition
+                            source_component.transition_dictionary[source_obj.name + dest_obj.name] = 2;
+                        } else if (source_component.transition_dictionary[source_obj.name + dest_obj.name] == 2){
                             offset = -30;
                         }
+                    } else {
+                        // add the source -> dest combo into the components dictionary
+                        source_component.transition_dictionary[source_obj.name + dest_obj.name] = 1;
                     }
-                    console.log("The offset is: ", offset);
-                    // add the source -> dest combo into the global dictionary
-                    source_component.transition_dictionary[source_obj.name] = dest_obj.name;
+
                     console.log("Source place transition out count: ", source_obj.transition_count);
                     transition = addNewTransition(offset, source_transition, dest_transition, source_obj, dest_obj, component_obj, component_group);
                 } 
