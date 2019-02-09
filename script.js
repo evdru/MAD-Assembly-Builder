@@ -96,7 +96,7 @@ function addNewComponent(posX, posY) {
     layer.draw();
 
     stage.on('click', function (e) {
-        if (e.evt.button === 0) {
+        if (e.evt.button === 1) {
             // if click on empty area - remove all transformers
             if (e.target === stage) {
                 stage.find('Transformer').destroy();
