@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="Change Component Details" charset="utf-8">
+        <script src="./script.js"></script>
+    </head>
+
+    <body>
+        <p>Please enter the component's new name:</p>
+        New Component Name: <input type="text" name="component_name" id="component_name" autofocus><br><br>
+        <button id="submit">Change Name</button>
+        <button id="delete_component">Delete This Component</button>
+
+        <script>
+            const electron = require('electron');
+            const {ipcRenderer} = electron;
+
+            const submit = document.getElementById("submit");
+            submit.addEventListener('click', function(e) {
+                e.preventDefault();
+                const component_name = document.querySelector('#component_name').value.replace(/ /g,"_");
+                console.log(component_name);
+                ipcRenderer.send('component->main', {name: component_name});
+
+                //Close the window on button press.
+                // closeNewWindow();
+            });
+
+            const deleteBtn = document.getElementById("delete_component");
+            deleteBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                console.log("Delete Component");
+            });
+            </script>
+
+    </body>
+</html>
