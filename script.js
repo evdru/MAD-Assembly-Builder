@@ -157,8 +157,11 @@ function addNewComponent(posX, posY) {
     // hide the tooltip on mouse out
     component.on("mouseout", function(){
         //console.log(component_obj.name + " out");
+        component.stroke('black');
+        component.strokeWidth(1);
         tooltip.hide();
         tooltipLayer.draw();
+        layer.draw();
     });
 
     // if double click on component
@@ -181,6 +184,10 @@ function addNewComponent(posX, posY) {
 
     component.on("click", function(e){
         if (e.evt.button === 2){
+            // highlight the component
+            component.stroke('blue');
+            component.strokeWidth(3);
+            component.draw();
             // open window for editing
             console.log("Open window for editing component details");
             ipcRenderer.send("change_component_details", {component: component_obj.name});
@@ -299,7 +306,6 @@ function addNewPlace(component_group, component, placePos, component_obj) {
             if(source_transition != null){
                 // check the index and both places are in same component
                 if(source_obj.index < dest_obj.index && source_component == dest_component){
-                    console.log("Source has a lower index than dest");
                     var offset = 0;
                     // check if this source -> dest combo has been added prior
                     if(source_component.transition_dictionary[source_obj.name + dest_obj.name]){
@@ -320,6 +326,11 @@ function addNewPlace(component_group, component, placePos, component_obj) {
                     transition = addNewTransition(offset, source_transition, dest_transition, source_obj, dest_obj, component_obj, component_group);
                 } 
             } else {
+                // highlight the place
+                highlighted = true;
+                place.stroke('blue');
+                place.strokeWidth(3);
+                place.draw();
                 // right clk source was not selected, open window for editing
                 console.log("Open window for editing place details");
                 ipcRenderer.send("change_place_details", {component: component_obj.name, place: place_obj.name});
@@ -341,12 +352,12 @@ function addNewPlace(component_group, component, placePos, component_obj) {
         if(source_transition != null && source_obj.index < place_obj.index && source_component == component_obj){
             highlighted = true;
             place.stroke('green');
-            place.strokeWidth(5);
+            place.strokeWidth(3);
             place.draw();
         } else if (source_transition != null && source_obj.index >= place_obj.index && source_component == component_obj){
             highlighted = true;
             place.stroke('red');
-            place.strokeWidth(5);
+            place.strokeWidth(3);
             place.draw();
         }
     });
@@ -476,12 +487,19 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
     // hide the tooltip on mouse out
     transition_selection_area.on('mouseout', function(){
         stage.container().style.cursor = 'default';
+        transition.stroke('black');
+        transition.strokeWidth(1);
         tooltip.hide();
         tooltipLayer.draw();
+        layer.draw();
     });
 
     transition_selection_area.on("click", function(e){
         if (e.evt.button === 2){
+            // highlight the transition
+            transition.stroke('blue');
+            transition.strokeWidth(3);
+            transition.draw();
             //open window for editing transition
             console.log("Open window for editing transition details");
             ipcRenderer.send("change_transition_details");
