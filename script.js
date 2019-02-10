@@ -515,7 +515,6 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
         };
     });
 
-<<<<<<< HEAD
     // Catch new transition details from ipcMain
     ipcRenderer.on("transition->renderer", function(event, args) {
         changeTransitionDetails(args.component, args.transition, args.name, args.old_func, args.new_func);
@@ -526,12 +525,10 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
         console.log(args.new_func)
     });
 
-=======
     // move transition below its source and dest
     transition.moveToBottom();
     source_obj.transition_count++;
     layer.draw();   
->>>>>>> 61f3baa4ab9ac5696d60e04b093e4a2a6c0e21f8
     return transition;
 }
 
