@@ -511,14 +511,27 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
             transition.draw();
             //open window for editing transition
             console.log("Open window for editing transition details");
-            ipcRenderer.send("change_transition_details");
+            ipcRenderer.send("change_transition_details", {component: component_obj.name, transition: transition_obj.name, function: transition_obj.func});
         };
     });
 
+<<<<<<< HEAD
+    // Catch new transition details from ipcMain
+    ipcRenderer.on("transition->renderer", function(event, args) {
+        changeTransitionDetails(args.component, args.transition, args.name, args.old_func, args.new_func);
+        console.log(args.component)
+        console.log(args.transition)
+        console.log(args.name)
+        console.log(args.old_func)
+        console.log(args.new_func)
+    });
+
+=======
     // move transition below its source and dest
     transition.moveToBottom();
     source_obj.transition_count++;
     layer.draw();   
+>>>>>>> 61f3baa4ab9ac5696d60e04b093e4a2a6c0e21f8
     return transition;
 }
 
@@ -593,6 +606,22 @@ function changeComponentName(component, new_comp_name) {
     for (var i = 0; i < component_list.length; i++) {
         if (component_list[i].name == component) {
             component_list[i].name = new_comp_name;
+        }
+    }
+};
+
+//Function to change transition details
+function changeTransitionDetails(component, old_name, new_name, old_func, new_func) {
+    for (var i = 0; i < component_list.length; i++) {
+        if (component_list[i].name == component) {
+            for (var j = 0; j < component_list[i].transition_list.length; j++) {
+                if (component_list[i].transition_list[j].name == old_name) {
+                    component_list[i].transition_list[j].name = new_name;
+                }
+                if (component_list[i].transition_list[j].func == old_func) {
+                    component_list[i].transition_list[j].func = new_func;
+                }
+            }
         }
     }
 };
