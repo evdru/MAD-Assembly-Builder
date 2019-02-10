@@ -461,8 +461,18 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
         if (e.evt.button === 2){
             //open window for editing transition
             console.log("Open window for editing transition details");
-            ipcRenderer.send("change_transition_details");
+            ipcRenderer.send("change_transition_details", {component: component_obj.name, transition: transition_obj.name, function: transition_obj.func});
         };
+    });
+
+    // Catch new transition details from ipcMain
+    ipcRenderer.on("transition->renderer", function(event, args) {
+        changeTransitionDetails(args.component, args.transition, args.name, args.old_func, args.new_func);
+        console.log(args.component)
+        console.log(args.transition)
+        console.log(args.name)
+        console.log(args.old_func)
+        console.log(args.new_func)
     });
 
     return transition;
@@ -513,6 +523,22 @@ function changeComponentName(component, new_comp_name) {
     for (var i = 0; i < component_list.length; i++) {
         if (component_list[i].name == component) {
             component_list[i].name = new_comp_name;
+        }
+    }
+};
+
+//Function to change transition details
+function changeTransitionDetails(component, old_name, new_name, old_func, new_func) {
+    for (var i = 0; i < component_list.length; i++) {
+        if (component_list[i].name == component) {
+            for (var j = 0; j < component_list[i].transition_list.length; j++) {
+                if (component_list[i].transition_list[j].name == old_name) {
+                    component_list[i].transition_list[j].name = new_name;
+                }
+                if (component_list[i].transition_list[j].func == old_func) {
+                    component_list[i].transition_list[j].func = new_func;
+                }
+            }
         }
     }
 };

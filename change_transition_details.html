@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="Change Transition Details" charset="utf-8">
+        <script src="./script.js"></script>
+    </head>
+
+    <body>
+        <p>Please enter the transitions's new name:</p>
+        New Transition Name: <input type="text" name="transition_name" id="transition_name" autofocus><br>
+        New Transition Function: <input type="text" name="function_name" id="function_name"><br><br>
+        <button id="submit">Change Details</button>
+        <button id="delete_transition">Delete This Transition</button>
+
+        <script>
+            const electron = require('electron');
+            const {ipcRenderer} = electron;
+
+            const submit = document.getElementById("submit");
+            submit.addEventListener('click', function(e) {
+                e.preventDefault();
+                const transition_name = document.querySelector('#transition_name').value.replace(/ /g,"_");
+                const function_name = document.querySelector('#function_name').value.replace(/ /g,"_");
+                console.log(transition_name);
+                console.log(function_name);
+                ipcRenderer.send('transition->main', {name: transition_name, function: function_name});
+
+                //Close the window on button press.
+                // closeNewWindow();
+            });
+
+            const deleteBtn = document.getElementById("delete_transition");
+            deleteBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                console.log("Delete Transition");
+            });
+            </script>
+
+    </body>
+</html>

@@ -155,8 +155,25 @@ ipcMain.on("component->main", function(event, args) {
 });
 
 // Catch transition right click
-ipcMain.on("change_transition_details", function() {
+ipcMain.on("change_transition_details", function(event, args) {
 	console.log("Logging: change_transition_details from main thread");
+	transition_args = args;
+	// Create new window
+	var transition_window = new BrowserWindow({
+		width: 350,
+		height: 250
+	})
+	transition_window.loadURL(url.format({
+		pathname: path.join(__dirname, 'change_transition_details.html'),
+		protocol: 'file:',
+		slashes: true
+	}));
+});
+
+ipcMain.on("transition->main", function(event, args) {
+	console.log(transition_args.transition);
+	console.log(args.name);
+	window.webContents.send("transition->renderer", {component: transition_args.component, transition: transition_args.transition, name: args.name, old_func: transition_args.function,  new_func: args.function});
 });
 
 // Listen for app to be ready
