@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="Change Place Details" charset="utf-8">
+        <script src="./script.js"></script>
+    </head>
+
+    <body>
+        <p>Please enter the place's new name:</p>
+        New Place Name: <input type="text" name="place_name" id="place_name" autofocus><br><br>
+        <button id="submit">Change Name</button>
+        <button id="delete_place">Delete This Place</button>
+
+        <script>
+            const electron = require('electron');
+            const {ipcRenderer} = electron;
+
+            const submit = document.getElementById("submit");
+            submit.addEventListener('click', function(e) {
+                e.preventDefault();
+                const place_name = document.querySelector('#place_name').value.replace(/ /g,"_");
+                console.log(place_name);
+                ipcRenderer.send('place->main', {name: place_name});
+
+                //Close the window on button press.
+                closeNewWindow();
+            });
+
+            const deleteBtn = document.getElementById("delete_place");
+            deleteBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                console.log("Delete place");
+            });
+            </script>
+
+    </body>
+</html>

@@ -2,10 +2,14 @@ const electron = require('electron');
 const url = require('url');
 const plugin_manager = require('./plugin_manager.js');
 const path = require('path');
+const ipcMain = electron.ipcMain;
 
 const {app, BrowserWindow, Menu} = electron;
 
 let window;
+var place_args = 'global';
+var component_args = 'global';
+var transition_args = 'global';
 
 function boot() {
 	// Create new window
@@ -44,7 +48,7 @@ function populate_plugins() {
 					accelerator: 'CmdOrCtrl+' + index,
 					driver_path: plugin_manager[1][index],
 					plugin_number: index,
-					message: plugin_manager[0][index].toLocaleLowerCase().replace(' ', '_'),
+					message: plugin_manager[0][index].toLocaleLowerCase().replace(/ /g,"_"),
 					click(MenuItem){			
 						window.webContents.send(MenuItem.message);
 						console.log('The following Plugin has been activated: ' + MenuItem.label);
@@ -104,6 +108,56 @@ if(process.env.NODE_ENV !== 'production'){
 		]
 	});
 }
+
+// Catch place right click
+ipcMain.on("change_place_details", function(event, args) {
+	console.log("Logging: change_place_details from main thread");
+	place_args = args;
+	// Create new window
+	var place_window = new BrowserWindow({
+		width: 350,
+		height: 200
+	})
+	place_window.loadURL(url.format({
+		pathname: path.join(__dirname, 'change_place_details.html'),
+		protocol: 'file:',
+		slashes: true
+	}));
+});
+
+ipcMain.on("place->main", function(event, args) {
+	console.log(place_args.component);
+	console.log(place_args.place);
+	console.log(args.name);
+	window.webContents.send("place->renderer", {component: place_args.component, place: place_args.place, name: args.name});
+});
+
+// Catch component right click
+ipcMain.on("change_component_details", function(event, args) {
+	console.log("Logging: change_component_details from main thread");
+	component_args = args;
+	// Create new window
+	var component_window = new BrowserWindow({
+		width: 350,
+		height: 200
+	})
+	component_window.loadURL(url.format({
+		pathname: path.join(__dirname, 'change_component_details.html'),
+		protocol: 'file:',
+		slashes: true
+	}));
+});
+
+ipcMain.on("component->main", function(event, args) {
+	console.log(component_args.component);
+	console.log(args.name);
+	window.webContents.send("component->renderer", {component: component_args.component, name: args.name});
+});
+
+// Catch transition right click
+ipcMain.on("change_transition_details", function() {
+	console.log("Logging: change_transition_details from main thread");
+});
 
 // Listen for app to be ready
 app.on('ready', boot);
