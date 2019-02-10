@@ -537,7 +537,7 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
 function addNewDependency(component, source_element, component_obj, place_obj, component_group) {
 
     var dependency = new Konva.Line({
-        points: [source_element.getX(), source_element.getY(), (component.getX() * component.scaleX() + component.getWidth()), source_element.getY()],
+        points: [source_element.getX(), source_element.getY(), (component.getX() + component.getWidth()) * component.scaleX(), source_element.getY()],
         stroke: 'black',
         strokeWidth: 1,
         name: "provide_dependency",
@@ -546,10 +546,10 @@ function addNewDependency(component, source_element, component_obj, place_obj, c
     });
 
     source_element.on('dragmove', (e) => {
-        dependency.setPoints([snapToGrid(source_element.getX()),
-                              snapToGrid(source_element.getY()),
-                              snapToGrid((component.getX() * component.scaleX() + component.getWidth())),
-                              snapToGrid(source_element.getY())]);
+        dependency.setPoints([source_element.getX(),
+                              source_element.getY(),
+                              (component.getX() + component.getWidth()) * component.scaleX(),
+                              source_element.getY()]);
         layer.draw();
     });
 
