@@ -31,7 +31,7 @@ class Place {
         this.name = name;
         this.index = index;
         this.transition_count = 0;
-        this.dependency = false;
+        this.dependency = true;
         this.dependency_type;
     };
 };
@@ -43,7 +43,7 @@ class Transition {
         this.src = src;
         this.dest = dest;
         this.func = func;
-        this.dependency = false;
+        this.dependency = true;
         this.dependency_type;
     };
 };
@@ -218,6 +218,7 @@ function addNewPlace(component_group, component, placePos, component_obj) {
         strokeWidth: 1,
         fill: 'white',
         name: 'place',
+        text: 'place',
         ShadowBlur: 1,
         draggable: true,
         dragBoundFunc: function(pos) {
@@ -327,7 +328,7 @@ function addNewPlace(component_group, component, placePos, component_obj) {
                     }
 
                     console.log("Source place transition out count: ", source_obj.transition_count);
-                    transition = addNewTransition(offset, source_transition, dest_transition, source_obj, dest_obj, component_obj, component_group);
+                    transition = addNewTransition(offset, source_transition, dest_transition, source_obj, dest_obj, component_obj, component_group, component);
                 } 
             } else {
                 // highlight the place
@@ -391,15 +392,15 @@ function addNewPlace(component_group, component, placePos, component_obj) {
 
     // create dependency here
     if(place_obj.dependency == true){
-        console.log("Creating dependency");
-        dependency = addNewDependency(component, place, component_obj, place_obj, component_group);
+        console.log("Creating provide dependency");
+        dependency = addNewDependency(component, place, place_obj, component_obj, component_group);
     }
     // return konva object back to its parent component
     return place;
 };
 
 // function that adds new transition obj and konva arrow
-function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj, component_obj, component_group){
+function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj, component_obj, component_group, component){
 
     // max number of transitions out of the same source = 3
     if(source_obj.transition_count >= 3){
@@ -528,31 +529,70 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
     // move transition below its source and dest
     transition.moveToBottom();
     source_obj.transition_count++;
-    layer.draw();   
+    layer.draw();
+    
+    // create dependency here
+    if(transition_obj.dependency == true){
+        console.log("Creating use dependency");
+        dependency = addNewDependency(component, transition_selection_area, transition_obj, component_obj, component_group);
+    }
+
     return transition;
 }
 
 
 // Add new dependency function, should only be called by place and transition
-function addNewDependency(component, source_element, component_obj, place_obj, component_group) {
+function addNewDependency(component, source_element, source_obj, component_obj, component_group) {
+
+    var pos_x;
+    var offset;
+    console.log(source_element.getX());
+    // provide connection
+    if(source_obj.type == 'Place'){
+        pos_x = (component.getX() + component.getWidth()) * component.scaleX();
+        offset = 20;
+    } else {
+        // use connection
+        pos_x = component.getX();
+        offset = -20;
+    }
 
     var dependency = new Konva.Line({
-        points: [source_element.getX(), source_element.getY(), (component.getX() + component.getWidth()) * component.scaleX(), source_element.getY()],
+        points: [source_element.getX(), source_element.getY(), pos_x, source_element.getY()],
         stroke: 'black',
         strokeWidth: 1,
         name: "provide_dependency",
         tension: 0,
-        dash: [10, 5]
+        dash: [10, 5],
+        listening: true
     });
 
-    source_element.on('dragmove', (e) => {
+    var stub = new Konva.Circle({
+        x: dependency.points()[2] + offset,
+        y: dependency.points()[3],
+        radius: 10,
+        stroke: 'black',
+        strokeWidth: 1,
+        fill: 'black',
+        name: 'provide_stub',
+        ShadowBlur: 1,
+        listening: true
+      });
+
+    // when the source element moves
+    source_element.on('xChange yChange', (e) => {
         dependency.setPoints([source_element.getX(),
                               source_element.getY(),
-                              (component.getX() + component.getWidth()) * component.scaleX(),
+                              pos_x,
                               source_element.getY()]);
+        stub.position({
+            x: dependency.points()[2] + offset,
+            y: dependency.points()[3]
+        });
         layer.draw();
     });
 
+    component_group.add(stub);
     component_group.add(dependency);
     dependency.moveToBottom();
     layer.draw();
