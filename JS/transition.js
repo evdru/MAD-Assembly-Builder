@@ -1,5 +1,5 @@
 // function that adds new transition obj and konva arrow
-function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj, component_obj, component_group, component) {
+function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj, component_obj, component_group, component, tooltipLayer) {
 
     // max number of transitions out of the same source = 3
     if(source_obj.transition_count >= 3){
@@ -43,7 +43,6 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
         visible: false
     });
 
-    var tooltipLayer = new Konva.Layer();
     tooltipLayer.add(tooltip);
     stage.add(tooltipLayer);
 

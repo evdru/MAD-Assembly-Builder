@@ -1,5 +1,5 @@
 // Add new place function, should only be called by component
-function addNewPlace(component_group, component, placePos, component_obj) {
+function addNewPlace(component_group, component, placePos, component_obj, tooltipLayer) {
     var index = component_obj.place_list.length;
     var place_obj = new Place('Place', "Place_" + (index + 1), index);
     component_obj.place_list.push(place_obj);
@@ -55,7 +55,6 @@ function addNewPlace(component_group, component, placePos, component_obj) {
         visible: false
     });
 
-    var tooltipLayer = new Konva.Layer();
     tooltipLayer.add(tooltip);
     stage.add(tooltipLayer);
 
@@ -121,7 +120,7 @@ function addNewPlace(component_group, component, placePos, component_obj) {
                     }
 
                     console.log("Source place transition out count: ", source_obj.transition_count);
-                    transition = addNewTransition(offset, source_transition, dest_transition, source_obj, dest_obj, component_obj, component_group, component);
+                    transition = addNewTransition(offset, source_transition, dest_transition, source_obj, dest_obj, component_obj, component_group, component, tooltipLayer);
                 } 
             } else {
                 // highlight the place

@@ -111,7 +111,7 @@ function addNewComponent(posX, posY) {
             var pos = stage.getPointerPosition();
             var placePos = transform.point(pos);
             // grow component here
-            var place = addNewPlace(component_group, component, placePos, component_obj);
+            var place = addNewPlace(component_group, component, placePos, component_obj, tooltipLayer);
             //layer.add(component_group);
             layer.draw();
         }
