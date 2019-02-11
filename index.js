@@ -1,6 +1,6 @@
 const electron = require('electron');
 const url = require('url');
-const plugin_manager = require('./plugin_manager.js');
+const plugin_manager = require('./JS/plugin_manager.js');
 const path = require('path');
 const ipcMain = electron.ipcMain;
 
@@ -16,7 +16,7 @@ function boot() {
 	window = new BrowserWindow()
 	window.maximize()
 	window.loadURL(url.format({
-		pathname: path.join(__dirname, 'index.html'),
+		pathname: path.join(__dirname, './HTML/index.html'),
 		protocol: 'file:',
 		slashes: true
 	}));
@@ -119,7 +119,7 @@ ipcMain.on("change_place_details", function(event, args) {
 		height: 200
 	})
 	place_window.loadURL(url.format({
-		pathname: path.join(__dirname, 'change_place_details.html'),
+		pathname: path.join(__dirname, './HTML/change_place_details.html'),
 		protocol: 'file:',
 		slashes: true
 	}));
@@ -142,7 +142,7 @@ ipcMain.on("change_component_details", function(event, args) {
 		height: 200
 	})
 	component_window.loadURL(url.format({
-		pathname: path.join(__dirname, 'change_component_details.html'),
+		pathname: path.join(__dirname, './HTML/change_component_details.html'),
 		protocol: 'file:',
 		slashes: true
 	}));
@@ -164,7 +164,7 @@ ipcMain.on("change_transition_details", function(event, args) {
 		height: 250
 	})
 	transition_window.loadURL(url.format({
-		pathname: path.join(__dirname, 'change_transition_details.html'),
+		pathname: path.join(__dirname, './HTML/change_transition_details.html'),
 		protocol: 'file:',
 		slashes: true
 	}));
