@@ -561,7 +561,7 @@ function addNewDependency(component, source_element, source_obj, component_obj, 
         points: [source_element.getX(), source_element.getY(), pos_x, source_element.getY()],
         stroke: 'black',
         strokeWidth: 1,
-        name: "provide_dependency",
+        name: 'dependency',
         tension: 0,
         dash: [10, 5],
         listening: true
@@ -574,22 +574,30 @@ function addNewDependency(component, source_element, source_obj, component_obj, 
         stroke: 'black',
         strokeWidth: 1,
         fill: 'black',
-        name: 'provide_stub',
+        name: 'stub',
         ShadowBlur: 1,
         listening: true
-      });
+    });
 
     // when the source element moves
     source_element.on('xChange yChange', (e) => {
         dependency.setPoints([source_element.getX(),
                               source_element.getY(),
-                              pos_x,
+                              pos_x * component.scaleX(),
                               source_element.getY()]);
         stub.position({
             x: dependency.points()[2] + offset,
             y: dependency.points()[3]
         });
         layer.draw();
+    });
+
+    // if a click over stub
+    stub.on("click", function(e){
+        if (e.evt.button === 0){
+            // first left click
+            console.log("Left clicked stub: ", source_element.name);
+        };
     });
 
     component_group.add(stub);
