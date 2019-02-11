@@ -93,7 +93,7 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
             place.strokeWidth(5);
             place.draw();
         }
-        if (e.evt.button === 2) {
+        else if (e.evt.button === 2) {
             // first right click set dest
             console.log("Right clicked place: ", place_obj.name);
             dest_component = component_obj;

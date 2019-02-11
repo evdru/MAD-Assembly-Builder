@@ -4,7 +4,6 @@ function addNewDependency(component, source_element, source_obj, component_obj, 
     var offset;
     var add;
     var depedency_name;
-    console.log(source_element.getX());
     // provide connection going right of a place
     if(source_obj.type == 'Place'){
         offset = component.getWidth();
@@ -70,7 +69,6 @@ function addNewDependency(component, source_element, source_obj, component_obj, 
     stub.on('mouseout', function(){
         tooltip.hide();
         tooltipLayer.draw();
-        // layer.draw();
     });
 
     // when the source element moves
@@ -96,7 +94,6 @@ function addNewDependency(component, source_element, source_obj, component_obj, 
             x: dependency.points()[2] + add,
             y: dependency.points()[3]
         });
-        // layer.draw();
     });
 
     // if a click over stub
@@ -104,7 +101,38 @@ function addNewDependency(component, source_element, source_obj, component_obj, 
         if (e.evt.button === 0){
             // first left click
             console.log("Left clicked stub: ", source_obj.name);
-        };
+            // check if source stub is a provide dependency
+            if(source_obj.type == 'Place'){
+                provide_component_obj = component_obj;
+                provide_source_obj = source_obj;
+                provide_stub_konva = stub;
+                provide_component_group = component_group;
+            }
+        } 
+        else if (e.evt.button === 2){
+            // check if provide stub was selected prior
+            console.log("Right clicked stub: ", source_obj.name);
+            if(provide_stub_konva != null){
+                if(source_obj.type == 'Transition'){
+                    use_component_obj = component_obj;
+                    use_source_obj = source_obj;
+                    use_stub_konva = stub;
+                    use_component_group = component_group;
+                    // Dont create connection if both stubs are from the same component
+                    if(provide_component_obj != use_component_obj){
+                        // create new connection here
+                        connection = addNewConnection(provide_component_obj, provide_source_obj, provide_stub_konva, provide_component_group, use_component_obj, use_source_obj, use_stub_konva, use_component_group);
+                    } else {
+                        alert("Cant create connection from " + provide_component_obj.name + " to " + use_component_obj.name);
+                    }
+                } else {
+                    alert("Left click Provide dependency stub and Right click Use dependency stub to connect them");
+                }
+            }
+            // reset source and dest
+            provide_stub_konva = null;
+            use_stub_konva = null;
+        }
     });
 
     component_group.add(stub);
