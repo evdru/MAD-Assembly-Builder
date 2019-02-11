@@ -1,7 +1,7 @@
 // Add new connection function, should only be called by provide depedency stub
 function addNewConnection(provide_component_obj, provide_source_obj, provide_stub_konva, provide_component_group, use_component_obj, use_source_obj, use_stub_konva, use_component_group) {
 
-    var provide_offset = 10;
+    var provide_offset = 15;
     var use_offset = -10;
     var midpoint_x = ((provide_stub_konva.getAbsolutePosition().x + provide_offset) + (use_stub_konva.getAbsolutePosition().x + use_offset)) / 2;
 

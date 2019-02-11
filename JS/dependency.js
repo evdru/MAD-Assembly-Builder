@@ -9,7 +9,7 @@ function addNewDependency(component, source_element, source_obj, component_obj, 
     if(source_obj.type == 'Place'){
         offset = component.getWidth();
         add = 20;
-        stub_x = 10;
+        stub_x = 0;
         depedency_name = "Provide Dependency from " + source_obj.name;
     } else {
         // use connection going left of a transition
@@ -42,19 +42,31 @@ function addNewDependency(component, source_element, source_obj, component_obj, 
         var stub = new Konva.Circle({
             x: dependency.points()[2] + add + stub_x,
             y: dependency.points()[3],
-            radius: 10,
+            radius: 8,
             stroke: 'black',
             strokeWidth: 1,
             fill: 'black',
             name: 'stub',
             ShadowBlur: 1
         });
+
+        var arc = new Konva.Arc({
+            x: stub.getX(),
+            y: stub.getY(),
+            innerRadius: 15,
+            outerRadius: 16,
+            angle: 180,
+            stroke: 'black',
+            strokeWidth: 1,
+            rotation: 270,
+            opacity: 0
+          });
     } else {
         // stub for use dependency
         var stub = new Konva.Circle({
             x: dependency.points()[2] + add + stub_x,
             y: dependency.points()[3],
-            radius: 10,
+            radius: 8,
             stroke: 'black',
             strokeWidth: 1,
             fill: 'black',
@@ -164,6 +176,7 @@ function addNewDependency(component, source_element, source_obj, component_obj, 
                 provide_source_obj = source_obj;
                 provide_stub_konva = stub;
                 provide_component_group = component_group;
+                provide_arc = arc;
             }
         } 
         else if (e.evt.button === 2){
@@ -177,6 +190,11 @@ function addNewDependency(component, source_element, source_obj, component_obj, 
                     use_component_group = component_group;
                     // Dont create connection if both stubs are from the same component
                     if(provide_component_obj != use_component_obj){
+                        // check if arc is visible
+                        if(provide_arc.opacity() == 0){
+                            // make it visible
+                            provide_arc.opacity(1);
+                        }
                         // create new connection here
                         connection = addNewConnection(provide_component_obj, provide_source_obj, provide_stub_konva, provide_component_group, use_component_obj, use_source_obj, use_stub_konva, use_component_group);
                     } else {
