@@ -121,7 +121,7 @@ function addNewPlace(component_group, component, placePos, component_obj) {
                     }
 
                     console.log("Source place transition out count: ", source_obj.transition_count);
-                    transition = addNewTransition(offset, source_transition, dest_transition, source_obj, dest_obj, component_obj, component_group);
+                    transition = addNewTransition(offset, source_transition, dest_transition, source_obj, dest_obj, component_obj, component_group, component);
                 } 
             } else {
                 // highlight the place
@@ -185,8 +185,8 @@ function addNewPlace(component_group, component, placePos, component_obj) {
 
     // create dependency here
     if(place_obj.dependency == true){
-        console.log("Creating dependency");
-        dependency = addNewDependency(component, place, component_obj, place_obj, component_group);
+        console.log("Creating provide dependency");
+        dependency = addNewDependency(component, place, place_obj, component_obj, component_group);
     }
     // return konva object back to its parent component
     return place;

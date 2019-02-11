@@ -31,7 +31,7 @@ class Place {
         this.name = name;
         this.index = index;
         this.transition_count = 0;
-        this.dependency = false;
+        this.dependency = true;
         this.dependency_type;
     };
 };
@@ -43,7 +43,7 @@ class Transition {
         this.src = src;
         this.dest = dest;
         this.func = func;
-        this.dependency = false;
+        this.dependency = true;
         this.dependency_type;
     };
 };

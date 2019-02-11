@@ -1,5 +1,5 @@
 // function that adds new transition obj and konva arrow
-function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj, component_obj, component_group) {
+function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj, component_obj, component_group, component) {
 
     // max number of transitions out of the same source = 3
     if(source_obj.transition_count >= 3){
@@ -128,6 +128,12 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
     // move transition below its source and dest
     transition.moveToBottom();
     source_obj.transition_count++;
-    layer.draw();   
+    layer.draw();
+
+    // create dependency here
+    if(transition_obj.dependency == true){
+        console.log("Creating use dependency");
+        dependency = addNewDependency(component, transition_selection_area, transition_obj, component_obj, component_group);
+    }
     return transition;
 }
