@@ -76,6 +76,16 @@ function addNewComponent(posX, posY) {
         tooltipLayer.draw();
     });
 
+    // When drag end entire component group snap to grid
+    // easier alignment for component connections
+    component_group.on('dragend', (e) => {
+        component_group.position({
+          x: snapToGrid(component_group.x()),
+          y: snapToGrid(component_group.y())
+        });
+        layer.batchDraw();
+    });
+
     // if mouse is over a component
     component.on('mousemove', function () {
         //console.log(component_obj.name + " over");
