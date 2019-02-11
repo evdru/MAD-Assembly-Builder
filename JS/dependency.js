@@ -1,17 +1,20 @@
 // Add new dependency function, should only be called by place and transition
-function addNewDependency(component, source_element, source_obj, component_obj, component_group) {
+function addNewDependency(component, source_element, source_obj, component_obj, component_group, tooltipLayer) {
 
     var offset;
     var add;
+    var depedency_name;
     console.log(source_element.getX());
     // provide connection
     if(source_obj.type == 'Place'){
         offset = component.getWidth();
         add = 20;
+        depedency_name = "Provide Dependency from " + source_obj.name;
     } else {
         // use connection
         offset = 0;
         add = -20;
+        depedency_name = "Use Dependency from " + source_obj.name;
     };
 
     var dependency = new Konva.Line({
@@ -24,7 +27,7 @@ function addNewDependency(component, source_element, source_obj, component_obj, 
         listening: true
     });
 
-    var stub = new Konva.Circle({ 
+    var stub = new Konva.Circle({
         x: dependency.points()[2],
         y: dependency.points()[3],
         radius: 10,
@@ -34,6 +37,40 @@ function addNewDependency(component, source_element, source_obj, component_obj, 
         name: 'stub',
         ShadowBlur: 1,
         listening: true
+    });
+
+    // tooltip to display name of object
+    var tooltip = new Konva.Text({
+        text: "",
+        fontFamily: "Calibri",
+        fontSize: 12,
+        padding: 5,
+        textFill: "white",
+        fill: "black",
+        alpha: 0.75,
+        visible: false
+    });
+    
+    tooltipLayer.add(tooltip);
+    stage.add(tooltipLayer);
+
+    // if mouse is over a stub
+    stub.on('mousemove', function () {
+        var mousePos = stage.getPointerPosition();
+        tooltip.position({
+            x : mousePos.x + 10,
+            y : mousePos.y + 10
+        });
+        tooltip.text(depedency_name);
+        tooltip.show();
+        tooltipLayer.batchDraw();
+    });
+    
+    // hide the tooltip on mouse out
+    stub.on('mouseout', function(){
+        tooltip.hide();
+        tooltipLayer.draw();
+        layer.draw();
     });
 
     // when the source element moves

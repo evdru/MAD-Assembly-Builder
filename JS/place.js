@@ -185,7 +185,7 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
     // create dependency here
     if(place_obj.dependency == true){
         console.log("Creating provide dependency");
-        dependency = addNewDependency(component, place, place_obj, component_obj, component_group);
+        dependency = addNewDependency(component, place, place_obj, component_obj, component_group, tooltipLayer);
     }
     // return konva object back to its parent component
     return place;

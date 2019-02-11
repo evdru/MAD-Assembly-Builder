@@ -99,7 +99,7 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
         transition.strokeWidth(1);
         tooltip.hide();
         tooltipLayer.draw();
-        layer.draw();
+        //layer.draw();
     });
 
     transition_selection_area.on("click", function(e){
@@ -132,7 +132,7 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
     // create dependency here
     if(transition_obj.dependency == true){
         console.log("Creating use dependency");
-        dependency = addNewDependency(component, transition_selection_area, transition_obj, component_obj, component_group);
+        dependency = addNewDependency(component, transition_selection_area, transition_obj, component_obj, component_group, tooltipLayer);
     }
     return transition;
 }
