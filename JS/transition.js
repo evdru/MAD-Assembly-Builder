@@ -58,7 +58,7 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
             x: snapToGrid(((source_konva.getX() + dest_konva.getX()) / 2) + offset),
             y: snapToGrid((source_konva.getY() + dest_konva.getY()) / 2)
         });
-        layer.draw();
+        //layer.draw();
     });
 
     // destination place is moved update the transitions that are connected to it
@@ -73,7 +73,7 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
             x: snapToGrid(((source_konva.getX() + dest_konva.getX()) / 2) + offset),
             y: snapToGrid((source_konva.getY() + dest_konva.getY()) / 2)
         });
-        layer.draw();
+        //layer.draw();
     });
 
     transition_selection_area.on('moveenter', function(){
@@ -127,7 +127,7 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
     // move transition below its source and dest
     transition.moveToBottom();
     source_obj.transition_count++;
-    layer.draw();
+    //layer.draw();
 
     // create dependency here
     if(transition_obj.dependency == true){

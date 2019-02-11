@@ -5,13 +5,13 @@ function addNewDependency(component, source_element, source_obj, component_obj, 
     var add;
     var depedency_name;
     console.log(source_element.getX());
-    // provide connection
+    // provide connection going right of a place
     if(source_obj.type == 'Place'){
         offset = component.getWidth();
         add = 20;
         depedency_name = "Provide Dependency from " + source_obj.name;
     } else {
-        // use connection
+        // use connection going left of a transition
         offset = 0;
         add = -20;
         depedency_name = "Use Dependency from " + source_obj.name;
@@ -70,7 +70,7 @@ function addNewDependency(component, source_element, source_obj, component_obj, 
     stub.on('mouseout', function(){
         tooltip.hide();
         tooltipLayer.draw();
-        layer.draw();
+        // layer.draw();
     });
 
     // when the source element moves
@@ -83,7 +83,7 @@ function addNewDependency(component, source_element, source_obj, component_obj, 
             x: dependency.points()[2] + add,
             y: dependency.points()[3]
         });
-        layer.draw();
+        //layer.draw();
     });
 
      // when the source element moves
@@ -96,7 +96,7 @@ function addNewDependency(component, source_element, source_obj, component_obj, 
             x: dependency.points()[2] + add,
             y: dependency.points()[3]
         });
-        layer.draw();
+        // layer.draw();
     });
 
     // if a click over stub

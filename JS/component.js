@@ -96,7 +96,7 @@ function addNewComponent(posX, posY) {
         component.strokeWidth(1);
         tooltip.hide();
         tooltipLayer.draw();
-        layer.draw();
+        //layer.draw();
     });
 
     // if double click on component
@@ -113,7 +113,7 @@ function addNewComponent(posX, posY) {
             // grow component here
             var place = addNewPlace(component_group, component, placePos, component_obj, tooltipLayer);
             //layer.add(component_group);
-            layer.draw();
+            //layer.draw();
         }
     });
 
