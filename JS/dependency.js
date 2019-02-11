@@ -6,13 +6,13 @@ function addNewDependency(component, source_element, source_obj, component_obj, 
     console.log(source_element.getX());
     // provide connection
     if(source_obj.type == 'Place'){
-        pos_x = (component.getX() + component.getWidth()) * component.scaleX();
+        pos_x = component.getX() + (component.getWidth() * component.scaleX());
         offset = 20;
     } else {
         // use connection
         pos_x = component.getX();
         offset = -20;
-    }
+    };
 
     var dependency = new Konva.Line({
         points: [source_element.getX(), source_element.getY(), pos_x, source_element.getY()],
@@ -37,7 +37,20 @@ function addNewDependency(component, source_element, source_obj, component_obj, 
     });
 
     // when the source element moves
-    source_element.on('xChange yChange', (e) => {
+    source_element.on('xChange yChange dragmove', (e) => {
+        dependency.setPoints([source_element.getX(),
+                              source_element.getY(),
+                              pos_x * component.scaleX(),
+                              source_element.getY()]);
+        stub.position({
+            x: dependency.points()[2] + offset,
+            y: dependency.points()[3]
+        });
+        layer.draw();
+    });
+
+     // when the source element moves
+     component.on('xChange', (e) => {
         dependency.setPoints([source_element.getX(),
                               source_element.getY(),
                               pos_x * component.scaleX(),
