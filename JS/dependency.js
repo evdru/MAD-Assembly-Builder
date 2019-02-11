@@ -1,21 +1,21 @@
 // Add new dependency function, should only be called by place and transition
 function addNewDependency(component, source_element, source_obj, component_obj, component_group) {
 
-    var pos_x;
     var offset;
+    var add;
     console.log(source_element.getX());
     // provide connection
     if(source_obj.type == 'Place'){
-        pos_x = component.getX() + (component.getWidth() * component.scaleX());
-        offset = 20;
+        offset = component.getWidth();
+        add = 20;
     } else {
         // use connection
-        pos_x = component.getX();
-        offset = -20;
+        offset = 0;
+        add = -20;
     };
 
     var dependency = new Konva.Line({
-        points: [source_element.getX(), source_element.getY(), pos_x, source_element.getY()],
+        points: [source_element.getX(), source_element.getY(), (component.getX() + offset * component.scaleX()) + add, source_element.getY()],
         stroke: 'black',
         strokeWidth: 1,
         name: 'dependency',
@@ -25,7 +25,7 @@ function addNewDependency(component, source_element, source_obj, component_obj, 
     });
 
     var stub = new Konva.Circle({ 
-        x: dependency.points()[2] + offset,
+        x: dependency.points()[2],
         y: dependency.points()[3],
         radius: 10,
         stroke: 'black',
@@ -37,13 +37,13 @@ function addNewDependency(component, source_element, source_obj, component_obj, 
     });
 
     // when the source element moves
-    source_element.on('xChange yChange dragmove', (e) => {
+    source_element.on('xChange yChange', (e) => {
         dependency.setPoints([source_element.getX(),
                               source_element.getY(),
-                              pos_x * component.scaleX(),
+                              component.getX() + offset * component.scaleX(),
                               source_element.getY()]);
         stub.position({
-            x: dependency.points()[2] + offset,
+            x: dependency.points()[2] + add,
             y: dependency.points()[3]
         });
         layer.draw();
@@ -53,10 +53,10 @@ function addNewDependency(component, source_element, source_obj, component_obj, 
      component.on('xChange', (e) => {
         dependency.setPoints([source_element.getX(),
                               source_element.getY(),
-                              pos_x * component.scaleX(),
+                              component.getX() + offset * component.scaleX(),
                               source_element.getY()]);
         stub.position({
-            x: dependency.points()[2] + offset,
+            x: dependency.points()[2] + add,
             y: dependency.points()[3]
         });
         layer.draw();
