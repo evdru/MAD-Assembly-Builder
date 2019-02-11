@@ -3,21 +3,24 @@ function addNewDependency(component, source_element, source_obj, component_obj, 
 
     var offset;
     var add;
+    var stub_x;
     var depedency_name;
     // provide connection going right of a place
     if(source_obj.type == 'Place'){
         offset = component.getWidth();
         add = 20;
+        stub_x = 10;
         depedency_name = "Provide Dependency from " + source_obj.name;
     } else {
         // use connection going left of a transition
         offset = 0;
         add = -20;
+        stub_x = -15;
         depedency_name = "Use Dependency from " + source_obj.name;
     };
 
     var dependency = new Konva.Line({
-        points: [source_element.getX(), source_element.getY(), (component.getX() + offset * component.scaleX()) + add, source_element.getY()],
+        points: [source_element.getX(), source_element.getY(), (component.getX() + offset * component.scaleX()), source_element.getY()],
         stroke: 'black',
         strokeWidth: 1,
         name: 'dependency',
@@ -26,17 +29,50 @@ function addNewDependency(component, source_element, source_obj, component_obj, 
         listening: true
     });
 
-    var stub = new Konva.Circle({
-        x: dependency.points()[2],
-        y: dependency.points()[3],
-        radius: 10,
+    var stem = new Konva.Line({
+        points: [component.getX() + offset * component.scaleX(), source_element.getY(), (component.getX() + offset * component.scaleX()) + add, source_element.getY()],
         stroke: 'black',
         strokeWidth: 1,
-        fill: 'black',
-        name: 'stub',
-        ShadowBlur: 1,
-        listening: true
+        name: 'stem',
+        tension: 0,
     });
+
+    // stub for provide dependency
+    if(source_obj.type == 'Place'){
+        var stub = new Konva.Circle({
+            x: dependency.points()[2] + add + stub_x,
+            y: dependency.points()[3],
+            radius: 10,
+            stroke: 'black',
+            strokeWidth: 1,
+            fill: 'black',
+            name: 'stub',
+            ShadowBlur: 1
+        });
+    } else {
+        // stub for use dependency
+        var stub = new Konva.Circle({
+            x: dependency.points()[2] + add + stub_x,
+            y: dependency.points()[3],
+            radius: 10,
+            stroke: 'black',
+            strokeWidth: 1,
+            fill: 'black',
+            name: 'stub',
+            opacity: 0
+        });
+
+        var arc = new Konva.Arc({
+            x: stub.getX(),
+            y: stub.getY(),
+            innerRadius: 15,
+            outerRadius: 16,
+            angle: 180,
+            stroke: 'black',
+            strokeWidth: 1,
+            rotation: 270
+          });
+    };
 
     // tooltip to display name of object
     var tooltip = new Konva.Text({
@@ -77,10 +113,21 @@ function addNewDependency(component, source_element, source_obj, component_obj, 
                               source_element.getY(),
                               component.getX() + offset * component.scaleX(),
                               source_element.getY()]);
+        stem.setPoints([component.getX() + offset * component.scaleX(),
+                        source_element.getY(),
+                        (component.getX() + offset * component.scaleX()) + add,
+                        source_element.getY()]);
         stub.position({
-            x: dependency.points()[2] + add,
+            x: dependency.points()[2] + add + stub_x,
             y: dependency.points()[3]
         });
+        if(arc != null){
+            arc.position({
+                x: stub.getX(),
+                y: stub.getY()
+            });
+        }
+        
         //layer.draw();
     });
 
@@ -90,10 +137,20 @@ function addNewDependency(component, source_element, source_obj, component_obj, 
                               source_element.getY(),
                               component.getX() + offset * component.scaleX(),
                               source_element.getY()]);
+        stem.setPoints([component.getX() + offset * component.scaleX(),
+                        source_element.getY(),
+                        (component.getX() + offset * component.scaleX()) + add,
+                        source_element.getY()]);
         stub.position({
-            x: dependency.points()[2] + add,
+            x: dependency.points()[2] + add + stub_x,
             y: dependency.points()[3]
         });
+        if(arc != null){
+            arc.position({
+                x: stub.getX(),
+                y: stub.getY()
+            });
+        }
     });
 
     // if a click over stub
@@ -135,6 +192,11 @@ function addNewDependency(component, source_element, source_obj, component_obj, 
         }
     });
 
+    // add arc if exists
+    if(arc != null){
+        component_group.add(arc);
+    }
+    component_group.add(stem);
     component_group.add(stub);
     component_group.add(dependency);
     dependency.moveToBottom();
