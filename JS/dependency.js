@@ -1,22 +1,26 @@
 // Add new Service dependency function, should only be called by place and transition
 function addNewServiceDependency(component, source_element, source_obj, component_obj, component_group, tooltipLayer) {
-
-    // create the dependency object
-    var dependency_obj = new Dependency('Service', "Dependency_" + (component_obj.dependency_list.length + 1));
-    component_obj.dependency_list.push(dependency_obj); 
-
     var offset;
     var add;
     var stub_x;
     var depedency_name;
+    var provide_stub_konva = null;
 
     // provide connection going right of a place
-    if(source_obj.type == 'Place'){
+    if(source_obj.type == 'Place') {
+        // create the dependency object
+        var dependency_obj = new Dependency('PROVIDE', "Dependency_" + (component_obj.dependency_list.length + 1));
+        component_obj.dependency_list.push(dependency_obj);
+        console.log('Created new PROVIDE dependency dock'); 
         offset = component.getWidth();
         add = 20;
         stub_x = 0;
         depedency_name = dependency_obj.type + " Provide Dependency from " + source_obj.name;
-    } else {
+    } else if (source_obj.type == 'Transition') {
+        // create the dependency object
+        var dependency_obj = new Dependency('USE', "Dependency_" + (component_obj.dependency_list.length + 1));
+        component_obj.dependency_list.push(dependency_obj); 
+        console.log('Created new USE dependency dock');
         // use connection going left of a transition
         offset = 0;
         add = -20;
@@ -172,8 +176,7 @@ function addNewServiceDependency(component, source_element, source_obj, componen
                 provide_component_group = component_group;
                 provide_symbol = symbol;
             }
-        } 
-        else if (e.evt.button === 2){
+        } else if (e.evt.button === 2) {
             // check if provide stub was selected prior
             console.log("Right clicked stub: ", source_obj.name);
             if(provide_stub_konva != null){
@@ -198,6 +201,10 @@ function addNewServiceDependency(component, source_element, source_obj, componen
                 } else {
                     alert("Left click Provide dependency stub and Right click Use dependency stub to connect them");
                 }
+            } else {
+                // right clk source was not selected, open window for editing
+                console.log("Open window for editing " + source_obj.name + " stub details");
+                ipcRenderer.send("change_stub_details", {component: component_obj.name, stub: dependency_obj.name});
             }
             // reset source and dest
             provide_stub_konva = null;
@@ -214,15 +221,15 @@ function addNewServiceDependency(component, source_element, source_obj, componen
     component_group.add(dependency);
     dependency.moveToBottom();
     layer.draw();
+
+    // Catch new stub name from ipcMain
+    ipcRenderer.on("stub->renderer", function(event, args) {
+        changeStubName(args.component, args.old_name, args.new_name);
+    });
 }
 
 // Add new Service dependency function, should only be called by place and transition
 function addNewDataDependency(component, source_element, source_obj, component_obj, component_group, tooltipLayer) {
-
-    // create the dependency object
-    var dependency_obj = new Dependency('Data', "Dependency_" + (component_obj.dependency_list.length + 1));
-    component_obj.dependency_list.push(dependency_obj); 
-
     var offset;
     var add;
     var stub_x;
@@ -233,14 +240,23 @@ function addNewDataDependency(component, source_element, source_obj, component_o
     var data_symbol_provide;
     var data_stub_use;
     var data_symbol_use;
+    var provide_stub_konva = null;
 
     // provide connection going right of a place
     if(source_obj.type == 'Place'){
+        // create the dependency object
+        var dependency_obj = new Dependency('DATA_PROVIDE', "Dependency_" + (component_obj.dependency_list.length + 1));
+        component_obj.dependency_list.push(dependency_obj);
+        console.log('Created new DATA_PROVIDE dependency dock');
         offset = component.getWidth();
         add = 20;
         stub_x = -5;
         depedency_name = dependency_obj.type + " Provide Dependency from " + source_obj.name;
-    } else {
+    } else if (source_obj.type == 'Transition') {
+        // create the dependency object
+        var dependency_obj = new Dependency('DATA_USE', "Dependency_" + (component_obj.dependency_list.length + 1));
+        component_obj.dependency_list.push(dependency_obj);
+        console.log('Created new DATA_USE dependency dock');
         // use connection going left of a transition
         offset = 0;
         add = -20;
@@ -501,11 +517,15 @@ function addNewDataDependency(component, source_element, source_obj, component_o
                 } else {
                     alert("Left click Provide dependency stub and Right click Use dependency stub to connect them");
                 }
+            } else {
+                // right clk source was not selected, open window for editing
+                console.log("Open window for editing " + source_obj.name + " dependency stub details");
+                ipcRenderer.send("change_stub_details", {component: component_obj.name, stub: dependency_obj.name});
             }
             // reset source and dest
             provide_stub_konva = null;
             use_stub_konva = null;
-        }
+        } 
     });
 
     // stub for provide dependency
@@ -522,4 +542,9 @@ function addNewDataDependency(component, source_element, source_obj, component_o
     component_group.add(dependency);
     dependency.moveToBottom();
     layer.draw();
+
+    // Catch new stub name from ipcMain
+    ipcRenderer.on("stub->renderer", function(event, args) {
+        changeStubName(args.component, args.old_name, args.new_name);
+    });
 }

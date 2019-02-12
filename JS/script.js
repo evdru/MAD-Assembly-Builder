@@ -33,7 +33,7 @@ class Place {
         this.index = index;
         this.transition_count = 0;
         this.dependency = true;
-        this.dependency_type = 'Data';
+        this.dependency_type = 'PROVIDE';
         this.provide_dependency_list = [];
     };
 };
@@ -46,7 +46,7 @@ class Transition {
         this.dest = dest;
         this.func = func;
         this.dependency = true;
-        this.dependency_type = 'Data';
+        this.dependency_type = 'USE';
         this.use_dependency_list = [];
     };
 };
@@ -55,8 +55,8 @@ class Dependency {
     constructor(type, name) {
         this.type = type;
         this.name = name;
-    }
-}
+    };
+};
 
 function snapToGrid(pos){
     return Math.round(pos / blockSnapSize) * blockSnapSize;
@@ -136,6 +136,19 @@ function changeTransitionDetails(component, old_name, new_name, old_func, new_fu
                 }
                 if (component_list[i].transition_list[j].func == old_func) {
                     component_list[i].transition_list[j].func = new_func;
+                }
+            }
+        }
+    }
+};
+
+// Function to change stub name
+function changeStubName(component, stub_name, new_stub_name) {
+    for (var i = 0; i < component_list.length; i++) {
+        if (component_list[i].name == component) {
+            for (var j = 0; j < component_list[i].dependency_list.length; j++) {
+                if (component_list[i].dependency_list[j].name == stub_name) {
+                    component_list[i].dependency_list[j].name = new_stub_name;
                 }
             }
         }

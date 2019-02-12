@@ -133,12 +133,12 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
     if(transition_obj.dependency == true){
         // determine which type of dependency
         switch(transition_obj.dependency_type) {
-            case 'Service':
+            case 'USE':
               // Creating service use dependency
               console.log("Creating service use dependency");
               dependency = addNewServiceDependency(component, transition_selection_area, transition_obj, component_obj, component_group, tooltipLayer);
               break;
-            case 'Data':
+            case 'DATA_USE':
                 // Creating data use dependency
                 console.log("Creating service use dependency");
                 dependency = addNewDataDependency(component, transition_selection_area, transition_obj, component_obj, component_group, tooltipLayer);

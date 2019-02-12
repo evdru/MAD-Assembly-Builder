@@ -10,6 +10,7 @@ let window;
 var place_args = 'global';
 var component_args = 'global';
 var transition_args = 'global';
+var stub_args = 'global'
 
 function boot() {
 	// Create new window
@@ -174,6 +175,27 @@ ipcMain.on("transition->main", function(event, args) {
 	console.log(transition_args.transition);
 	console.log(args.name);
 	window.webContents.send("transition->renderer", {component: transition_args.component, transition: transition_args.transition, name: args.name, old_func: transition_args.function,  new_func: args.function});
+});
+
+// Catch stub right click
+ipcMain.on("change_stub_details", function(event, args) {
+	console.log("Logging: change_stub_details from main thread");
+	stub_args = args;
+	// Create new window
+	var stub_window = new BrowserWindow({
+		width: 350,
+		height: 200
+	})
+	stub_window.loadURL(url.format({
+		pathname: path.join(__dirname, './HTML/change_stub_details.html'),
+		protocol: 'file:',
+		slashes: true
+	}));
+});
+
+ipcMain.on("stub->main", function(event, args) {
+	console.log(args.name);
+	window.webContents.send("stub->renderer", {component: stub_args.component, old_name: stub_args.stub, new_name: args.name});
 });
 
 // Listen for app to be ready

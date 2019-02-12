@@ -186,12 +186,12 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
     if(place_obj.dependency == true){
         // determine which type of dependency
         switch(place_obj.dependency_type) {
-            case 'Service':
+            case 'PROVIDE':
                 // Creating service provide dependency
                 console.log("Creating service provide dependency");
                 dependency = addNewServiceDependency(component, place, place_obj, component_obj, component_group, tooltipLayer);
                 break;
-            case 'Data':
+            case 'DATA_PROVIDE':
                 // Creating service provide dependency
                 console.log("Creating data provide dependency");
                 dependency = addNewDataDependency(component, place, place_obj, component_obj, component_group, tooltipLayer);
