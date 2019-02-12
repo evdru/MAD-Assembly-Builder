@@ -1,5 +1,5 @@
 // function that adds new transition obj and konva arrow
-function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj, component_obj, component_group, component) {
+function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj, component_obj, component_group, component, tooltipLayer) {
 
     // max number of transitions out of the same source = 3
     if(source_obj.transition_count >= 3){
@@ -15,7 +15,7 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
         stroke: 'black',
         strokeWidth: 1,
         name: transition_obj.name,
-        tension: 1
+        tension: 0.5
     });
 
     var transition_selection_area = new Konva.Circle({
@@ -24,7 +24,7 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
         radius: 15,
         opacity: 0,
         text: transition.name,
-        name: 'transition_hover'
+        name: 'Transition_hover'
     });
 
     // add transition konva obj to component group
@@ -43,7 +43,6 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
         visible: false
     });
 
-    var tooltipLayer = new Konva.Layer();
     tooltipLayer.add(tooltip);
     stage.add(tooltipLayer);
 
@@ -59,7 +58,7 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
             x: snapToGrid(((source_konva.getX() + dest_konva.getX()) / 2) + offset),
             y: snapToGrid((source_konva.getY() + dest_konva.getY()) / 2)
         });
-        layer.draw();
+        //layer.draw();
     });
 
     // destination place is moved update the transitions that are connected to it
@@ -74,7 +73,7 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
             x: snapToGrid(((source_konva.getX() + dest_konva.getX()) / 2) + offset),
             y: snapToGrid((source_konva.getY() + dest_konva.getY()) / 2)
         });
-        layer.draw();
+        //layer.draw();
     });
 
     transition_selection_area.on('moveenter', function(){
@@ -100,7 +99,7 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
         transition.strokeWidth(1);
         tooltip.hide();
         tooltipLayer.draw();
-        layer.draw();
+        //layer.draw();
     });
 
     transition_selection_area.on("click", function(e){
@@ -128,12 +127,12 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
     // move transition below its source and dest
     transition.moveToBottom();
     source_obj.transition_count++;
-    layer.draw();
+    //layer.draw();
 
     // create dependency here
     if(transition_obj.dependency == true){
         console.log("Creating use dependency");
-        dependency = addNewDependency(component, transition_selection_area, transition_obj, component_obj, component_group);
+        dependency = addNewDataDependency(component, transition_selection_area, transition_obj, component_obj, component_group, tooltipLayer);
     }
     return transition;
 }

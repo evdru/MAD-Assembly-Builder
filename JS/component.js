@@ -76,6 +76,16 @@ function addNewComponent(posX, posY) {
         tooltipLayer.draw();
     });
 
+    // When drag end entire component group snap to grid
+    // easier alignment for component connections
+    component_group.on('dragend', (e) => {
+        component_group.position({
+          x: snapToGrid(component_group.x()),
+          y: snapToGrid(component_group.y())
+        });
+        layer.batchDraw();
+    });
+
     // if mouse is over a component
     component.on('mousemove', function () {
         //console.log(component_obj.name + " over");
@@ -96,7 +106,7 @@ function addNewComponent(posX, posY) {
         component.strokeWidth(1);
         tooltip.hide();
         tooltipLayer.draw();
-        layer.draw();
+        //layer.draw();
     });
 
     // if double click on component
@@ -111,9 +121,9 @@ function addNewComponent(posX, posY) {
             var pos = stage.getPointerPosition();
             var placePos = transform.point(pos);
             // grow component here
-            var place = addNewPlace(component_group, component, placePos, component_obj);
+            var place = addNewPlace(component_group, component, placePos, component_obj, tooltipLayer);
             //layer.add(component_group);
-            layer.draw();
+            //layer.draw();
         }
     });
 

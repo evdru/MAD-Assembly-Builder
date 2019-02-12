@@ -22,6 +22,7 @@ class Component {
         this.place_list = [];
         this.transition_list = [];
         this.transition_dictionary = {};
+        this.dependency_list = [];
     };
 };
 
@@ -32,7 +33,8 @@ class Place {
         this.index = index;
         this.transition_count = 0;
         this.dependency = true;
-        this.dependency_type;
+        this.dependency_type = 'service';
+        this.provide_dependency_list = [];
     };
 };
 
@@ -44,9 +46,17 @@ class Transition {
         this.dest = dest;
         this.func = func;
         this.dependency = true;
-        this.dependency_type;
+        this.dependency_type = 'service';
+        this.use_dependency_list = [];
     };
 };
+
+class Dependency {
+    constructor(type, name) {
+        this.type = type;
+        this.name = name;
+    }
+}
 
 function snapToGrid(pos){
     return Math.round(pos / blockSnapSize) * blockSnapSize;

@@ -1,5 +1,5 @@
 // Add new place function, should only be called by component
-function addNewPlace(component_group, component, placePos, component_obj) {
+function addNewPlace(component_group, component, placePos, component_obj, tooltipLayer) {
     var index = component_obj.place_list.length;
     var place_obj = new Place('Place', "Place_" + (index + 1), index);
     component_obj.place_list.push(place_obj);
@@ -55,7 +55,6 @@ function addNewPlace(component_group, component, placePos, component_obj) {
         visible: false
     });
 
-    var tooltipLayer = new Konva.Layer();
     tooltipLayer.add(tooltip);
     stage.add(tooltipLayer);
 
@@ -94,7 +93,7 @@ function addNewPlace(component_group, component, placePos, component_obj) {
             place.strokeWidth(5);
             place.draw();
         }
-        if (e.evt.button === 2) {
+        else if (e.evt.button === 2) {
             // first right click set dest
             console.log("Right clicked place: ", place_obj.name);
             dest_component = component_obj;
@@ -121,7 +120,7 @@ function addNewPlace(component_group, component, placePos, component_obj) {
                     }
 
                     console.log("Source place transition out count: ", source_obj.transition_count);
-                    transition = addNewTransition(offset, source_transition, dest_transition, source_obj, dest_obj, component_obj, component_group, component);
+                    transition = addNewTransition(offset, source_transition, dest_transition, source_obj, dest_obj, component_obj, component_group, component, tooltipLayer);
                 } 
             } else {
                 // highlight the place
@@ -186,7 +185,7 @@ function addNewPlace(component_group, component, placePos, component_obj) {
     // create dependency here
     if(place_obj.dependency == true){
         console.log("Creating provide dependency");
-        dependency = addNewDependency(component, place, place_obj, component_obj, component_group);
+        dependency = addNewDataDependency(component, place, place_obj, component_obj, component_group, tooltipLayer);
     }
     // return konva object back to its parent component
     return place;
