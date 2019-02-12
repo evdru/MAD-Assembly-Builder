@@ -33,7 +33,7 @@ class Place {
         this.index = index;
         this.transition_count = 0;
         this.dependency = true;
-        this.dependency_type = 'service';
+        this.dependency_type = 'Data';
         this.provide_dependency_list = [];
     };
 };
@@ -46,7 +46,7 @@ class Transition {
         this.dest = dest;
         this.func = func;
         this.dependency = true;
-        this.dependency_type = 'service';
+        this.dependency_type = 'Data';
         this.use_dependency_list = [];
     };
 };

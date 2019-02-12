@@ -184,8 +184,22 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
 
     // create dependency here
     if(place_obj.dependency == true){
-        console.log("Creating provide dependency");
-        dependency = addNewDataDependency(component, place, place_obj, component_obj, component_group, tooltipLayer);
+        // determine which type of dependency
+        switch(place_obj.dependency_type) {
+            case 'Service':
+                // Creating service provide dependency
+                console.log("Creating service provide dependency");
+                dependency = addNewServiceDependency(component, place, place_obj, component_obj, component_group, tooltipLayer);
+                break;
+            case 'Data':
+                // Creating service provide dependency
+                console.log("Creating data provide dependency");
+                dependency = addNewDataDependency(component, place, place_obj, component_obj, component_group, tooltipLayer);
+                break;
+            default:
+                // invalid dependency type
+                alert("Invalid dependency type: " + place_obj.dependency_type);
+        }
     }
     // return konva object back to its parent component
     return place;

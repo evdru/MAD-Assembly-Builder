@@ -131,8 +131,22 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
 
     // create dependency here
     if(transition_obj.dependency == true){
-        console.log("Creating use dependency");
-        dependency = addNewDataDependency(component, transition_selection_area, transition_obj, component_obj, component_group, tooltipLayer);
+        // determine which type of dependency
+        switch(transition_obj.dependency_type) {
+            case 'Service':
+              // Creating service use dependency
+              console.log("Creating service use dependency");
+              dependency = addNewServiceDependency(component, transition_selection_area, transition_obj, component_obj, component_group, tooltipLayer);
+              break;
+            case 'Data':
+                // Creating data use dependency
+                console.log("Creating service use dependency");
+                dependency = addNewDataDependency(component, transition_selection_area, transition_obj, component_obj, component_group, tooltipLayer);
+              break;
+            default:
+                // invalid dependency type
+                alert("Invalid dependency type: " + transition_obj.dependency_type);
+        }
     }
     return transition;
 }
