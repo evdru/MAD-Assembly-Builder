@@ -117,7 +117,7 @@ ipcMain.on("change_place_details", function(event, args) {
 	// Create new window
 	var place_window = new BrowserWindow({
 		width: 350,
-		height: 200
+		height: 400
 	})
 	place_window.loadURL(url.format({
 		pathname: path.join(__dirname, './HTML/change_place_details.html'),
@@ -130,7 +130,9 @@ ipcMain.on("place->main", function(event, args) {
 	console.log(place_args.component);
 	console.log(place_args.place);
 	console.log(args.name);
-	window.webContents.send("place->renderer", {component: place_args.component, place: place_args.place, name: args.name});
+	console.log(args.dependency_status);
+	console.log(args.dependency_type);
+	window.webContents.send("place->renderer", {component: place_args.component, place: place_args.place, name: args.name, dependency_status: args.dependency_status, dependency_type: args.dependency_type});
 });
 
 // Catch component right click

@@ -32,8 +32,8 @@ class Place {
         this.name = name;
         this.index = index;
         this.transition_count = 0;
-        this.dependency = true;
-        this.dependency_type = 'PROVIDE';
+        this.dependency = false;
+        this.dependency_type = '';
         this.provide_dependency_list = [];
     };
 };
@@ -45,8 +45,8 @@ class Transition {
         this.src = src;
         this.dest = dest;
         this.func = func;
-        this.dependency = true;
-        this.dependency_type = 'USE';
+        this.dependency = false;
+        this.dependency_type = '';
         this.use_dependency_list = [];
     };
 };
@@ -117,7 +117,35 @@ function changePlaceName(component, place, new_place_name) {
     }
 };
 
-//Function to change component name
+// Function to change place's dependency status
+function changeDependencyStatus(component, place, dependency_status) {
+    for (var i = 0; i < component_list.length; i++) {
+        if (component_list[i].name == component) {
+            for (var j = 0; j < component_list[i].place_list.length; j++) {
+                if (component_list[i].place_list[j].name == place) {
+                    component_list[i].place_list[j].dependency = dependency_status;
+                    console.log(place + " dependency status is: " + component_list[i].place_list[j].dependency)
+                }
+            }
+        }
+    }
+};
+
+// Function to change place's dependency type
+function changeDependencyType(component, place, dependency_type) {
+    for (var i = 0; i < component_list.length; i++) {
+        if (component_list[i].name == component) {
+            for (var j = 0; j < component_list[i].place_list.length; j++) {
+                if (component_list[i].place_list[j].name == place) {
+                    component_list[i].place_list[j].dependency = dependency_type.toUpperCase();
+                    console.log(place + " dependency type is: " + component_list[i].place_list[j].dependency)
+                }
+            }
+        }
+    }
+};
+
+// Function to change component name
 function changeComponentName(component, new_comp_name) {
     for (var i = 0; i < component_list.length; i++) {
         if (component_list[i].name == component) {
@@ -126,7 +154,7 @@ function changeComponentName(component, new_comp_name) {
     }
 };
 
-//Function to change transition details
+// Function to change transition details
 function changeTransitionDetails(component, old_name, new_name, old_func, new_func) {
     for (var i = 0; i < component_list.length; i++) {
         if (component_list[i].name == component) {
