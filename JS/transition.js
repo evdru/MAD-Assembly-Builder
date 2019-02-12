@@ -15,7 +15,7 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
         stroke: 'black',
         strokeWidth: 1,
         name: transition_obj.name,
-        tension: 1
+        tension: 0.5
     });
 
     var transition_selection_area = new Konva.Circle({
