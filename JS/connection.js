@@ -6,9 +6,6 @@ function addNewConnection(provide_component_obj, provide_source_obj, provide_stu
     var midpoint_x = getMidPointX();
     var midpoint_y = getMidPointY();
 
-    // connection being made, set use stub opacity to 1
-    use_stub_konva.opacity(1);
-
     var connection = new Konva.Line({
         points: [provide_stub_konva.getAbsolutePosition().x + provide_offset, 
                  provide_stub_konva.getAbsolutePosition().y, 

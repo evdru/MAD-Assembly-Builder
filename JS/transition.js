@@ -24,7 +24,7 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
         radius: 15,
         opacity: 0,
         text: transition.name,
-        name: 'transition_hover'
+        name: 'Transition_hover'
     });
 
     // add transition konva obj to component group
@@ -132,7 +132,7 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
     // create dependency here
     if(transition_obj.dependency == true){
         console.log("Creating use dependency");
-        dependency = addNewDependency(component, transition_selection_area, transition_obj, component_obj, component_group, tooltipLayer);
+        dependency = addNewDataDependency(component, transition_selection_area, transition_obj, component_obj, component_group, tooltipLayer);
     }
     return transition;
 }
