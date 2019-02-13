@@ -137,7 +137,7 @@ function changeDependencyType(component, place, dependency_type) {
         if (component_list[i].name == component) {
             for (var j = 0; j < component_list[i].place_list.length; j++) {
                 if (component_list[i].place_list[j].name == place) {
-                    component_list[i].place_list[j].dependency_type = dependency_type.toUpperCase();
+                    component_list[i].place_list[j].dependency_type = dependency_type.toUpperCase(); // before: component_list[i].place_list[j].dependency = dependency_type.toUpperCase();
                     console.log(place + " dependency type is: " + component_list[i].place_list[j].dependency_type)
                 }
             }

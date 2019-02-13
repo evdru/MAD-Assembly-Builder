@@ -158,7 +158,6 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
             place.strokeWidth(3);
             place.draw();
         }
-        console.log("THIS Place is : " + place_obj.dependency);
     });
 
     // changes the cursor back to default
@@ -170,7 +169,7 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
             place.strokeWidth(1);
             layer.draw();
             highlighted = false;
-        } 
+        }
     });
 
     // hide the tooltip on mouse out
@@ -194,28 +193,35 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
         if (args.dependency_type != undefined) {
             changeDependencyType(args.component, args.place, args.dependency_type);
         }
+        // check if dependency stub needs to be created
+        checkDependencyStatus();
     });
 
-    // create dependency here
-    if(place_obj.dependency == true){
-        // determine which type of dependency
-        console.log("I entered the if statement ");
-        switch(place_obj.dependency_type) {
-            case 'PROVIDE':
-                // Creating service provide dependency
-                console.log("Creating service provide dependency");
-                dependency = addNewServiceDependency(component, place, place_obj, component_obj, component_group, tooltipLayer);
-                break;
-            case 'DATA_PROVIDE':
-                // Creating service provide dependency
-                console.log("Creating data provide dependency");
-                dependency = addNewDataDependency(component, place, place_obj, component_obj, component_group, tooltipLayer);
-                break;
-            default:
-                // invalid dependency type
-                alert("Invalid dependency type: " + place_obj.dependency_type);
+    function checkDependencyStatus(){
+        // create dependency here if set true
+        if(place_obj.dependency){
+            // determine which type of dependency
+            console.log("I entered the if statement ");
+            switch(place_obj.dependency_type) {
+                case 'PROVIDE':
+                    // Creating service provide dependency
+                    console.log("Creating service provide dependency");
+                    dependency = addNewServiceDependency(component, place, place_obj, component_obj, component_group, tooltipLayer);
+                    break;
+                case 'DATA_PROVIDE':
+                    // Creating service provide dependency
+                    console.log("Creating data provide dependency");
+                    dependency = addNewDataDependency(component, place, place_obj, component_obj, component_group, tooltipLayer);
+                    break;
+                case '':
+                    alert("Dependency type has not been specified");
+                    break;
+                default:
+                    // invalid dependency type
+                    alert("Invalid dependency type: " + place_obj.dependency_type);
+            }
         }
-    }
+    };
     
     // return konva object back to its parent component
     return place;
