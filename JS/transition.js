@@ -15,7 +15,7 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
         stroke: 'black',
         strokeWidth: 1,
         name: transition_obj.name,
-        tension: 0.5
+        tension: 1
     });
 
     var transition_selection_area = new Konva.Circle({
@@ -127,6 +127,7 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
     // move transition below its source and dest
     transition.moveToBottom();
     source_obj.transition_count++;
+    layer.batchDraw();
     //layer.draw();
 
     // create dependency here

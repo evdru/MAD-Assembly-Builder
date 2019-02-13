@@ -131,6 +131,7 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
                 // right clk source was not selected, open window for editing
                 console.log("Open window for editing place details");
                 ipcRenderer.send("change_place_details", {component: component_obj.name, place: place_obj.name});
+
             }
             source_transition = null;
             dest_transition = null;
@@ -157,6 +158,7 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
             place.strokeWidth(3);
             place.draw();
         }
+        console.log("THIS Place is : " + place_obj.dependency);
     });
 
     // changes the cursor back to default
@@ -197,6 +199,7 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
     // create dependency here
     if(place_obj.dependency == true){
         // determine which type of dependency
+        console.log("I entered the if statement ");
         switch(place_obj.dependency_type) {
             case 'PROVIDE':
                 // Creating service provide dependency
@@ -213,6 +216,7 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
                 alert("Invalid dependency type: " + place_obj.dependency_type);
         }
     }
+    
     // return konva object back to its parent component
     return place;
 };
