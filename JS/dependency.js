@@ -4,7 +4,6 @@ function addNewServiceDependency(component, source_element, source_obj, componen
     var add;
     var stub_x;
     var depedency_name;
-    var provide_stub_konva = null;
 
     // provide connection going right of a place
     if(source_obj.type == 'Place') {
@@ -109,7 +108,7 @@ function addNewServiceDependency(component, source_element, source_obj, componen
             x : mousePos.x + 10,
             y : mousePos.y + 10
         });
-        tooltip.text(depedency_name);
+        tooltip.text(component_obj.name + " - " + dependency_obj.name);
         tooltip.show();
         tooltipLayer.batchDraw();
     });
@@ -175,11 +174,12 @@ function addNewServiceDependency(component, source_element, source_obj, componen
                 provide_stub_konva = stub;
                 provide_component_group = component_group;
                 provide_symbol = symbol;
+                // set source selected true
+                source_selected = true;
             }
         } else if (e.evt.button === 2) {
             // check if provide stub was selected prior
-            console.log("Right clicked stub: ", source_obj.name);
-            if(provide_stub_konva != null){
+            if(source_selected){
                 if(source_obj.type == 'Transition'){
                     use_component_obj = component_obj;
                     use_source_obj = source_obj;
@@ -209,6 +209,7 @@ function addNewServiceDependency(component, source_element, source_obj, componen
             // reset source and dest
             provide_stub_konva = null;
             use_stub_konva = null;
+            source_selected = false;
         }
     });
 
@@ -240,7 +241,6 @@ function addNewDataDependency(component, source_element, source_obj, component_o
     var data_symbol_provide;
     var data_stub_use;
     var data_symbol_use;
-    var provide_stub_konva = null;
 
     // provide connection going right of a place
     if(source_obj.type == 'Place'){
@@ -398,7 +398,7 @@ function addNewDataDependency(component, source_element, source_obj, component_o
             x : mousePos.x + 10,
             y : mousePos.y + 10
         });
-        tooltip.text(depedency_name);
+        tooltip.text(component_obj.name + " - " + dependency_obj.name);
         tooltip.show();
         tooltipLayer.batchDraw();
     });
@@ -493,12 +493,14 @@ function addNewDataDependency(component, source_element, source_obj, component_o
                 provide_stub_konva = stub;
                 provide_component_group = component_group;
                 provide_symbol = data_symbol_provide;
+                source_selected = true;
             }
         } 
         else if (e.evt.button === 2){
-            // check if provide stub was selected prior
             console.log("Right clicked stub: ", source_obj.name);
-            if(provide_stub_konva != null){
+            // check if provide stub was selected prior to create connection
+            if(source_selected){
+                console.log("Left stub was: ", provide_source_obj.name);
                 if(source_obj.type == 'Transition'){
                     use_component_obj = component_obj;
                     use_source_obj = source_obj;
@@ -525,6 +527,7 @@ function addNewDataDependency(component, source_element, source_obj, component_o
             // reset source and dest
             provide_stub_konva = null;
             use_stub_konva = null;
+            source_selected = false;
         } 
     });
 
