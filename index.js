@@ -127,11 +127,7 @@ ipcMain.on("change_place_details", function(event, args) {
 });
 
 ipcMain.on("place->main", function(event, args) {
-	console.log(place_args.component);
-	console.log(place_args.place);
-	console.log(args.name);
-	console.log(args.dependency_status);
-	console.log(args.dependency_type);
+	console.log()
 	window.webContents.send("place->renderer", {component: place_args.component, place: place_args.place, name: args.name, dependency_status: args.dependency_status, dependency_type: args.dependency_type});
 });
 
@@ -163,8 +159,8 @@ ipcMain.on("change_transition_details", function(event, args) {
 	transition_args = args;
 	// Create new window
 	var transition_window = new BrowserWindow({
-		width: 350,
-		height: 250
+		width: 400,
+		height: 450
 	})
 	transition_window.loadURL(url.format({
 		pathname: path.join(__dirname, './HTML/change_transition_details.html'),
@@ -174,9 +170,7 @@ ipcMain.on("change_transition_details", function(event, args) {
 });
 
 ipcMain.on("transition->main", function(event, args) {
-	console.log(transition_args.transition);
-	console.log(args.name);
-	window.webContents.send("transition->renderer", {component: transition_args.component, transition: transition_args.transition, name: args.name, old_func: transition_args.function,  new_func: args.function});
+	window.webContents.send("transition->renderer", {component: transition_args.component, transition: transition_args.transition, name: args.name, old_func: transition_args.function,  new_func: args.function, dependency_status: args.dependency_status, dependency_type: args.dependency_type});
 });
 
 // Catch stub right click

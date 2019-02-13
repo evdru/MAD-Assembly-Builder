@@ -17,7 +17,7 @@
         <input type="radio" name="dependency_type" id="provide" value="provide"> PROVIDE <br>
         <input type="radio" name="dependency_type" id="data_provide" value="data_provide"> DATA_PROVIDE <br>
         <hr>
-        <button id="submit">Change Details</button>
+        <button id="submit">Change Place Details</button>
         <button id="delete_place">Delete This Place</button>
 
         <script>
@@ -49,7 +49,7 @@
 
                 ipcRenderer.send('place->main', {name: new_place_name, dependency_status: dependency_status, dependency_type: dependency_type});
                 //Close the window on button press.
-                // closeNewWindow();
+                closeNewWindow();
             });
 
             const deleteBtn = document.getElementById("delete_place");

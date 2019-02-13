@@ -180,18 +180,14 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
 
     // Catch new place name from ipcMain
     ipcRenderer.on("place->renderer", function(event, args) {
-        console.log(args.name);
-        console.log(args.dependency_status);
-        console.log(args.dependency_type);
-
         if (args.name != '') {
             changePlaceName(args.component, args.place, args.name);
         };
         if (args.dependency_status != undefined) {
-            changeDependencyStatus(args.component, args.place, args.dependency_status);
+            changePlaceDependencyStatus(args.component, args.place, args.dependency_status);
         };
         if (args.dependency_type != undefined) {
-            changeDependencyType(args.component, args.place, args.dependency_type);
+            changePlaceDependencyType(args.component, args.place, args.dependency_type);
         }
         // check if dependency stub needs to be created
         checkDependencyStatus();
