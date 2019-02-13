@@ -13,7 +13,7 @@ for (var i = 0; i < plugins.length; i++) {
     if (fs.lstatSync(plugins_folder + plugins[i] + '/').isDirectory()){
         let files = fs.readdirSync(plugins_folder + plugins[i] + '/');
 
-        if (files.includes(plugins[i].toLocaleLowerCase().replace(/ /g,"_") + '.js')) {
+        if (files.includes('driver.js')) {
             valid_plugins.push(plugins[i]);
             valid_paths.push(plugins_folder + plugins[i] + '/');
         }
