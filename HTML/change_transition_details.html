@@ -8,8 +8,17 @@
     <body>
         <p>Please enter the transitions's new name:</p>
         New Transition Name: <input type="text" name="transition_name" id="transition_name" autofocus><br>
-        New Transition Function: <input type="text" name="function_name" id="function_name"><br><br>
-        <button id="submit">Change Details</button>
+        New Transition Function: <input type="text" name="function_name" id="function_name"><br>
+        <hr>
+        <p>Update this Transition's dependency status:</p>
+        <input type="radio" name="dependency" id="user" value=true> User <br>
+        <input type="radio" name="dependency" id="!user" value=false> Not a user <br>
+        <hr>
+        <p>If a user, select or change the type:</p>
+        <input type="radio" name="dependency_type" id="use" value="use"> USE <br>
+        <input type="radio" name="dependency_type" id="data_use" value="data_use"> DATA_USE <br>
+        <hr>
+        <button id="submit">Change Transition Details</button>
         <button id="delete_transition">Delete This Transition</button>
 
         <script>
@@ -21,10 +30,25 @@
                 e.preventDefault();
                 const transition_name = document.querySelector('#transition_name').value.replace(/ /g,"_");
                 const function_name = document.querySelector('#function_name').value.replace(/ /g,"_");
-                console.log(transition_name);
-                console.log(function_name);
-                ipcRenderer.send('transition->main', {name: transition_name, function: function_name});
 
+                if (document.getElementById('user').checked) {
+                    var dependency_status = document.getElementById('user').value;
+                    console.log(dependency_status);
+                };
+                if (document.getElementById('!user').checked) {
+                    var dependency_status = document.getElementById('!user').value;
+                    console.log(dependency_status);
+                };
+                if (document.getElementById('use').checked) {
+                    var dependency_type = document.getElementById('use').value;
+                    console.log(dependency_type);
+                };
+                if (document.getElementById('data_use').checked) {
+                    var dependency_type = document.getElementById('data_use').value;
+                    console.log(dependency_type);
+                };
+
+                ipcRenderer.send('transition->main', {name: transition_name, function: function_name, dependency_status: dependency_status, dependency_type: dependency_type});
                 //Close the window on button press.
                 closeNewWindow();
             });
@@ -34,7 +58,7 @@
                 e.preventDefault();
                 console.log("Delete Transition");
             });
-            </script>
+        </script>
 
     </body>
 </html>

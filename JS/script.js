@@ -32,8 +32,8 @@ class Place {
         this.name = name;
         this.index = index;
         this.transition_count = 0;
-        this.dependency = true;
-        this.dependency_type = 'service';
+        this.dependency = false;
+        this.dependency_type = '';
         this.provide_dependency_list = [];
     };
 };
@@ -45,8 +45,8 @@ class Transition {
         this.src = src;
         this.dest = dest;
         this.func = func;
-        this.dependency = true;
-        this.dependency_type = 'service';
+        this.dependency = false;
+        this.dependency_type = '';
         this.use_dependency_list = [];
     };
 };
@@ -55,8 +55,8 @@ class Dependency {
     constructor(type, name) {
         this.type = type;
         this.name = name;
-    }
-}
+    };
+};
 
 function snapToGrid(pos){
     return Math.round(pos / blockSnapSize) * blockSnapSize;
@@ -117,7 +117,35 @@ function changePlaceName(component, place, new_place_name) {
     }
 };
 
-//Function to change component name
+// Function to change place's dependency status
+function changePlaceDependencyStatus(component, place, dependency_status) {
+    for (var i = 0; i < component_list.length; i++) {
+        if (component_list[i].name == component) {
+            for (var j = 0; j < component_list[i].place_list.length; j++) {
+                if (component_list[i].place_list[j].name == place) {
+                    component_list[i].place_list[j].dependency = dependency_status;
+                    console.log(place + " dependency status is: " + component_list[i].place_list[j].dependency)
+                }
+            }
+        }
+    }
+};
+
+// Function to change place's dependency type
+function changePlaceDependencyType(component, place, dependency_type) {
+    for (var i = 0; i < component_list.length; i++) {
+        if (component_list[i].name == component) {
+            for (var j = 0; j < component_list[i].place_list.length; j++) {
+                if (component_list[i].place_list[j].name == place) {
+                    component_list[i].place_list[j].dependency_type = dependency_type.toUpperCase();
+                    console.log(place + " dependency type is: " + component_list[i].place_list[j].dependency_type)
+                }
+            }
+        }
+    }
+};
+
+// Function to change component name
 function changeComponentName(component, new_comp_name) {
     for (var i = 0; i < component_list.length; i++) {
         if (component_list[i].name == component) {
@@ -126,16 +154,71 @@ function changeComponentName(component, new_comp_name) {
     }
 };
 
-//Function to change transition details
-function changeTransitionDetails(component, old_name, new_name, old_func, new_func) {
+// Function to change transition name
+function changeTransitionName(component, old_name, new_name) {
     for (var i = 0; i < component_list.length; i++) {
         if (component_list[i].name == component) {
             for (var j = 0; j < component_list[i].transition_list.length; j++) {
                 if (component_list[i].transition_list[j].name == old_name) {
                     component_list[i].transition_list[j].name = new_name;
                 }
+            }
+        }
+    }
+};
+
+// Function to change transition function
+function changeTransitionFunc(component, old_func, new_func) {
+    console.log("Changing func name in script.js");
+    console.log(component);
+    console.log(old_func);
+    console.log(new_func);
+    for (var i = 0; i < component_list.length; i++) {
+        if (component_list[i].name == component) {
+            for (var j = 0; j < component_list[i].transition_list.length; j++) {
                 if (component_list[i].transition_list[j].func == old_func) {
                     component_list[i].transition_list[j].func = new_func;
+                }
+            }
+        }
+    }
+};
+
+// Function to change transitions's dependency status
+function changeTransitionDependencyStatus(component, transition, dependency_status) {
+    for (var i = 0; i < component_list.length; i++) {
+        if (component_list[i].name == component) {
+            for (var j = 0; j < component_list[i].transition_list.length; j++) {
+                if (component_list[i].transition_list[j].name == transition) {
+                    component_list[i].transition_list[j].dependency = dependency_status;
+                    console.log(transition + " dependency status is: " + component_list[i].transition_list[j].dependency)
+                }
+            }
+        }
+    }
+};
+
+// Function to change transition's dependency type
+function changeTransitionDependencyType(component, transition, dependency_type) {
+    for (var i = 0; i < component_list.length; i++) {
+        if (component_list[i].name == component) {
+            for (var j = 0; j < component_list[i].transition_list.length; j++) {
+                if (component_list[i].transition_list[j].name == transition) {
+                    component_list[i].transition_list[j].dependency_type = dependency_type.toUpperCase();
+                    console.log(transition + " dependency type is: " + component_list[i].transition_list[j].dependency_type)
+                }
+            }
+        }
+    }
+};
+
+// Function to change stub name
+function changeStubName(component, stub_name, new_stub_name) {
+    for (var i = 0; i < component_list.length; i++) {
+        if (component_list[i].name == component) {
+            for (var j = 0; j < component_list[i].dependency_list.length; j++) {
+                if (component_list[i].dependency_list[j].name == stub_name) {
+                    component_list[i].dependency_list[j].name = new_stub_name;
                 }
             }
         }

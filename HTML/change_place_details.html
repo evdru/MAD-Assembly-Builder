@@ -7,8 +7,17 @@
 
     <body>
         <p>Please enter the place's new name:</p>
-        New Place Name: <input type="text" name="place_name" id="place_name" autofocus><br><br>
-        <button id="submit">Change Name</button>
+        New Place Name: <input type="text" name="place_name" id="place_name" autofocus><br>
+        <hr>
+        <p>Update this Place's dependency status:</p>
+        <input type="radio" name="dependency" id="provider" value=true> Provider <br>
+        <input type="radio" name="dependency" id="!provider" value=false> Not a provider <br>
+        <hr>
+        <p>If a provider, select or change the type:</p>
+        <input type="radio" name="dependency_type" id="provide" value="provide"> PROVIDE <br>
+        <input type="radio" name="dependency_type" id="data_provide" value="data_provide"> DATA_PROVIDE <br>
+        <hr>
+        <button id="submit">Change Place Details</button>
         <button id="delete_place">Delete This Place</button>
 
         <script>
@@ -18,10 +27,27 @@
             const submit = document.getElementById("submit");
             submit.addEventListener('click', function(e) {
                 e.preventDefault();
-                const place_name = document.querySelector('#place_name').value.replace(/ /g,"_");
-                console.log(place_name);
-                ipcRenderer.send('place->main', {name: place_name});
+                const new_place_name = document.querySelector('#place_name').value.replace(/ /g,"_");
+                console.log(new_place_name);
 
+                if (document.getElementById('provider').checked) {
+                    var dependency_status = document.getElementById('provider').value;
+                    console.log(dependency_status);
+                };
+                if (document.getElementById('!provider').checked) {
+                    var dependency_status = document.getElementById('!provider').value;
+                    console.log(dependency_status);
+                };
+                if (document.getElementById('provide').checked) {
+                    var dependency_type = document.getElementById('provide').value;
+                    console.log(dependency_type);
+                };
+                if (document.getElementById('data_provide').checked) {
+                    var dependency_type = document.getElementById('data_provide').value;
+                    console.log(dependency_type);
+                };
+
+                ipcRenderer.send('place->main', {name: new_place_name, dependency_status: dependency_status, dependency_type: dependency_type});
                 //Close the window on button press.
                 closeNewWindow();
             });
