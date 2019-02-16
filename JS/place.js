@@ -193,6 +193,21 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
         checkDependencyStatus();
     });
 
+    // function to delete konva place element and place obj from component list
+    function deletePlace(place, place_obj, component_obj){
+        // find index of place_obj in component_obj.place_list
+        var index = component_obj.place_list.indexOf(place_obj);
+        // if place obj not in place_list then index will be in -1
+        if (index > -1) {
+            // splice modifies the array in place and returns a new array containing the elements that have been removed.
+            var removed = component_obj.place_list.splice(index, 1);
+            console.log("Element: " + removed + " has been removed from the component list of " + component_obj.name);
+          }
+        // finally destory the konva element
+        console.log("Konva place element has been removed");
+        place.destroy();
+    };
+
     function checkDependencyStatus(){
         // create dependency here if set true
         if(place_obj.dependency){
