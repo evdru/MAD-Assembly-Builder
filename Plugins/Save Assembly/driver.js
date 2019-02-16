@@ -7,6 +7,7 @@ var sa_fs = require('fs'); // Load the File System to execute our common tasks (
 var sa_app = electron.remote;
 var sa_dialog = app.dialog;
 var sa_comp_list = component_list;
+var sa_yaml = require('js-yaml');
 
 ipcRenderer.on('save_assembly', function() {
 
@@ -17,8 +18,13 @@ ipcRenderer.on('save_assembly', function() {
 
 function saveAssembly() {
 
-    // @todo: convert assembly -> .yaml; put .yaml in saveContent variable
-    var saveContent = 'placeholder content';
+    // @todo: what other information do we need to save?
+    var saveContent = '';
+
+    for(var i = 0; i < sa_comp_list.length; i++) {
+        saveContent += sa_yaml.safeDump(sa_comp_list[i]);
+        saveContent += '\n';
+    }
 
     dialog.showSaveDialog(
 
