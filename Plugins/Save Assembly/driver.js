@@ -9,7 +9,7 @@ var sa_dialog = app.dialog;
 var sa_comp_list = component_list;
 var sa_yaml = require('js-yaml');
 
-ipcRenderer.on('save_assembly', function() {
+sa_ipcRenderer.on('save_assembly', function() {
 
     saveAssembly();
     return;
@@ -26,7 +26,7 @@ function saveAssembly() {
         saveContent += '\n';
     }
 
-    dialog.showSaveDialog(
+    sa_dialog.showSaveDialog(
 
         {defaultPath: "~/*.yaml"},
 
@@ -37,7 +37,7 @@ function saveAssembly() {
                 return;
             }
             // fileName is a string that contains the path and filename created in the save file dialog.
-            fs.writeFile(fileName, saveContent, (err) => {
+            sa_fs.writeFile(fileName, saveContent, (err) => {
                 if (err) {
                     alert("An error ocurred creating the file " + err.message)
                 };
