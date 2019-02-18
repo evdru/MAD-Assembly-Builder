@@ -2,10 +2,10 @@
 // or else the plugin will not work
 
 const sa_electron = require('electron');
-const sa_ipcRenderer = electron.ipcRenderer;
+const sa_ipcRenderer = sa_electron.ipcRenderer;
 var sa_fs = require('fs'); // Load the File System to execute our common tasks (CRUD)
-var sa_app = electron.remote;
-var sa_dialog = app.dialog;
+var sa_app = sa_electron.remote;
+var sa_dialog = sa_app.dialog;
 var sa_comp_list = component_list;
 var sa_yaml = require('js-yaml');
 
@@ -26,23 +26,19 @@ function saveAssembly() {
         saveContent += '\n';
     }
 
-    sa_dialog.showSaveDialog(
+    sa_dialog.showSaveDialog( {defaultPath: "~/*.yaml"}, function (fileName) {
 
-        {defaultPath: "~/*.yaml"},
+        if (fileName === undefined) {
+            console.log("You didn't save a file.");
+            return;
+        }
 
-        function (fileName) {
-
-            if (fileName === undefined) {
-                console.log("You didn't save a file.");
-                return;
-            }
-            // fileName is a string that contains the path and filename created in the save file dialog.
-            sa_fs.writeFile(fileName, saveContent, (err) => {
-                if (err) {
-                    alert("An error ocurred creating the file " + err.message)
-                };
-                console.log("Save successful.");
-            });
-      });
+        sa_fs.writeFile(fileName, saveContent, (err) => {
+            if (err) {
+                alert("An error ocurred creating the file " + err.message)
+            };
+            console.log("Save successful.");
+        });
+  });
 
 };
