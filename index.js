@@ -148,9 +148,13 @@ ipcMain.on("change_component_details", function(event, args) {
 });
 
 ipcMain.on("component->main", function(event, args) {
-	console.log(component_args.component);
-	console.log(args.name);
-	window.webContents.send("component->renderer", {component: component_args.component, name: args.name});
+	// delete component
+	if (args.remove){
+		console.log("Deleting...")
+		window.webContents.send("component->renderer", {component: component_args.component, konva: component_args.konva, remove: args.remove});
+	} else {
+		window.webContents.send("component->renderer", {component: component_args.component, name: args.name, konva: component_args.konva, remove: args.remove});
+	}
 });
 
 // Catch transition right click

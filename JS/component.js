@@ -1,3 +1,6 @@
+// const electron = require("electron");
+const ipc = require("electron").ipcRenderer;
+
 // Adds a new component to the stage
 function addNewComponent(posX, posY) {
     
@@ -99,6 +102,25 @@ function addNewComponent(posX, posY) {
         tooltipLayer.batchDraw();
     });
 
+    function removeComponent(ev){
+        // keyCode Delete key
+        if (ev.keyCode === 46) {
+            if (confirm('Are you sure you want to delete this Component?')){
+                // Delete it!
+                component_group.destroy();
+                layer.draw();
+                removeComponentObj();
+            } else {
+                // Do nothing!
+                return;
+            }   
+        }
+    };
+
+    component.on("mouseover", function(e){
+        window.addEventListener('keydown', removeComponent);
+    });
+    
     // hide the tooltip on mouse out
     component.on("mouseout", function(){
         //console.log(component_obj.name + " out");
@@ -107,6 +129,7 @@ function addNewComponent(posX, posY) {
         tooltip.hide();
         tooltipLayer.draw();
         //layer.draw();
+        window.removeEventListener('keydown', removeComponent);
     });
 
     // if double click on component
@@ -135,12 +158,13 @@ function addNewComponent(posX, posY) {
             component.draw();
             // open window for editing
             console.log("Open window for editing component details");
-            ipcRenderer.send("change_component_details", {component: component_obj.name});
+            ipc.send("change_component_details", {component: component_obj, konva: component_group});
         };
     });
 
-    // Catch new component name from ipcMain
-    ipcRenderer.on("component->renderer", function(event, args) {
-        changeComponentName(args.component, args.name);
-    });
 };
+
+// Catch new component name from ipcMain
+ipc.on("component->renderer", function(event, args) {
+    changeComponentName(args.component, args.name);
+});
