@@ -191,6 +191,13 @@ function changeTransitionFunc(component, old_func, new_func) {
     }
 };
 
+function removeTransitionObj(component_obj, transition_obj) {
+    console.log("Before " + component_obj.transition_list);
+    // find index of component in component_list and remove
+    component_obj.transition_list.splice( component_obj.transition_list.indexOf(transition_obj), 1 );
+    console.log("After " + component_obj.transition_list);
+};
+
 // Function to change transitions's dependency status
 function changeTransitionDependencyStatus(component, transition, dependency_status) {
     for (var i = 0; i < component_list.length; i++) {

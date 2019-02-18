@@ -80,6 +80,10 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
         stage.container().style.cursor = 'pointer';
     });
 
+    transition_selection_area.on('mouseover', function(){
+        window.addEventListener('keydown', removeTransition);
+    });
+
     // if mouse is over a place
     transition_selection_area.on('mousemove', function () {
         var mousePos = stage.getPointerPosition();
@@ -100,6 +104,7 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
         tooltip.hide();
         tooltipLayer.draw();
         //layer.draw();
+        window.removeEventListener('keydown', removeTransition);
     });
 
     transition_selection_area.on("click", function(e){
@@ -113,6 +118,28 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
             ipcRenderer.send("change_transition_details", {component: component_obj.name, transition: transition_obj.name, function: transition_obj.func});
         };
     });
+
+    function removeTransition(ev){
+        // keyCode Delete key
+        if (ev.keyCode === 46) {
+            if (confirm('Are you sure you want to delete this Transition?')){
+                // Delete it!
+                transition.destroy();
+                transition_selection_area.destroy();
+                tooltip.destroy();
+                layer.draw();
+                // decrement transition dictionary
+                --component_obj.transition_dictionary[source_obj.name + dest_obj.name];
+                // decrement the transition count for source obj
+                --source_obj.transition_count;
+                // remove the transition obj from its components transition list
+                removeTransitionObj(component_obj, transition_obj);
+            } else {
+                // Do nothing!
+                return;
+            }   
+        }
+    }
 
     // Catch new transition details from ipcMain
     ipcRenderer.on("transition->renderer", function(event, args) {

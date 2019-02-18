@@ -107,6 +107,7 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
                     // check if this source -> dest combo has been added prior
                     if(source_component.transition_dictionary[source_obj.name + dest_obj.name]){
                         // set offset based on its value in the dictionary
+                        console.log(source_component.transition_dictionary[source_obj.name + dest_obj.name]);
                         if(source_component.transition_dictionary[source_obj.name + dest_obj.name] == 1){
                             offset = 30;
                             // iterate the count for this transition
