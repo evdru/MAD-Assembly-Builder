@@ -129,9 +129,9 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
                 tooltip.destroy();
                 layer.draw();
                 // decrement transition dictionary
-                --component_obj.transition_dictionary[source_obj.name + dest_obj.name];
+                component_obj.transition_dictionary[source_obj.name + dest_obj.name]--;
                 // decrement the transition count for source obj
-                --source_obj.transition_count;
+                source_obj.transition_count--;
                 // remove the transition obj from its components transition list
                 removeTransitionObj(component_obj, transition_obj);
             } else {
