@@ -160,6 +160,7 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
             place.strokeWidth(3);
             place.draw();
         }
+        window.addEventListener('keydown', removePlace);
     });
 
     // changes the cursor back to default
@@ -178,6 +179,7 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
     place.on("mouseout", function(){
         tooltip.hide();
         tooltipLayer.draw();
+        window.removeEventListener('keydown', removePlace);
     });
 
     // Catch new place name from ipcMain
@@ -195,19 +197,24 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
         checkDependencyStatus();
     });
 
-    // function to delete konva place element and place obj from component list
-    function deletePlace(place, place_obj, component_obj){
-        // find index of place_obj in component_obj.place_list
-        var index = component_obj.place_list.indexOf(place_obj);
-        // if place obj not in place_list then index will be in -1
-        if (index > -1) {
-            // splice modifies the array in place and returns a new array containing the elements that have been removed.
-            var removed = component_obj.place_list.splice(index, 1);
-            console.log("Element: " + removed + " has been removed from the component list of " + component_obj.name);
-          }
-        // finally destory the konva element
-        console.log("Konva place element has been removed");
-        place.destroy();
+    function removePlace(ev){
+        // keyCode Delete key = 46
+        if (ev.keyCode === 46) {
+            if (confirm('Are you sure you want to delete this Place?')){
+                // Delete it!
+                place.destroy();
+                tooltip.destroy();
+                layer.draw();
+
+                // remove all transitions that are connected to this place
+                //
+                // remove the place obj from its components place list
+                removePlaceObj(component_obj, place_obj);
+            } else {
+                // Do nothing!
+                return;
+            }   
+        }
     };
 
     function checkDependencyStatus(){

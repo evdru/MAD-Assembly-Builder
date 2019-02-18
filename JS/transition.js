@@ -76,6 +76,28 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
         //layer.draw();
     });
 
+    // delete this transition if the source_konva has been deleted
+    source_konva.on('destroy', (e) => {
+        // destroy the transition konva element
+        transition.destroy();
+        transition_selection_area.destroy();
+        tooltip.destroy();
+        layer.draw();
+        // remove the transition obj from transition list
+        removeTransitionObj(component_obj, transition_obj);
+    });
+
+    // delete this transition if the source_konva has been deleted
+    dest_konva.on('destroy', (e) => {
+        // destroy the transition konva element
+        transition.destroy();
+        transition_selection_area.destroy();
+        tooltip.destroy();
+        layer.draw();
+        // remove the transition obj from transition list
+        removeTransitionObj(component_obj, transition_obj);
+    });
+
     transition_selection_area.on('moveenter', function(){
         stage.container().style.cursor = 'pointer';
     });

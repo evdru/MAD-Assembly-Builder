@@ -104,6 +104,14 @@ function closeNewWindow() {
     window.close();
 };
 
+// remove the place obj from the component_obj's place list
+function removePlaceObj(component_obj, place_obj){
+    console.log("Before " + component_obj.place_list);
+    // find index of component in component_list and remove
+    component_obj.place_list.splice( component_obj.place_list.indexOf(place_obj), 1 );
+    console.log("After " + component_obj.place_list);
+};
+
 // Function to change place name
 function changePlaceName(component, place, new_place_name) {
     for (var i = 0; i < component_list.length; i++) {
