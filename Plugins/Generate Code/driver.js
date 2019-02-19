@@ -12,12 +12,12 @@ ipcRenderer.on('generate_code', function() {
      * string, open the dialog box, save that string to the newly chosen file 
      */
     for (var i = 0; i < comp_list.length; i++) {
-        createString(comp_list[i]);
+        createComponentString(comp_list[i]);
     };
     createAssemblyString(comp_list);
 });
 
-function createString(component) {
+function createComponentString(component) {
     var content = "";
     //Append to content
 	content += "from mad import *\n";
@@ -104,8 +104,10 @@ function getRndInteger(min, max) {
 
 function createAssemblyString(comp_list) {
     var content = "";
+    
     //Import MAD
     content += "from mad import *\n\n";
+    
     //Import component files and classes
     for (var i = 0; i < comp_list.length; i++) {
         content += "from " + comp_list[i].name.toLowerCase() + " import " + comp_list[i].name + "\n";
@@ -113,12 +115,15 @@ function createAssemblyString(comp_list) {
             content += "\n";
         }
     }
+    
     //Add actual functionality
     content += "if __name__ == '__main__':\n";
+    
     //Create new classes of imported types
     for (var j = 0; j < comp_list.length; j++) {
         content += "\t" + comp_list[j].name.toLowerCase() + " = " + comp_list[j].name + "()\n\n";
     }
+
     //Create and add to the assembly
     content += "\tassembly = Assembly()\n";
     for (var k = 0; k < comp_list.length; k++) {
@@ -127,6 +132,15 @@ function createAssemblyString(comp_list) {
             content += "\n";
         }
     }
+
+    //Add dependencies to the assembly
+    // assembly.addConnection(apache, 'ipprov', maria, 'ip')
+    // assembly.addConnection(apache, 'service', maria, 'service')
+    // for (var l = 0; l < comp_list.length; l++) {
+    //     for (var m = 0; m < comp_list[l].dependency_list.length; m++) {
+    //         content += "\tassembly.addConnection(" + comp_list[l].name.toLowerCase() + ", '"
+    //     }
+    // }
 
     content += "\tmad = Mad(assembly)\n";
     content += "\tmad.run()\n";
