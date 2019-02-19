@@ -60,7 +60,7 @@ class Dependency {
     constructor(type, name) {
         this.type = type;
         this.name = name;
-        this.dep_konva;
+        this.dep_group_konva;
     };
 };
 

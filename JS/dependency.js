@@ -42,17 +42,32 @@ function addNewServiceDependency(component, source_element, source_obj, componen
         tension: 0,
     });
 
+    // create a new dependency_group
+    var dependency_group = new Konva.Group({
+        name: 'dependency_group'
+    });
+
+    // add dependency (dashed line) and stem to dependency group
+    dependency_group.add(dependency);
+    dependency_group.add(stem);
+
     // stub for provide dependency
     if(source_obj.type == 'Place'){
         var stub = getServiceStub();
         var symbol = getServiceSymbol();
         symbol.opacity(0);
+        // add stub and symbol to group for place
+        dependency_group.add(stub);
+        dependency_group.add(symbol);
     }
     else if(source_obj.type == 'Transition') {
         // stub for use dependency
         var stub = getServiceStub();
         stub.opacity(0);
         var symbol = getServiceSymbol();
+        // add stub and symbol to group for transition
+        dependency_group.add(stub);
+        dependency_group.add(symbol);
     };
 
     function getServiceStub(){
@@ -126,10 +141,11 @@ function addNewServiceDependency(component, source_element, source_obj, componen
         if (ev.keyCode === 46) {
             if (confirm('Are you sure you want to delete this dependency?')){
                 // Delete it!
-                dependency.destroy();
-                stem.destroy();
-                stub.destroy();
-                symbol.destroy();
+                // dependency.destroy();
+                // stem.destroy();
+                // stub.destroy();
+                // symbol.destroy();
+                dependency_group.destroy();
                 tooltip.destroy();
                 layer.draw();
 
@@ -253,14 +269,13 @@ function addNewServiceDependency(component, source_element, source_obj, componen
         }
     });
 
-    // add arc if exists
-    if(symbol != null){
-        component_group.add(symbol);
-    }
-    component_group.add(stem);
-    component_group.add(stub);
-    component_group.add(dependency);
-    dependency.moveToBottom();
+    // add dependency group to dependency obj
+    dependency_obj.dep_group_konva = dependency_group;
+    // add dependency group to component group
+    component_group.add(dependency_group);
+    // move dependency group to bottom
+    dependency_group.moveToBottom();
+    // draw the layer with added dependency elements
     layer.draw();
 
     // Catch new stub name from ipcMain
@@ -322,6 +337,15 @@ function addNewDataDependency(component, source_element, source_obj, component_o
         tension: 0,
     });
 
+    // create a new dependency_group
+    var dependency_group = new Konva.Group({
+        name: 'dependency_group'
+    });
+
+    // add dependency (dashed line) and stem to dependency group
+    dependency_group.add(dependency);
+    dependency_group.add(stem);
+
     // stub for provide dependency
     if(source_obj.type == 'Place'){
         // Data type
@@ -331,6 +355,11 @@ function addNewDataDependency(component, source_element, source_obj, component_o
         // symbol is invisbile until connection has been established
         data_symbol_provide = getDataSymbolProvide();
         data_symbol_provide.opacity(0);
+        // add all to dependency group
+        dependency_group.add(stub);
+        dependency_group.add(data_stub_provide);
+        dependency_group.add(data_symbol_provide);
+
     }
     else if(source_obj.type == 'Transition') {
         // invisible stub for selection
@@ -338,6 +367,10 @@ function addNewDataDependency(component, source_element, source_obj, component_o
         data_stub_use = getDataStubUse();
         data_stub_use.opacity(0);
         data_symbol_use = getDataSymbolUse();
+        // add all to dependency group
+        dependency_group.add(stub);
+        dependency_group.add(data_stub_use);
+        dependency_group.add(data_symbol_use);
     };
 
     function getDataStubHover(){
@@ -459,13 +492,14 @@ function addNewDataDependency(component, source_element, source_obj, component_o
         if (ev.keyCode === 46) {
             if (confirm('Are you sure you want to delete this dependency?')){
                 // Delete it!
-                dependency.destroy();
-                stem.destroy();
-                stub.destroy();
-                if (data_stub_provide) {data_stub_provide.destroy()};
-                if (data_symbol_provide) {data_symbol_provide.destroy()};
-                if (data_stub_use) {data_stub_use.destroy()};
-                if (data_symbol_use) {data_symbol_use.destroy()};
+                // dependency.destroy();
+                // stem.destroy();
+                // stub.destroy();
+                // if (data_stub_provide) {data_stub_provide.destroy()};
+                // if (data_symbol_provide) {data_symbol_provide.destroy()};
+                // if (data_stub_use) {data_stub_use.destroy()};
+                // if (data_symbol_use) {data_symbol_use.destroy()};
+                dependency_group.destroy();
                 tooltip.destroy();
 
                 // remove connection if created from dependency stub
@@ -616,19 +650,12 @@ function addNewDataDependency(component, source_element, source_obj, component_o
         }
     });
 
-    // stub for provide dependency
-    if(data_stub_provide != null && data_symbol_provide != null){
-        component_group.add(data_stub_provide);
-        component_group.add(data_symbol_provide);
-    }
-    else if(data_stub_use != null && data_symbol_use != null) {
-        component_group.add(data_stub_use);
-        component_group.add(data_symbol_use);
-    };
-    component_group.add(stem);
-    component_group.add(stub);
-    component_group.add(dependency);
-    dependency.moveToBottom();
+    // add dependency group to dependency obj
+    dependency_obj.dep_group_konva = dependency_group;
+    // add dependency group to component group
+    component_group.add(dependency_group);
+    // move dependency group to bottom
+    dependency_group.moveToBottom();
     layer.draw();
 
     // Catch new stub name from ipcMain
