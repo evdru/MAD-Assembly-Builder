@@ -52,7 +52,7 @@ class Transition {
         this.func = func;
         this.dependency = false;
         this.dependency_type = '';
-        this.use_dependency_list = [];
+        this.dependency_konva_list = [];
     };
 };
 
@@ -117,6 +117,17 @@ function removePlaceObj(component_obj, place_obj){
     // find index of component in component_list and remove
     component_obj.place_list.splice( component_obj.place_list.indexOf(place_obj), 1 );
     console.log("After " + component_obj.place_list);
+
+    // remove all dependencies belonging to this place
+    for(var i = 0; i < component_obj.dependency_list.length; i++){
+        // if this dependency belongs to place obj
+        if(component_obj.dependency_list[i].source_obj == place_obj){
+            // destroy konva dependency group first
+            component_obj.dependency_list[i].dep_group_konva.destroy();
+            // remove dependency obj from list
+            removeDependencyObj(component_obj, component_obj.dependency_list[i]);
+        }
+    }
 };
 
 // function gets called when a place is deleted
@@ -235,6 +246,17 @@ function changeTransitionFunc(component, old_func, new_func) {
 };
 
 function removeTransitionObj(component_obj, transition_obj) {
+    // remove all dependencies belonging to this transition_obj
+    for(var i = 0; i < component_obj.dependency_list.length; i++){
+        // if this dependency belongs to transition_obj
+        if(component_obj.dependency_list[i].source_obj == transition_obj){
+            // destroy konva dependency group first
+            component_obj.dependency_list[i].dep_group_konva.destroy();
+            // remove dependency obj from list
+            removeDependencyObj(component_obj, component_obj.dependency_list[i]);
+            layer.batchDraw();
+        }
+    }
     // check the transition dictionary for parallel transitions
     if(component_obj.transition_dictionary[transition_obj.src.name + transition_obj.dest.name] > 0){
         console.log("Decrementing dictionary keys")

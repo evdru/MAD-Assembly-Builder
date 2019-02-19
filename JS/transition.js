@@ -199,15 +199,19 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
             // determine which type of dependency
             switch(transition_obj.dependency_type) {
                 case 'USE':
-                // Creating service use dependency
-                console.log("Creating service use dependency");
-                dependency = addNewServiceDependency(component, transition_selection_area, transition_obj, component_obj, component_group, tooltipLayer);
-                break;
+                    // Creating service use dependency
+                    console.log("Creating service use dependency");
+                    dependency_group = addNewServiceDependency(component, transition_selection_area, transition_obj, component_obj, component_group, tooltipLayer);
+                    // add the return dependency konva elements 
+                    transition_obj.dependency_konva_list.push(dependency_group);
+                    break;
                 case 'DATA_USE':
                     // Creating data use dependency
                     console.log("Creating service use dependency");
-                    dependency = addNewDataDependency(component, transition_selection_area, transition_obj, component_obj, component_group, tooltipLayer);
-                break;
+                    dependency_group = addNewDataDependency(component, transition_selection_area, transition_obj, component_obj, component_group, tooltipLayer);
+                    // add the return dependency konva elements 
+                    transition_obj.dependency_konva_list.push(dependency_group);
+                    break;
                 default:
                     // invalid dependency type
                     alert("Invalid dependency type: " + transition_obj.dependency_type);
