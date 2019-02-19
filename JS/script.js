@@ -120,17 +120,21 @@ function removePlaceObj(component_obj, place_obj){
 // function gets called when a place is deleted
 function removeOutboundAndInboundTransitions(component_obj, place_obj){
     // remove all inbound transitions from this place_obj
-    for (var i = 0; i < place_obj.transition_inbound_list.length; i++){
-        place_obj.transition_inbound_list[i].tran_group_konva.destroy();
-        removeTransitionObj(component_obj, place_obj.transition_inbound_list[i]);
-        
+    if(place_obj.transition_inbound_list.length > 0){
+        for (var i = 0; i < place_obj.transition_inbound_list.length; i++){
+            place_obj.transition_inbound_list[i].tran_group_konva.destroy();
+            removeTransitionObj(component_obj, place_obj.transition_inbound_list[i]);
+            
+        }
     }
-    // remove all outbound transitions from this place_obj
-    for (var i = 0; i < place_obj.transition_outbound_list.length; i++){
-        // destroy the konva transition group
-        place_obj.transition_outbound_list[i].tran_group_konva.destroy();
-        // remove the transition obj
-        removeTransitionObj(component_obj, place_obj.transition_outbound_list[i]);
+    if(place_obj.transition_outbound_list.length > 0){
+        // remove all outbound transitions from this place_obj
+        for (var i = 0; i < place_obj.transition_outbound_list.length; i++){
+            // destroy the konva transition group
+            place_obj.transition_outbound_list[i].tran_group_konva.destroy();
+            // remove the transition obj
+            removeTransitionObj(component_obj, place_obj.transition_outbound_list[i]);
+        }
     }
 };
 
