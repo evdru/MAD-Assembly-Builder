@@ -15,19 +15,33 @@ var source_obj = null;
 var dest_obj = null;
 var highlighted = false;
 
+// @todo: add fields
+// [x] int: posX, posY
+// [x] ?: component_group
+// [ ] Rect: component
+// [ ] Component: component_obj
+// [ ] Layer: tooltipLayer
 class Component {
-    constructor(type, name){
+    constructor(type, name, posX, posY, group){
         this.type = type;
         this.name = name;
         this.place_list = [];
         this.transition_list = [];
         this.transition_dictionary = {};
         this.dependency_list = [];
+        this.posX = posX;
+        this.posY = posY;
+        this.group = group;
     };
 };
 
+// @todo: add fields
+// [ ] ?: offset
+// [ ] Circle: circle
+// [ ] ?: placePos
+
 class Place {
-    constructor(type, name, index) {
+    constructor(type, name, index, pos) {
         this.type = type;
         this.name = name;
         this.index = index;
@@ -35,9 +49,13 @@ class Place {
         this.dependency = false;
         this.dependency_type = '';
         this.provide_dependency_list = [];
+        this.pos = pos;
     };
 };
 
+// @todo: add fields
+// [ ] Circle: source_konva
+// [ ] Circle: dest_konva
 class Transition {
     constructor(type, name, src, dest, func) {
         this.type = type;
@@ -65,13 +83,13 @@ function snapToGrid(pos){
 function initialize() {
     var width = window.innerWidth;
     var height = window.innerHeight;
-    
+
     stage = new Konva.Stage({
         container: 'container',
         width: width,
         height: height
     });
-    
+
     layer = new Konva.Layer();
     stage.add(layer);
     var container = stage.container();
@@ -93,7 +111,7 @@ function drop(ev) {
         addNewComponent(posX, posY);
     }
 };
-  
+
 function drag(ev) {
     ev.dataTransfer.setData("text", ev.target.id);
 };

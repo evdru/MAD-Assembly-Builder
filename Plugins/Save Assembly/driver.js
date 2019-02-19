@@ -18,7 +18,13 @@ sa_ipcRenderer.on('save_assembly', function() {
 
 function saveAssembly() {
 
-    // @todo: what other information do we need to save?
+    console.log(sa_comp_list);
+
+    for(var i = 0; i < sa_comp_list.length; i++) {
+        component = sa_comp_list[i];
+        component.group = '';
+    }
+
     var saveContent = sa_yaml.safeDump(sa_comp_list);
 
     fileName = sa_dialog.showSaveDialog( {defaultPath: "~/*.yaml"} );
@@ -27,6 +33,8 @@ function saveAssembly() {
         console.log("You didn't save a file.");
         return;
     }
+
+    console.log(sa_comp_list);
 
     sa_fs.writeFileSync(fileName, saveContent);
 

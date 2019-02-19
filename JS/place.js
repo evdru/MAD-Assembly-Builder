@@ -1,7 +1,7 @@
 // Add new place function, should only be called by component
 function addNewPlace(component_group, component, placePos, component_obj, tooltipLayer) {
     var index = component_obj.place_list.length;
-    var place_obj = new Place('Place', "Place_" + (index + 1), index);
+    var place_obj = new Place('Place', "Place_" + (index + 1), index, placePos);
     component_obj.place_list.push(place_obj);
 
     var place = new Konva.Circle({
@@ -121,7 +121,7 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
 
                     console.log("Source place transition out count: ", source_obj.transition_count);
                     transition = addNewTransition(offset, source_transition, dest_transition, source_obj, dest_obj, component_obj, component_group, component, tooltipLayer);
-                } 
+                }
             } else {
                 // highlight the place
                 highlighted = true;
@@ -218,7 +218,7 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
             }
         }
     };
-    
+
     // return konva object back to its parent component
     return place;
 };

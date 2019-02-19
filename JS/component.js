@@ -1,6 +1,6 @@
 // Adds a new component to the stage
 function addNewComponent(posX, posY) {
-    
+
     // create a new component group every time a component is created
     var component_group = new Konva.Group({
         x: posX,
@@ -22,10 +22,26 @@ function addNewComponent(posX, posY) {
         strokeWidth: 0.5
     });
 
+    // tooltip to display name of object
+    var tooltip = new Konva.Text({
+        text: "",
+        fontFamily: "Calibri",
+        fontSize: 12,
+        padding: 5,
+        textFill: "white",
+        fill: "black",
+        alpha: 0.75,
+        visible: false
+    });
+
+    var tooltipLayer = new Konva.Layer();
+    tooltipLayer.add(tooltip);
+    stage.add(tooltipLayer);
+
     // create a component object and add it to the global list
-    var component_obj = new Component('Component', "Component_" + (component_list.length + 1));
+    var component_obj = new Component('Component', "Component_" + (component_list.length + 1), posX, posY, component_group);
     component_list.push(component_obj);
-    
+
     component_group.add(component);
     layer.add(component_group);
     layer.draw();
@@ -45,7 +61,7 @@ function addNewComponent(posX, posY) {
             // remove old transformers
             // TODO: we can skip it if current rect is already selected
             stage.find('Transformer').destroy();
-        
+
             // create new transformer
             var tr = new Konva.Transformer({rotateEnabled: false});
             e.target.getParent().add(tr);
@@ -53,22 +69,6 @@ function addNewComponent(posX, posY) {
             layer.draw();
         }
     });
-
-    // tooltip to display name of object
-    var tooltip = new Konva.Text({
-        text: "",
-        fontFamily: "Calibri",
-        fontSize: 12,
-        padding: 5,
-        textFill: "white",
-        fill: "black",
-        alpha: 0.75,
-        visible: false
-    });
-
-    var tooltipLayer = new Konva.Layer();
-    tooltipLayer.add(tooltip);
-    stage.add(tooltipLayer);
 
     // when component is being dragged
     component_group.on('dragmove', (e) => {
