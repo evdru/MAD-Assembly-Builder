@@ -25,13 +25,37 @@ function addNewComponent(posX, posY) {
         strokeWidth: 0.5
     });
 
+    // selection area used for created USE dependences from this component
+    var use_selection_area = new Konva.Rect({
+        x: -30,
+        y: 0,
+        width: 30,
+        height: 350,
+        //fill: 'black',
+        opacity: 0,
+        name: 'use_selection_area'
+    });
+
+    // selection area used for created USE dependences from this component
+    var provide_selection_area = new Konva.Rect({
+        x: component.getWidth(),
+        y: 0,
+        width: 30,
+        height: 350,
+        //fill: 'black',
+        opacity: 0,
+        name: 'provide_selection_area'
+    });
+
     // create a component object and add it to the global list
     var component_obj = new Component('Component', "Component_" + (component_list.length + 1));
     component_list.push(component_obj);
     // add konva component element to component_obj
-    component_obj.component_konva = component;
+    component_obj.component_group_konva = component_group;
     
     component_group.add(component);
+    component_group.add(use_selection_area);
+    component_group.add(provide_selection_area);
     layer.add(component_group);
     layer.draw();
 
@@ -75,6 +99,20 @@ function addNewComponent(posX, posY) {
     tooltipLayer.add(tooltip);
     stage.add(tooltipLayer);
 
+    // when component moves
+    component.on('xChange yChange', function () {
+        use_selection_area.position({
+            x: component.getX() - 30,
+            y: component.getY()
+        });
+        use_selection_area.height(component.getHeight() * component.scaleY());
+        provide_selection_area.position({
+            x: component.getX() + (component.getWidth() * component.scaleX()),
+            y: component.getY()
+        })
+        provide_selection_area.height(component.getHeight() * component.scaleY());
+    });
+
     // when component is being dragged
     component_group.on('dragmove', (e) => {
         tooltip.hide();
@@ -109,8 +147,7 @@ function addNewComponent(posX, posY) {
         if (ev.keyCode === 46) {
             if (confirm('Are you sure you want to delete this Component? You will lose everything inside of it.')){
                 // Delete it!
-                component.destroy();
-                component_group.destroy();
+                component_obj.component_group_konva.destroy();
                 layer.draw();
                 removeComponentObj();
             } else {

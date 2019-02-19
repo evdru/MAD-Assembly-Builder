@@ -20,7 +20,7 @@ class Component {
         this.type = type;
         this.name = name;
         this.place_list = [];
-        this.component_konva;
+        this.component_group_konva;
         this.transition_list = [];
         this.transition_dictionary = {};
         this.dependency_list = [];
