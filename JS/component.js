@@ -28,6 +28,8 @@ function addNewComponent(posX, posY) {
     // create a component object and add it to the global list
     var component_obj = new Component('Component', "Component_" + (component_list.length + 1));
     component_list.push(component_obj);
+    // add konva component element to component_obj
+    component_obj.component_konva = component;
     
     component_group.add(component);
     layer.add(component_group);
@@ -107,6 +109,7 @@ function addNewComponent(posX, posY) {
         if (ev.keyCode === 46) {
             if (confirm('Are you sure you want to delete this Component?')){
                 // Delete it!
+                component.destroy();
                 component_group.destroy();
                 layer.draw();
                 removeComponentObj();

@@ -41,6 +41,9 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
         }
     });
 
+    // add the place_konva to place_obj
+    place_obj.place_konva = place;
+
     component_group.add(place);
 
     // tooltip to display name of object
@@ -115,14 +118,19 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
                         } else if (source_component.transition_dictionary[source_obj.name + dest_obj.name] == 2){
                             offset = -30;
                             source_component.transition_dictionary[source_obj.name + dest_obj.name]++;
+                        } else {
+                            offset = 0;
                         }
                     } else {
                         // add the source -> dest combo into the components dictionary
                         source_component.transition_dictionary[source_obj.name + dest_obj.name] = 1;
                     }
-
+                   
                     console.log("Source place transition out count: ", source_obj.transition_count);
-                    transition = addNewTransition(offset, source_transition, dest_transition, source_obj, dest_obj, component_obj, component_group, component, tooltipLayer);
+                    returned_transition_obj = addNewTransition(offset, source_transition, dest_transition, source_obj, dest_obj, component_obj, component_group, component, tooltipLayer);
+                    // add the transition obj to both souce place and dest place transition_connected list
+                    source_obj.transition_outbound_list.push(returned_transition_obj);
+                    dest_obj.transition_inbound_list.push(returned_transition_obj);
                 } 
             } else {
                 // highlight the place
@@ -207,9 +215,10 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
                 layer.draw();
 
                 // remove all transitions that are connected to this place
-                //
+                removeOutboundAndInboundTransitions(component_obj, place_obj);
                 // remove the place obj from its components place list
                 removePlaceObj(component_obj, place_obj);
+                layer.batchDraw();
             } else {
                 // Do nothing!
                 return;

@@ -6,8 +6,9 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
         alert("Cant create more than 3 transitions from " + source_obj.name);
         return;
     }
-
-    var transition_obj = new Transition('Transition', "Transition_" + (component_obj.transition_list.length + 1), source_obj, dest_obj, "defaultFunction_" + (component_obj.transition_list.length + 1));
+    // Transition Creation arguments: type, name, src, src_konva, dest, dest_konva, func
+    var transition_obj = new Transition('Transition', "Transition_" + (component_obj.transition_list.length + 1), 
+                                        source_obj, dest_obj, "defaultFunction_" + (component_obj.transition_list.length + 1));
     component_obj.transition_list.push(transition_obj);
     
     var transition = new Konva.Line({
@@ -27,9 +28,20 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
         name: 'Transition_hover'
     });
 
+    // create a new transition group
+    var transition_group = new Konva.Group({
+        name: 'transition_group'
+    });
+
     // add transition konva obj to component group
-    component_group.add(transition);
-    component_group.add(transition_selection_area);
+    transition_group.add(transition);
+    transition_group.add(transition_selection_area)
+    component_group.add(transition_group);
+    // component_group.add(transition);
+    // component_group.add(transition_selection_area);
+
+    // add the konva group to transition obj attribute
+    transition_obj.tran_group_konva = transition_group;
 
     // tooltip to display name of object
     var tooltip = new Konva.Text({
@@ -225,10 +237,11 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
         }
     };
 
-    // move transition below its source and dest
-    transition.moveToBottom();
+    // move source and dest places above the transition
+    source_konva.moveToTop();
+    dest_konva.moveToTop();
     source_obj.transition_count++;
     layer.batchDraw();
     //layer.draw();
-    return transition;
+    return transition_obj;
 }

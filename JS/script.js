@@ -20,6 +20,7 @@ class Component {
         this.type = type;
         this.name = name;
         this.place_list = [];
+        this.component_konva;
         this.transition_list = [];
         this.transition_dictionary = {};
         this.dependency_list = [];
@@ -31,18 +32,22 @@ class Place {
         this.type = type;
         this.name = name;
         this.index = index;
+        this.place_konva;
         this.transition_count = 0;
         this.dependency = false;
         this.dependency_type = '';
         this.provide_dependency_list = [];
+        this.transition_outbound_list = [];
+        this.transition_inbound_list = [];
     };
 };
 
 class Transition {
-    constructor(type, name, src, dest, func) {
+    constructor(type, name, src, tran_konva, dest, func) {
         this.type = type;
         this.name = name;
         this.src = src;
+        this.tran_group_konva;
         this.dest = dest;
         this.func = func;
         this.dependency = false;
@@ -110,6 +115,23 @@ function removePlaceObj(component_obj, place_obj){
     // find index of component in component_list and remove
     component_obj.place_list.splice( component_obj.place_list.indexOf(place_obj), 1 );
     console.log("After " + component_obj.place_list);
+};
+
+// function gets called when a place is deleted
+function removeOutboundAndInboundTransitions(component_obj, place_obj){
+    // remove all inbound transitions from this place_obj
+    for (var i = 0; i < place_obj.transition_inbound_list.length; i++){
+        place_obj.transition_inbound_list[i].tran_group_konva.destroy();
+        removeTransitionObj(component_obj, place_obj.transition_inbound_list[i]);
+        
+    }
+    // remove all outbound transitions from this place_obj
+    for (var i = 0; i < place_obj.transition_outbound_list.length; i++){
+        // destroy the konva transition group
+        place_obj.transition_outbound_list[i].tran_group_konva.destroy();
+        // remove the transition obj
+        removeTransitionObj(component_obj, place_obj.transition_outbound_list[i]);
+    }
 };
 
 // Function to change place name
