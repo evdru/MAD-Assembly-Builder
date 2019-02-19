@@ -216,6 +216,13 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
 
                 // remove all transitions that are connected to this place
                 removeOutboundAndInboundTransitions(component_obj, place_obj);
+
+                // remove dependency stub if created
+                if(place_obj.dependency){
+                    
+                }
+                // remove connection if created from depdency stub
+
                 // remove the place obj from its components place list
                 removePlaceObj(component_obj, place_obj);
                 layer.batchDraw();

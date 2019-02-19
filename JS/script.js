@@ -124,7 +124,6 @@ function removeOutboundAndInboundTransitions(component_obj, place_obj){
         for (var i = 0; i < place_obj.transition_inbound_list.length; i++){
             place_obj.transition_inbound_list[i].tran_group_konva.destroy();
             removeTransitionObj(component_obj, place_obj.transition_inbound_list[i]);
-            
         }
     }
     if(place_obj.transition_outbound_list.length > 0){
@@ -226,10 +225,10 @@ function changeTransitionFunc(component, old_func, new_func) {
 };
 
 function removeTransitionObj(component_obj, transition_obj) {
-    console.log("Before " + component_obj.transition_list);
+    // decrement the transition count of source
+    transition_obj.src.transition_count--;
     // find index of component in component_list and remove
     component_obj.transition_list.splice( component_obj.transition_list.indexOf(transition_obj), 1 );
-    console.log("After " + component_obj.transition_list);
 };
 
 // Function to change transitions's dependency status

@@ -107,7 +107,7 @@ function addNewComponent(posX, posY) {
     function removeComponent(ev){
         // keyCode Delete key
         if (ev.keyCode === 46) {
-            if (confirm('Are you sure you want to delete this Component?')){
+            if (confirm('Are you sure you want to delete this Component? You will lose everything inside of it.')){
                 // Delete it!
                 component.destroy();
                 component_group.destroy();
