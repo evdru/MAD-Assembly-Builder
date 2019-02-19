@@ -57,7 +57,16 @@ function createString(component) {
     content += "\t\t}\n\n";
 
     //Create dependencies dictionary
-    content += "\t\tself.dependencies = {}\n\n";
+    content += "\t\tself.dependencies = {\n";
+    console.log(component.dependency_list.length);
+    for (var k = 0; k < component.dependency_list.length; k++) {
+        if (k == component.dependency_list.length - 1) {
+            content += "\t\t\t'" + component.dependency_list[k].name + "': (DepType." + component.dependency_list[k].type + ", ['place_name'])\n"
+        } else {
+            content += "\t\t\t'" + component.dependency_list[k].name + "': (DepType." + component.dependency_list[k].type + ", ['place_name']),\n"
+        };
+    };
+    content += "\t\t}\n\n"
 
     //Create functions
     for (var k = 0; k < component.transition_list.length; k++) {
