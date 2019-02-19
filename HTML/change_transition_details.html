@@ -19,8 +19,7 @@
         <input type="radio" name="dependency_type" id="data_use" value="data_use"> DATA_USE <br>
         <hr>
         <button id="submit">Change Transition Details</button>
-        <button id="delete_transition">Delete This Transition</button>
-
+        
         <script>
             const electron = require('electron');
             const {ipcRenderer} = electron;
@@ -51,12 +50,6 @@
                 ipcRenderer.send('transition->main', {name: transition_name, function: function_name, dependency_status: dependency_status, dependency_type: dependency_type});
                 //Close the window on button press.
                 closeNewWindow();
-            });
-
-            const deleteBtn = document.getElementById("delete_transition");
-            deleteBtn.addEventListener('click', function (e) {
-                e.preventDefault();
-                console.log("Delete Transition");
             });
         </script>
 

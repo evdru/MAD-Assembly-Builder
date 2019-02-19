@@ -18,8 +18,7 @@
         <input type="radio" name="dependency_type" id="data_provide" value="data_provide"> DATA_PROVIDE <br>
         <hr>
         <button id="submit">Change Place Details</button>
-        <button id="delete_place">Delete This Place</button>
-
+        
         <script>
             const electron = require('electron');
             const {ipcRenderer} = electron;
@@ -50,12 +49,6 @@
                 ipcRenderer.send('place->main', {name: new_place_name, dependency_status: dependency_status, dependency_type: dependency_type});
                 //Close the window on button press.
                 closeNewWindow();
-            });
-
-            const deleteBtn = document.getElementById("delete_place");
-            deleteBtn.addEventListener('click', function (e) {
-                e.preventDefault();
-                console.log("Delete place");
             });
             </script>
 
