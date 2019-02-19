@@ -8,21 +8,29 @@ function addNewServiceDependency(component, source_element, source_obj, componen
     if(source_obj.type == 'Place') {
         // create the dependency object
         var dependency_obj = new Dependency('PROVIDE', "Dependency_" + (component_obj.dependency_list.length + 1));
+        // add dep obj to comp_obj.dep_list
         component_obj.dependency_list.push(dependency_obj);
         console.log('Created new PROVIDE dependency dock'); 
+        
         offset = component.getWidth();
         add = 20;
         stub_x = 0;
     } else if (source_obj.type == 'Transition') {
         // create the dependency object
         var dependency_obj = new Dependency('USE', "Dependency_" + (component_obj.dependency_list.length + 1));
+        // add dep obj to comp_obj.dep_list
         component_obj.dependency_list.push(dependency_obj); 
         console.log('Created new USE dependency dock');
+        
         // use connection going left of a transition
         offset = 0;
         add = -20;
         stub_x = -15;
     };
+
+    // set source obj of dependency stub
+    dependency_obj.source_obj = source_obj;
+    console.log("This dependencys source obj is " + dependency_obj.source_obj.name);
 
     var dependency = new Konva.Line({
         points: [source_element.getX(), source_element.getY(), (component.getX() + offset * component.scaleX()), source_element.getY()],
@@ -282,6 +290,8 @@ function addNewServiceDependency(component, source_element, source_obj, componen
     ipcRenderer.on("stub->renderer", function(event, args) {
         changeStubName(args.component, args.old_name, args.new_name);
     });
+
+    return dependency_group;
 }
 
 // Add new Service dependency function, should only be called by place and transition
@@ -289,7 +299,7 @@ function addNewDataDependency(component, source_element, source_obj, component_o
     var offset;
     var add;
     var stub_x;
-    var depedency_name;
+    var dependency_name;
 
     var stub;
     var data_stub_provide;
@@ -318,6 +328,10 @@ function addNewDataDependency(component, source_element, source_obj, component_o
         stub_x = 0;
         depedency_name = dependency_obj.type + " Use Dependency from " + source_obj.name;
     };
+
+    // set source obj of dependency stub
+    dependency_obj.source_obj = source_obj;
+    console.log("This dependencys source obj is " + dependency_obj.source_obj.name);
 
     var dependency = new Konva.Line({
         points: [source_element.getX(), source_element.getY(), (component.getX() + offset * component.scaleX()), source_element.getY()],
@@ -492,13 +506,6 @@ function addNewDataDependency(component, source_element, source_obj, component_o
         if (ev.keyCode === 46) {
             if (confirm('Are you sure you want to delete this dependency?')){
                 // Delete it!
-                // dependency.destroy();
-                // stem.destroy();
-                // stub.destroy();
-                // if (data_stub_provide) {data_stub_provide.destroy()};
-                // if (data_symbol_provide) {data_symbol_provide.destroy()};
-                // if (data_stub_use) {data_stub_use.destroy()};
-                // if (data_symbol_use) {data_symbol_use.destroy()};
                 dependency_group.destroy();
                 tooltip.destroy();
 
@@ -662,4 +669,6 @@ function addNewDataDependency(component, source_element, source_obj, component_o
     ipcRenderer.on("stub->renderer", function(event, args) {
         changeStubName(args.component, args.old_name, args.new_name);
     });
+
+    return dependency_group;
 }

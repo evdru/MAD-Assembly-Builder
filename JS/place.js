@@ -220,6 +220,7 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
                 // remove dependency stub if created
                 if(place_obj.dependency){
                     console.log("It had a dependency attached!")
+
                 }
                 // remove connection if created from dependency stub
 
@@ -242,12 +243,15 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
                 case 'PROVIDE':
                     // Creating service provide dependency
                     console.log("Creating service provide dependency");
-                    dependency = addNewServiceDependency(component, place, place_obj, component_obj, component_group, tooltipLayer);
+                    dependency_group = addNewServiceDependency(component, place, place_obj, component_obj, component_group, tooltipLayer);
+                    // add the return dependency konva elements 
+                    place_obj.dependency_konva_list.push(dependency_group);
                     break;
                 case 'DATA_PROVIDE':
                     // Creating service provide dependency
                     console.log("Creating data provide dependency");
-                    dependency = addNewDataDependency(component, place, place_obj, component_obj, component_group, tooltipLayer);
+                    dependency_group = addNewDataDependency(component, place, place_obj, component_obj, component_group, tooltipLayer);
+                    place_obj.dependency_konva_list.push(dependency_group);
                     break;
                 case '':
                     alert("Dependency type has not been specified");

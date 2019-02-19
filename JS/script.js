@@ -36,7 +36,7 @@ class Place {
         this.transition_count = 0;
         this.dependency = false;
         this.dependency_type = '';
-        this.provide_dependency_list = [];
+        this.dependency_konva_list = [];
         this.transition_outbound_list = [];
         this.transition_inbound_list = [];
     };
@@ -61,6 +61,7 @@ class Dependency {
         this.type = type;
         this.name = name;
         this.dep_group_konva;
+        this.source_obj;
     };
 };
 
