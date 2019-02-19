@@ -19,7 +19,7 @@ function addNewServiceDependency(component, source_element, source_obj, componen
         // create the dependency object
         var dependency_obj = new Dependency('USE', "Dependency_" + (component_obj.dependency_list.length + 1));
         // add dep obj to comp_obj.dep_list
-        component_obj.dependency_list.push(dependency_obj); 
+        component_obj.dependency_list.push(dependency_obj);
         console.log('Created new USE dependency dock');
         
         // use connection going left of a transition
@@ -227,6 +227,7 @@ function addNewServiceDependency(component, source_element, source_obj, componen
                 provide_stub_konva = stub;
                 provide_component_group = component_group;
                 provide_symbol = symbol;
+                provide_dependency_obj = dependency_obj;
                 provide_dependency_type = source_obj.dependency_type;
                 console.log("PROVIDE dependency type is " + provide_dependency_type);
                 // set source selected true
@@ -248,6 +249,7 @@ function addNewServiceDependency(component, source_element, source_obj, componen
                             use_source_obj = source_obj;
                             use_stub_konva = stub;
                             use_component_group = component_group;
+                            use_dependency_obj = dependency_obj;
                             // check if arc is visible
                             if(provide_symbol.opacity() == 0){
                                 // make it visible
@@ -255,7 +257,7 @@ function addNewServiceDependency(component, source_element, source_obj, componen
                                 use_stub_konva.opacity(1);
                             }
                             // create new connection here
-                            connection = addNewConnection(provide_component_obj, provide_source_obj, provide_stub_konva, provide_component_group, use_component_obj, use_source_obj, use_stub_konva, use_component_group);
+                            connection_obj = addNewConnection(provide_component_obj, provide_source_obj, provide_stub_konva, provide_component_group, use_component_obj, use_source_obj, use_stub_konva, use_component_group, provide_dependency_obj, use_dependency_obj);
                         } else {
                             alert("Cant create connection from " + provide_component_obj.name + " to " + use_component_obj.name);
                         }
@@ -609,6 +611,7 @@ function addNewDataDependency(component, source_element, source_obj, component_o
                 provide_component_group = component_group;
                 provide_symbol = data_symbol_provide;
                 provide_dependency_type = source_obj.dependency_type;
+                provide_dependency_obj = dependency_obj;
                 console.log("PROVIDE dependency type is " + provide_dependency_type);
                 // set source selected true
                 source_selected = true;
@@ -631,11 +634,12 @@ function addNewDataDependency(component, source_element, source_obj, component_o
                             use_source_obj = source_obj;
                             use_stub_konva = stub;
                             use_component_group = component_group;
+                            use_dependency_obj = dependency_obj;
                             // make things visible
                             provide_symbol.opacity(1);
                             data_stub_use.opacity(1);
                             // create new connection here
-                            connection = addNewConnection(provide_component_obj, provide_source_obj, provide_stub_konva, provide_component_group, use_component_obj, use_source_obj, use_stub_konva, use_component_group);
+                            connection_obj = addNewConnection(provide_component_obj, provide_source_obj, provide_stub_konva, provide_component_group, use_component_obj, use_source_obj, use_stub_konva, use_component_group, provide_dependency_obj, use_dependency_obj);
                         } else {
                             alert("Cant create connection from " + provide_component_obj.name + " to " + use_component_obj.name);
                         }

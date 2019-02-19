@@ -1,5 +1,5 @@
 // Add new connection function, should only be called by provide depedency stub
-function addNewConnection(provide_component_obj, provide_source_obj, provide_stub_konva, provide_component_group, use_component_obj, use_source_obj, use_stub_konva, use_component_group) {
+function addNewConnection(provide_component_obj, provide_source_obj, provide_stub_konva, provide_component_group, use_component_obj, use_source_obj, use_stub_konva, use_component_group, provide_dependency_obj, use_dependency_obj) {
 
     var provide_offset = 15;
     var use_offset = -10;
@@ -43,6 +43,28 @@ function addNewConnection(provide_component_obj, provide_source_obj, provide_stu
         tension : 0,
         opacity: 1
     });
+
+    // create connection group
+    var connection_group = new Konva.Group({
+        name: 'connection_group'
+    });
+
+    // add konva elements to group
+    connection_group.add(connection);
+    connection_group.add(gate1);
+    connection_group.add(gate2);
+
+    // create the connection object
+    var connection_obj = new Connection();
+    // point to both gates, useful later for enabling and disabling connection
+    connection_obj.gate1_konva = gate1;
+    connection_obj.gate2_konva = gate2;
+    // create pointer to entire connection group
+    connection_obj.connection_group_konva = connection_group;
+    // create pointer to connection_obj from provide_dependency_obj
+    provide_dependency_obj.connection_obj = connection_obj;
+    // create pointer to connection_obj from use_dependency_obj
+    use_dependency_obj.connection_obj = connection_obj;
 
     // when the provide dependency moves
     provide_stub_konva.on('xChange yChange', (e) => {
@@ -144,8 +166,8 @@ function addNewConnection(provide_component_obj, provide_source_obj, provide_stu
         return points;
     }
 
-    layer.add(connection);
-    layer.add(gate1);
-    layer.add(gate2);
+    layer.add(connection_group);
     layer.draw();
+
+    return connection_obj;
 }

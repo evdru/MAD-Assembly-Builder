@@ -62,7 +62,17 @@ class Dependency {
         this.name = name;
         this.dep_group_konva;
         this.source_obj;
+        this.connection_obj;
     };
+};
+
+class Connection {
+    constructor() {
+        this.connection_group_konva;
+        this.gate1_konva;
+        this.gate2_konva;
+        this.enabled = false;
+    }
 };
 
 function snapToGrid(pos){
@@ -193,11 +203,25 @@ function changePlaceDependencyType(component, place, dependency_type) {
 
 // func to remove the dependency obj from its global comp_obj.depedency_list
 function removeDependencyObj(component_obj, dependency_obj){
+    // check if dependency has a connection with it
+    console.log("its before connection check")
+    console.log(dependency_obj.connection_obj)
+
+    if(dependency_obj.connection_obj){
+        console.log("its removing connection")
+        removeConnectionKonva(dependency_obj);
+    }
     console.log("Before " + component_obj.dependency_list);
     // find index of dependency_obj in component_list.dependency_list and remove
     component_obj.dependency_list.splice( component_obj.dependency_list.indexOf(dependency_obj), 1 );
     console.log("After " + component_obj.dependency_list);
 };
+
+// function to remove connection konva group
+function removeConnectionKonva(dependency_obj){
+    // destroy the connection group
+    dependency_obj.connection_obj.connection_group_konva.destroy();
+}
 
 // Function to change component name
 function changeComponentName(component, new_comp_name) {
