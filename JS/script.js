@@ -60,6 +60,7 @@ class Dependency {
     constructor(type, name) {
         this.type = type;
         this.name = name;
+        this.dep_konva;
     };
 };
 
@@ -178,6 +179,14 @@ function changePlaceDependencyType(component, place, dependency_type) {
     }
 };
 
+// func to remove the dependency obj from its global comp_obj.depedency_list
+function removeDependencyObj(component_obj, dependency_obj){
+    console.log("Before " + component_obj.dependency_list);
+    // find index of dependency_obj in component_list.dependency_list and remove
+    component_obj.dependency_list.splice( component_obj.dependency_list.indexOf(dependency_obj), 1 );
+    console.log("After " + component_obj.dependency_list);
+};
+
 // Function to change component name
 function changeComponentName(component, new_comp_name) {
     for (var i = 0; i < component_list.length; i++) {
@@ -225,6 +234,12 @@ function changeTransitionFunc(component, old_func, new_func) {
 };
 
 function removeTransitionObj(component_obj, transition_obj) {
+    // check the transition dictionary for parallel transitions
+    if(component_obj.transition_dictionary[transition_obj.src.name + transition_obj.dest.name] > 0){
+        console.log("Decrementing dictionary keys")
+        // decrement the trans dict 
+        component_obj.transition_dictionary[transition_obj.src.name + transition_obj.dest.name]--;
+    }
     // decrement the transition count of source
     transition_obj.src.transition_count--;
     // find index of component in component_list and remove

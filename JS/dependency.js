@@ -109,12 +109,44 @@ function addNewServiceDependency(component, source_element, source_obj, componen
         tooltip.show();
         tooltipLayer.batchDraw();
     });
+
+    stub.on('mouseenter', function () {
+        window.addEventListener('keydown', removeStub);
+    });
     
     // hide the tooltip on mouse out
     stub.on('mouseout', function(){
         tooltip.hide();
         tooltipLayer.draw();
+        window.removeEventListener('keydown', removeStub);
     });
+
+    function removeStub(ev){
+        // keyCode Delete key = 46
+        if (ev.keyCode === 46) {
+            if (confirm('Are you sure you want to delete this dependency?')){
+                // Delete it!
+                dependency.destroy();
+                stem.destroy();
+                stub.destroy();
+                symbol.destroy();
+                tooltip.destroy();
+                layer.draw();
+
+                // remove connection if created from dependency stub
+
+                // set source_obj dependency boolean to false
+                source_obj.dependency = false;
+
+                // remove the depedency obj from its components dependency list
+                removeDependencyObj(component_obj, dependency_obj);
+                layer.batchDraw();
+            } else {
+                // Do nothing!
+                return;
+            }   
+        }
+    };
 
     // when the source element moves
     source_element.on('xChange yChange', (e) => {
@@ -410,12 +442,46 @@ function addNewDataDependency(component, source_element, source_obj, component_o
         tooltip.show();
         tooltipLayer.batchDraw();
     });
+
+    stub.on('mouseenter', function () {
+        window.addEventListener('keydown', removeStub);
+    });
     
     // hide the tooltip on mouse out
     stub.on('mouseout', function(){
         tooltip.hide();
         tooltipLayer.draw();
+        window.removeEventListener('keydown', removeStub);
     });
+
+    function removeStub(ev){
+        // keyCode Delete key = 46
+        if (ev.keyCode === 46) {
+            if (confirm('Are you sure you want to delete this dependency?')){
+                // Delete it!
+                dependency.destroy();
+                stem.destroy();
+                stub.destroy();
+                if (data_stub_provide) {data_stub_provide.destroy()};
+                if (data_symbol_provide) {data_symbol_provide.destroy()};
+                if (data_stub_use) {data_stub_use.destroy()};
+                if (data_symbol_use) {data_symbol_use.destroy()};
+                tooltip.destroy();
+
+                // remove connection if created from dependency stub
+
+                // set source_obj dependency boolean to false
+                source_obj.dependency = false;
+
+                // remove the depedency obj from its components dependency list
+                removeDependencyObj(component_obj, dependency_obj);
+                layer.batchDraw();
+            } else {
+                // Do nothing!
+                return;
+            }   
+        }
+    };
 
     // when the source element moves
     source_element.on('xChange yChange', (e) => {

@@ -219,9 +219,9 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
 
                 // remove dependency stub if created
                 if(place_obj.dependency){
-                    
+                    console.log("It had a dependency attached!")
                 }
-                // remove connection if created from depdency stub
+                // remove connection if created from dependency stub
 
                 // remove the place obj from its components place list
                 removePlaceObj(component_obj, place_obj);
