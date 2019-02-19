@@ -39,6 +39,19 @@ function loadAssembly() {
 
     }
 
+    /*for(var i = 0; i < component_list.length; i++) {
+
+        component = component_list[i];
+
+        for(var j = 0; j < component.place_list.length; j++ ) {
+
+
+            addNewPlace(component.group, component.konva_component, );
+
+        }
+
+    }*/
+
     console.log(component_list);
 
 };

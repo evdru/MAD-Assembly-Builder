@@ -22,7 +22,7 @@ var highlighted = false;
 // [ ] Component: component_obj
 // [ ] Layer: tooltipLayer
 class Component {
-    constructor(type, name, posX, posY, group){
+    constructor(type, name, posX, posY, group, konva_component, tooltipLayer){
         this.type = type;
         this.name = name;
         this.place_list = [];
@@ -32,6 +32,8 @@ class Component {
         this.posX = posX;
         this.posY = posY;
         this.group = group;
+        this.konva_component = konva_component;
+        this.tooltipLayer = tooltipLayer;
     };
 };
 

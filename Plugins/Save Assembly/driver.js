@@ -23,7 +23,11 @@ function saveAssembly() {
     for(var i = 0; i < sa_comp_list.length; i++) {
         component = sa_comp_list[i];
         component.group = '';
+        component.konva_component = '';
+        component.tooltipLayer = '';
     }
+
+    console.log(sa_comp_list);
 
     var saveContent = sa_yaml.safeDump(sa_comp_list);
 

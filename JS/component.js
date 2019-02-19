@@ -39,7 +39,7 @@ function addNewComponent(posX, posY) {
     stage.add(tooltipLayer);
 
     // create a component object and add it to the global list
-    var component_obj = new Component('Component', "Component_" + (component_list.length + 1), posX, posY, component_group);
+    var component_obj = new Component('Component', "Component_" + (component_list.length + 1), posX, posY, component_group, component, tooltipLayer);
     component_list.push(component_obj);
 
     component_group.add(component);
