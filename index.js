@@ -3,6 +3,7 @@ const url = require('url');
 const plugin_manager = require('./JS/plugin_manager.js');
 const path = require('path');
 const ipcMain = electron.ipcMain;
+const dialog = electron.remote
 
 const {app, BrowserWindow, Menu} = electron;
 

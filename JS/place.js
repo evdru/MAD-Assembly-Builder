@@ -1,5 +1,5 @@
 // Add new place function, should only be called by component
-function addNewPlace(component_group, component, placePos, component_obj, tooltipLayer) {
+function addNewPlace(component_group, component, placePos, component_obj, tooltipLayer, use_selection_area, provide_selection_area) {
     var index = component_obj.place_list.length;
     var place_obj = new Place('Place', "Place_" + (index + 1), index);
     component_obj.place_list.push(place_obj);
@@ -79,6 +79,37 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
         tooltip.text(component_obj.name + " - " + place_obj.name);
         tooltip.show();
         tooltipLayer.batchDraw();
+    });
+
+    // if provide_selection_area gets clicked on
+    provide_selection_area.on("click", function(e){
+        // right click
+        if(e.evt.button === 2){
+            // if source obj has been assigned with a left click prior
+            if(source_transition != null){
+                place_obj.dependency = true;
+                // prompt for dependency type
+                const dialogOptions = {type: 'info', buttons: ['OK', 'Cancel'], message: 'Do it?'}
+                dialog.showMessageBox(dialogOptions, i => console.log(i))
+
+                var type = 'service';
+                console.log(dialog);
+                if(type ==  'service' ){
+                    type = 'PROVIDE';
+                    // set the type
+                    place_obj.dependency_type = type
+                    checkDependencyStatus(component, source_component, component_group, source_obj, source_transition, tooltipLayer);
+                } else if (type == 'data'){
+                    type = 'DATA_PROVIDE';
+                    // set the type
+                    place_obj.dependency_type = type
+                    checkDependencyStatus(component, source_component, component_group, source_obj, source_transition, tooltipLayer);
+                }
+                
+                // reset the source obj to null
+                source_transition = null;
+            }
+        }
     });
 
     // if a click over place occurs
@@ -202,7 +233,7 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
             changePlaceDependencyType(args.component, args.place, args.dependency_type);
         }
         // check if dependency stub needs to be created
-        checkDependencyStatus();
+        // checkDependencyStatus();
     });
 
     function removePlace(ev){
@@ -222,7 +253,6 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
                     console.log("It had a dependency attached!")
 
                 }
-                // remove connection if created from dependency stub
 
                 // remove the place obj from its components place list
                 removePlaceObj(component_obj, place_obj);
@@ -233,36 +263,36 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
             }   
         }
     };
-
-    function checkDependencyStatus(){
-        // create dependency here if set true
-        if(place_obj.dependency){
-            // determine which type of dependency
-            console.log("I entered the if statement ");
-            switch(place_obj.dependency_type) {
-                case 'PROVIDE':
-                    // Creating service provide dependency
-                    console.log("Creating service provide dependency");
-                    dependency_group = addNewServiceDependency(component, place, place_obj, component_obj, component_group, tooltipLayer);
-                    // add the return dependency konva elements 
-                    place_obj.dependency_konva_list.push(dependency_group);
-                    break;
-                case 'DATA_PROVIDE':
-                    // Creating service provide dependency
-                    console.log("Creating data provide dependency");
-                    dependency_group = addNewDataDependency(component, place, place_obj, component_obj, component_group, tooltipLayer);
-                    place_obj.dependency_konva_list.push(dependency_group);
-                    break;
-                case '':
-                    alert("Dependency type has not been specified");
-                    break;
-                default:
-                    // invalid dependency type
-                    alert("Invalid dependency type: " + place_obj.dependency_type);
-            }
-        }
-    };
     
     // return konva object back to its parent component
     return place;
+};
+
+function checkDependencyStatus(component, component_obj, component_group, place_obj, place, tooltipLayer){
+    // create dependency here if set true
+    if(place_obj.dependency){
+        // determine which type of dependency
+        console.log("I entered the if statement ");
+        switch(place_obj.dependency_type) {
+            case 'PROVIDE':
+                // Creating service provide dependency
+                console.log("Creating service provide dependency");
+                dependency_group = addNewServiceDependency(component, place, place_obj, component_obj, component_group, tooltipLayer);
+                // add the return dependency konva elements 
+                place_obj.dependency_konva_list.push(dependency_group);
+                break;
+            case 'DATA_PROVIDE':
+                // Creating service provide dependency
+                console.log("Creating data provide dependency");
+                dependency_group = addNewDataDependency(component, place, place_obj, component_obj, component_group, tooltipLayer);
+                place_obj.dependency_konva_list.push(dependency_group);
+                break;
+            case '':
+                alert("Dependency type has not been specified");
+                break;
+            default:
+                // invalid dependency type
+                alert("Invalid dependency type: " + place_obj.dependency_type);
+        }
+    }
 };

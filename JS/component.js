@@ -53,6 +53,8 @@ function addNewComponent(posX, posY) {
     // add konva component element to component_obj
     component_obj.component_group_konva = component_group;
     
+    use_selection_area.moveToBottom();
+    provide_selection_area.moveToBottom();
     component_group.add(component);
     component_group.add(use_selection_area);
     component_group.add(provide_selection_area);
@@ -184,7 +186,7 @@ function addNewComponent(posX, posY) {
             var pos = stage.getPointerPosition();
             var placePos = transform.point(pos);
             // grow component here
-            var place = addNewPlace(component_group, component, placePos, component_obj, tooltipLayer);
+            var place = addNewPlace(component_group, component, placePos, component_obj, tooltipLayer, use_selection_area, provide_selection_area);
             //layer.add(component_group);
             layer.draw();
         }
