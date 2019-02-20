@@ -15,12 +15,6 @@ var source_obj = null;
 var dest_obj = null;
 var highlighted = false;
 
-// @todo: add fields
-// [x] int: posX, posY
-// [x] ?: component_group
-// [ ] Rect: component
-// [ ] Component: component_obj
-// [ ] Layer: tooltipLayer
 class Component {
     constructor(type, name, posX, posY, group, konva_component, tooltipLayer){
         this.type = type;
@@ -40,7 +34,7 @@ class Component {
 // @todo: add fields
 // [ ] ?: offset
 // [ ] Circle: circle
-// [ ] ?: placePos
+// [x] ?: placePos
 
 class Place {
     constructor(type, name, index, pos) {
