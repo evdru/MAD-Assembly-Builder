@@ -48,11 +48,11 @@ function loadAssembly() {
         for(var j = 0; j < loaded_component.place_list.length; j++ ) {
             loaded_place = loaded_component.place_list[j];
             addNewPlace(component.group, component.konva_component, loaded_place.pos, component, component.tooltipLayer);
+            layer.batchDraw();
         }
 
     }
 
-    // @todo: currently, places load properly but don't show until something is clicked???
     console.log(component_list);
 
 };
