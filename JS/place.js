@@ -43,7 +43,7 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
 
     // add the place_konva to place_obj
     place_obj.place_konva = place;
-
+    // add the konva place to the component group
     component_group.add(place);
 
     // tooltip to display name of object
@@ -87,23 +87,20 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
         if(e.evt.button === 2){
             // if source obj has been assigned with a left click prior
             if(source_transition != null){
-                place_obj.dependency = true;
+                source_obj.dependency = true;
                 // prompt for dependency type
-                const dialogOptions = {type: 'info', buttons: ['OK', 'Cancel'], message: 'Do it?'}
-                dialog.showMessageBox(dialogOptions, i => console.log(i))
-
                 var type = 'service';
-                console.log(dialog);
+
                 if(type ==  'service' ){
                     type = 'PROVIDE';
                     // set the type
-                    place_obj.dependency_type = type
-                    checkDependencyStatus(component, source_component, component_group, source_obj, source_transition, tooltipLayer);
+                    source_obj.dependency_type = type
+                    createDependencyPort(component, source_component, component_group, source_obj, source_transition, tooltipLayer);
                 } else if (type == 'data'){
                     type = 'DATA_PROVIDE';
                     // set the type
-                    place_obj.dependency_type = type
-                    checkDependencyStatus(component, source_component, component_group, source_obj, source_transition, tooltipLayer);
+                    source_obj.dependency_type = type
+                    createDependencyPort(component, source_component, component_group, source_obj, source_transition, tooltipLayer);
                 }
                 
                 // reset the source obj to null
@@ -232,8 +229,6 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
         if (args.dependency_type != undefined) {
             changePlaceDependencyType(args.component, args.place, args.dependency_type);
         }
-        // check if dependency stub needs to be created
-        // checkDependencyStatus();
     });
 
     function removePlace(ev){
@@ -268,7 +263,7 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
     return place;
 };
 
-function checkDependencyStatus(component, component_obj, component_group, place_obj, place, tooltipLayer){
+function createDependencyPort(component, component_obj, component_group, place_obj, place, tooltipLayer){
     // create dependency here if set true
     if(place_obj.dependency){
         // determine which type of dependency

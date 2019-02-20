@@ -27,12 +27,12 @@ function addNewComponent(posX, posY) {
 
     // selection area used for created USE dependences from this component
     var use_selection_area = new Konva.Rect({
-        x: -30,
+        x: -15,
         y: 0,
-        width: 30,
+        width: 15,
         height: 350,
-        //fill: 'black',
-        opacity: 0,
+        fill: 'black',
+        opacity: 1,
         name: 'use_selection_area'
     });
 
@@ -40,10 +40,10 @@ function addNewComponent(posX, posY) {
     var provide_selection_area = new Konva.Rect({
         x: component.getWidth(),
         y: 0,
-        width: 30,
+        width: 15,
         height: 350,
-        //fill: 'black',
-        opacity: 0,
+        fill: 'black',
+        opacity: 1,
         name: 'provide_selection_area'
     });
 
@@ -53,8 +53,8 @@ function addNewComponent(posX, posY) {
     // add konva component element to component_obj
     component_obj.component_group_konva = component_group;
     
-    use_selection_area.moveToBottom();
-    provide_selection_area.moveToBottom();
+    // use_selection_area.moveToBottom();
+    // provide_selection_area.moveToBottom();
     component_group.add(component);
     component_group.add(use_selection_area);
     component_group.add(provide_selection_area);
@@ -101,10 +101,46 @@ function addNewComponent(posX, posY) {
     tooltipLayer.add(tooltip);
     stage.add(tooltipLayer);
 
+    use_selection_area.on('mousemove', function () {
+        //console.log(component_obj.name + " over");
+        var mousePos = stage.getPointerPosition();
+        tooltip.position({
+            x : mousePos.x + 10,
+            y : mousePos.y + 10
+        });
+        tooltip.text(component_obj.name + " USE selection area");
+        tooltip.show();
+        tooltipLayer.batchDraw();
+    });
+
+    // hide the tooltip on mouse out
+    provide_selection_area.on("mouseout", function() {
+        tooltip.hide();
+        tooltipLayer.draw();
+    });
+
+    provide_selection_area.on('mousemove', function () {
+        //console.log(component_obj.name + " over");
+        var mousePos = stage.getPointerPosition();
+        tooltip.position({
+            x : mousePos.x + 10,
+            y : mousePos.y + 10
+        });
+        tooltip.text(component_obj.name + " PROVIDE selection area");
+        tooltip.show();
+        tooltipLayer.batchDraw();
+    });
+
+    // hide the tooltip on mouse out
+    use_selection_area.on("mouseout", function() {
+        tooltip.hide();
+        tooltipLayer.draw();
+    });
+
     // when component moves
     component.on('xChange yChange', function () {
         use_selection_area.position({
-            x: component.getX() - 30,
+            x: component.getX() - 15,
             y: component.getY()
         });
         use_selection_area.height(component.getHeight() * component.scaleY());

@@ -3,6 +3,7 @@ function addNewServiceDependency(component, source_element, source_obj, componen
     var offset;
     var add;
     var stub_x;
+    var source_selected = false;
 
     // provide connection going right of a place
     if(source_obj.type == 'Place') {
