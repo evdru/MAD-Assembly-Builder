@@ -221,8 +221,8 @@ function removeDependencyObj(component_obj, dependency_obj){
 // function to remove connection konva group
 function removeConnectionKonva(dependency_obj){
     // change opacity of provide and use ports
-    dependency_obj.connection_obj.provide_port_obj.dep_group_konva.provide_symbol.opacity(0);
-    dependency_obj.connection_obj.use_port_obj.dep_group_konva.use_stub_konva.opacity(0);
+    // dependency_obj.connection_obj.provide_port_obj.dep_group_konva.provide_symbol.opacity(0);
+    // dependency_obj.connection_obj.use_port_obj.dep_group_konva.use_stub_konva.opacity(0);
 
     // destroy the connection group
     dependency_obj.connection_obj.connection_group_konva.destroy();

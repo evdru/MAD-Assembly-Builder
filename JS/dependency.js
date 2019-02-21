@@ -3,7 +3,7 @@ function addNewServiceDependency(component, source_element, source_obj, componen
     var offset;
     var add;
     var stub_x;
-    var source_selected = false;
+    source_selected = null;
 
     // provide connection going right of a place
     if(source_obj.type == 'Place') {
@@ -236,7 +236,7 @@ function addNewServiceDependency(component, source_element, source_obj, componen
             }
         } else if (e.evt.button === 2) {
             // check if provide stub was selected prior
-            if(source_selected){
+            if(source_selected != null){
                 // make sure connection is going to USE stub
                 if(source_obj.type == 'Transition'){
                     // get the use stub depedency type
@@ -276,7 +276,7 @@ function addNewServiceDependency(component, source_element, source_obj, componen
             // reset source and dest
             provide_stub_konva = null;
             use_stub_konva = null;
-            source_selected = false;
+            source_selected = null;
         }
     });
 
@@ -616,7 +616,7 @@ function addNewDataDependency(component, source_element, source_obj, component_o
         else if (e.evt.button === 2){
             console.log("Right clicked stub: ", source_obj.name);
             // check if provide stub was selected prior to create connection
-            if(source_selected){
+            if(source_selected == true){
                 // check if connection is going to USE stub
                 if(source_obj.type == 'Transition'){
                     // get the use stub dependency type

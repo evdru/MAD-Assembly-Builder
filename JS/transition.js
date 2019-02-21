@@ -168,7 +168,8 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
             // if source obj has been assigned with a left click prior
             if(source_transition_konva != null){
                 source_transition_obj.dependency = true;
-                // prompt for dependency type
+                
+                // TODO: prompt for dependency type
                 var type = 'service';
 
                 if(type ==  'service' ){
