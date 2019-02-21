@@ -33,7 +33,8 @@ class Place {
         this.name = name;
         this.index = index;
         this.place_konva;
-        this.transition_count = 0;
+        this.transition_count = 0; // 3 max
+        this.dependency_count = 0; // 3 max
         this.dependency = false;
         this.dependency_type = '';
         this.dependency_konva_list = [];
@@ -50,6 +51,7 @@ class Transition {
         this.tran_group_konva;
         this.dest = dest;
         this.func = func;
+        this.dependency_count = 0; // 3 max
         this.dependency = false;
         this.dependency_type = '';
         this.dependency_konva_list = [];
@@ -206,9 +208,6 @@ function changePlaceDependencyType(component, place, dependency_type) {
 // func to remove the dependency obj from its global comp_obj.depedency_list
 function removeDependencyObj(component_obj, dependency_obj){
     // check if dependency has a connection with it
-    console.log("its before connection check")
-    console.log(dependency_obj.connection_obj)
-
     if(dependency_obj.connection_obj){
         console.log("its removing connection")
         removeConnectionKonva(dependency_obj);

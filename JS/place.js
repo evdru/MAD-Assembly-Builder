@@ -217,6 +217,7 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
             place.strokeWidth(3);
             place.draw();
         }
+        // event listener for deletion
         window.addEventListener('keydown', removePlace);
     });
 
@@ -227,7 +228,7 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
         if(highlighted == true){
             place.stroke('black');
             place.strokeWidth(1);
-            layer.draw();
+            layer.batchDraw();
             highlighted = false;
         }
     });
@@ -236,6 +237,7 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
     place.on("mouseout", function(){
         tooltip.hide();
         tooltipLayer.draw();
+        // remove event listener for deletion
         window.removeEventListener('keydown', removePlace);
     });
 

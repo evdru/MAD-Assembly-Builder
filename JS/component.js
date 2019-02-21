@@ -27,20 +27,19 @@ function addNewComponent(posX, posY) {
 
     // selection area used for created USE dependences from this component
     var use_selection_area = new Konva.Rect({
-        x: -10,
+        x: 0,
         y: 0,
-        width: 10,
+        width: 15,
         height: 350,
-        fill: 'black',
-        opacity: 1,
+        opacity: 0,
         name: 'use_selection_area'
     });
 
     // selection area used for created USE dependences from this component
     var provide_selection_area = new Konva.Rect({
-        x: component.getWidth(),
+        x: component.getWidth() - 15,
         y: 0,
-        width: 10,
+        width: 15,
         height: 350,
         opacity: 0,
         name: 'provide_selection_area'
@@ -120,13 +119,15 @@ function addNewComponent(posX, posY) {
 
     // when component moves
     component.on('xChange yChange', function () {
+        // set use selection area position on component move or scale
         use_selection_area.position({
-            x: component.getX() - 10,
+            x: component.getX(),
             y: component.getY()
         });
         use_selection_area.height(component.getHeight() * component.scaleY());
+        // set provide selection area position on component move or scale
         provide_selection_area.position({
-            x: component.getX() + (component.getWidth() * component.scaleX()),
+            x: component.getX() + (component.getWidth() * component.scaleX()) - 15,
             y: component.getY()
         })
         provide_selection_area.height(component.getHeight() * component.scaleY());
