@@ -1,3 +1,4 @@
+
 // Add new place function, should only be called by component
 function addNewPlace(component_group, component, placePos, component_obj, tooltipLayer, use_selection_area, provide_selection_area) {
     var index = component_obj.place_list.length;
@@ -241,19 +242,6 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
         window.removeEventListener('keydown', removePlace);
     });
 
-    // Catch new place name from ipcMain
-    ipcRenderer.on("place->renderer", function(event, args) {
-        if (args.name != '') {
-            changePlaceName(args.component, args.place, args.name);
-        };
-        if (args.dependency_status != undefined) {
-            changePlaceDependencyStatus(args.component, args.place, args.dependency_status);
-        };
-        if (args.dependency_type != undefined) {
-            changePlaceDependencyType(args.component, args.place, args.dependency_type);
-        }
-    });
-
     function removePlace(ev){
         // keyCode Delete key = 46
         if (ev.keyCode === 46) {
@@ -314,3 +302,10 @@ function createDependencyPort(component, component_obj, component_group, place_o
         }
     }
 };
+
+// Catch new place name from ipcMain
+ipc.on("place->renderer", function(event, args) {
+    if (args.name != '') {
+        changePlaceName(args.component, args.place, args.name);
+    };
+});
