@@ -127,8 +127,7 @@ ipcMain.on("change_place_details", function(event, args) {
 });
 
 ipcMain.on("place->main", function(event, args) {
-	console.log()
-	window.webContents.send("place->renderer", {component: place_args.component, place: place_args.place, name: args.name, dependency_status: args.dependency_status, dependency_type: args.dependency_type});
+	window.webContents.send("place->renderer", {component: place_args.component, place: place_args.place, name: args.name});
 });
 
 // Catch component right click

@@ -27,9 +27,9 @@ function addNewComponent(posX, posY) {
 
     // selection area used for created USE dependences from this component
     var use_selection_area = new Konva.Rect({
-        x: -15,
+        x: -10,
         y: 0,
-        width: 15,
+        width: 10,
         height: 350,
         fill: 'black',
         opacity: 1,
@@ -40,10 +40,9 @@ function addNewComponent(posX, posY) {
     var provide_selection_area = new Konva.Rect({
         x: component.getWidth(),
         y: 0,
-        width: 15,
+        width: 10,
         height: 350,
-        fill: 'black',
-        opacity: 1,
+        opacity: 0,
         name: 'provide_selection_area'
     });
 
@@ -114,24 +113,6 @@ function addNewComponent(posX, posY) {
     });
 
     // hide the tooltip on mouse out
-    provide_selection_area.on("mouseout", function() {
-        tooltip.hide();
-        tooltipLayer.draw();
-    });
-
-    provide_selection_area.on('mousemove', function () {
-        //console.log(component_obj.name + " over");
-        var mousePos = stage.getPointerPosition();
-        tooltip.position({
-            x : mousePos.x + 10,
-            y : mousePos.y + 10
-        });
-        tooltip.text(component_obj.name + " PROVIDE selection area");
-        tooltip.show();
-        tooltipLayer.batchDraw();
-    });
-
-    // hide the tooltip on mouse out
     use_selection_area.on("mouseout", function() {
         tooltip.hide();
         tooltipLayer.draw();
@@ -140,7 +121,7 @@ function addNewComponent(posX, posY) {
     // when component moves
     component.on('xChange yChange', function () {
         use_selection_area.position({
-            x: component.getX() - 15,
+            x: component.getX() - 10,
             y: component.getY()
         });
         use_selection_area.height(component.getHeight() * component.scaleY());

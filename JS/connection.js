@@ -56,6 +56,10 @@ function addNewConnection(provide_component_obj, provide_source_obj, provide_stu
 
     // create the connection object
     var connection_obj = new Connection();
+
+    // set pointers to provide and use dependency ports
+    connection_obj.provide_port_obj = provide_dependency_obj;
+    connection_obj.use_port_obj = use_dependency_obj;
     // point to both gates, useful later for enabling and disabling connection
     connection_obj.gate1_konva = gate1;
     connection_obj.gate2_konva = gate2;

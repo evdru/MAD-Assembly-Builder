@@ -41,6 +41,9 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
         }
     });
 
+    // initial values to null 
+    source_konva = null;
+
     // add the place_konva to place_obj
     place_obj.place_konva = place;
     // add the konva place to the component group
@@ -86,7 +89,7 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
         // right click
         if(e.evt.button === 2){
             // if source obj has been assigned with a left click prior
-            if(source_transition != null){
+            if(source_konva != null){
                 source_obj.dependency = true;
                 // prompt for dependency type
                 var type = 'service';
@@ -95,17 +98,34 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
                     type = 'PROVIDE';
                     // set the type
                     source_obj.dependency_type = type
-                    createDependencyPort(component, source_component, component_group, source_obj, source_transition, tooltipLayer);
+                    createDependencyPort(component, source_component, component_group, source_obj, source_konva, tooltipLayer);
                 } else if (type == 'data'){
                     type = 'DATA_PROVIDE';
                     // set the type
                     source_obj.dependency_type = type
-                    createDependencyPort(component, source_component, component_group, source_obj, source_transition, tooltipLayer);
+                    createDependencyPort(component, source_component, component_group, source_obj, source_konva, tooltipLayer);
                 }
                 
                 // reset the source obj to null
-                source_transition = null;
+                source_konva = null;
             }
+        }
+    });
+
+    provide_selection_area.on("mouseover", function() {
+        // if source konva has been selected show green provide selection area on mouse enter
+        if(source_konva != null){
+            provide_selection_area.fill('green');
+            provide_selection_area.opacity(1);
+            layer.batchDraw();
+        }
+    });
+
+    provide_selection_area.on("mouseout", function() {
+        // if provide selection area was visible, hide it!
+        if(provide_selection_area.opacity() === 1){
+            provide_selection_area.opacity(0);
+            layer.batchDraw();
         }
     });
 
@@ -116,7 +136,8 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
             console.log("Left clicked place: ", place_obj.name);
             // get its component parent
             source_component = component_obj;
-            source_transition = place;
+            // source konva is the left clk source element
+            source_konva = place;
             source_obj = place_obj;
             // highlight selection
             highlighted = true;
@@ -131,7 +152,7 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
             dest_transition = place;
             dest_obj = place_obj;
             console.log("Source has been selected");
-            if(source_transition != null){
+            if(source_konva != null){
                 // check the index and both places are in same component
                 if(source_obj.index < dest_obj.index && source_component == dest_component){
                     var offset = 0;
@@ -155,7 +176,7 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
                     }
                    
                     console.log("Source place transition out count: ", source_obj.transition_count);
-                    returned_transition_obj = addNewTransition(offset, source_transition, dest_transition, source_obj, dest_obj, component_obj, component_group, component, tooltipLayer);
+                    returned_transition_obj = addNewTransition(offset, source_konva, dest_transition, source_obj, dest_obj, component_obj, component_group, component, tooltipLayer);
                     // add the transition obj to both souce place and dest place transition_connected list
                     source_obj.transition_outbound_list.push(returned_transition_obj);
                     dest_obj.transition_inbound_list.push(returned_transition_obj);
@@ -171,7 +192,7 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
                 ipcRenderer.send("change_place_details", {component: component_obj.name, place: place_obj.name});
 
             }
-            source_transition = null;
+            source_konva = null;
             dest_transition = null;
         }
     });
@@ -185,12 +206,12 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
     place.on("mouseenter", function(){
         stage.container().style.cursor = 'pointer';
         // checks if this place is valid
-        if(source_transition != null && source_obj.index < place_obj.index && source_component == component_obj){
+        if(source_konva != null && source_obj.index < place_obj.index && source_component == component_obj){
             highlighted = true;
             place.stroke('green');
             place.strokeWidth(3);
             place.draw();
-        } else if (source_transition != null && source_obj.index >= place_obj.index && source_component == component_obj){
+        } else if (source_konva != null && source_obj.index >= place_obj.index && source_component == component_obj){
             highlighted = true;
             place.stroke('red');
             place.strokeWidth(3);
