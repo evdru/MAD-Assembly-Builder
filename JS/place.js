@@ -1,4 +1,3 @@
-
 // Add new place function, should only be called by component
 function addNewPlace(component_group, component, placePos, component_obj, tooltipLayer, use_selection_area, provide_selection_area) {
     var index = component_obj.place_list.length;
@@ -177,7 +176,7 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
                     }
                    
                     console.log("Source place transition out count: ", source_obj.transition_count);
-                    returned_transition_obj = addNewTransition(offset, source_konva, dest_transition, source_obj, dest_obj, component_obj, component_group, component, tooltipLayer);
+                    returned_transition_obj = addNewTransition(offset, source_konva, dest_transition, source_obj, dest_obj, component_obj, component_group, component, tooltipLayer, use_selection_area, provide_selection_area);
                     // add the transition obj to both souce place and dest place transition_connected list
                     source_obj.transition_outbound_list.push(returned_transition_obj);
                     dest_obj.transition_inbound_list.push(returned_transition_obj);
@@ -190,7 +189,7 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
                 place.draw();
                 // right clk source was not selected, open window for editing
                 console.log("Open window for editing place details");
-                ipcRenderer.send("change_place_details", {component: component_obj.name, place: place_obj.name});
+                ipcRend.send("change_place_details", {component: component_obj.name, place: place_obj.name});
 
             }
             source_konva = null;
@@ -304,7 +303,7 @@ function createDependencyPort(component, component_obj, component_group, place_o
 };
 
 // Catch new place name from ipcMain
-ipc.on("place->renderer", function(event, args) {
+ipcRend.on("place->renderer", function(event, args) {
     if (args.name != '') {
         changePlaceName(args.component, args.place, args.name);
     };

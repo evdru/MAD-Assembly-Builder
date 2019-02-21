@@ -1,5 +1,4 @@
-// const electron = require("electron");
-const ipc = require("electron").ipcRenderer;
+// const ipc = require("electron").ipcRenderer;
 
 // Adds a new component to the stage
 function addNewComponent(posX, posY) {
@@ -218,13 +217,13 @@ function addNewComponent(posX, posY) {
             component.draw();
             // open window for editing
             console.log("Open window for editing component details");
-            ipc.send("change_component_details", {component: component_obj, konva: component_group});
+            ipcRend.send("change_component_details", {component: component_obj, konva: component_group});
         };
     });
 
 };
 
 // Catch new component name from ipcMain
-ipc.on("component->renderer", function(event, args) {
+ipcRend.on("component->renderer", function(event, args) {
     changeComponentName(args.component, args.name);
 });

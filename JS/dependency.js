@@ -271,7 +271,7 @@ function addNewServiceDependency(component, source_element, source_obj, componen
             } else {
                 // right clk source was not selected, open window for editing
                 console.log("Open window for editing " + source_obj.name + " stub details");
-                ipcRenderer.send("change_stub_details", {component: component_obj.name, stub: dependency_obj.name});
+                ipcRend.send("change_stub_details", {component: component_obj.name, stub: dependency_obj.name});
             }
             // reset source and dest
             provide_stub_konva = null;
@@ -288,11 +288,6 @@ function addNewServiceDependency(component, source_element, source_obj, componen
     dependency_group.moveToBottom();
     // draw the layer with added dependency elements
     layer.draw();
-
-    // Catch new stub name from ipcMain
-    ipcRenderer.on("stub->renderer", function(event, args) {
-        changeStubName(args.component, args.old_name, args.new_name);
-    });
 
     return dependency_group;
 }
@@ -653,7 +648,7 @@ function addNewDataDependency(component, source_element, source_obj, component_o
             } else {
                 // right clk source was not selected, open window for editing
                 console.log("Open window for editing " + source_obj.name + " dependency stub details");
-                ipcRenderer.send("change_stub_details", {component: component_obj.name, stub: dependency_obj.name});
+                ipcRend.send("change_stub_details", {component: component_obj.name, stub: dependency_obj.name});
             }
             // reset source and dest
             provide_stub_konva = null;
@@ -670,10 +665,10 @@ function addNewDataDependency(component, source_element, source_obj, component_o
     dependency_group.moveToBottom();
     layer.draw();
 
-    // Catch new stub name from ipcMain
-    ipcRenderer.on("stub->renderer", function(event, args) {
-        changeStubName(args.component, args.old_name, args.new_name);
-    });
-
     return dependency_group;
 }
+
+// Catch new stub name from ipcMain
+ipcRend.on("stub->renderer", function(event, args) {
+    changeStubName(args.component, args.old_name, args.new_name);
+});
