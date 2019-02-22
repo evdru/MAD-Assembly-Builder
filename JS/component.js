@@ -79,10 +79,14 @@ function addNewComponent(posX, posY) {
     // When drag end entire component group snap to grid
     // easier alignment for component connections
     component_group.on('dragend', (e) => {
+        posX = snapToGrid(component_group.x());
+        posY = snapToGrid(component_group.y());
         component_group.position({
-          x: snapToGrid(component_group.x()),
-          y: snapToGrid(component_group.y())
+          x: posX,
+          y: posY
         });
+        component_obj.posX = posX;
+        component_obj.posY = posY;
         layer.batchDraw();
     });
 

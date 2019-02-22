@@ -39,7 +39,7 @@ function loadAssembly() {
 
     }
 
-    // load components
+    // load places
     for(var i = 0; i < component_list.length; i++) {
 
         component = component_list[i]; // global components in which we will add places
