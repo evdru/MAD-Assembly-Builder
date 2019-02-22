@@ -47,7 +47,7 @@ function loadAssembly() {
 
         for(var j = 0; j < loaded_component.place_list.length; j++ ) {
             loaded_place = loaded_component.place_list[j];
-            addNewPlace(component.group, component.konva_component, loaded_place.pos, component, component.tooltipLayer);
+            addNewPlace(component.group, component.konva_component, {x: loaded_place.posX, y: loaded_place.posY}, component, component.tooltipLayer);
             layer.batchDraw();
         }
 

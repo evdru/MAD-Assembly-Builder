@@ -37,7 +37,7 @@ class Component {
 // [x] ?: placePos
 
 class Place {
-    constructor(type, name, index, pos) {
+    constructor(type, name, index, posX, posY) {
         this.type = type;
         this.name = name;
         this.index = index;
@@ -45,7 +45,8 @@ class Place {
         this.dependency = false;
         this.dependency_type = '';
         this.provide_dependency_list = [];
-        this.pos = pos;
+        this.posX = posX;
+        this.posY = posY;
     };
 };
 

@@ -1,7 +1,7 @@
 // Add new place function, should only be called by component
 function addNewPlace(component_group, component, placePos, component_obj, tooltipLayer) {
     var index = component_obj.place_list.length;
-    var place_obj = new Place('Place', "Place_" + (index + 1), index, placePos);
+    var place_obj = new Place('Place', "Place_" + (index + 1), index, placePos.x, placePos.y);
     component_obj.place_list.push(place_obj);
 
     var place = new Konva.Circle({
@@ -59,10 +59,14 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
     stage.add(tooltipLayer);
 
     place.on('dragend', (e) => {
+        posX = snapToGrid(place.x());
+        posY = snapToGrid(place.y());
         place.position({
-          x: snapToGrid(place.x()),
-          y: snapToGrid(place.y())
+          x: posX,
+          y: posY
         });
+        place_obj.posX = posX;
+        place_obj.posY = posY;
         layer.batchDraw();
     });
 
