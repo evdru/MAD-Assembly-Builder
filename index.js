@@ -180,7 +180,7 @@ ipcMain.on("change_component_details", function(event, args) {
 });
 
 ipcMain.on("component->main", function(event, args) {
-	window.webContents.send("component->renderer", {component: component_args.component, name: args.name, konva: component_args.konva});
+	window.webContents.send("component->renderer", {component_name: component_args.component_name, name: args.name});
 });
 
 // Catch transition right click

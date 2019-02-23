@@ -18,7 +18,6 @@
             submit.addEventListener('click', function(e) {
                 e.preventDefault();
                 const component_name = document.querySelector('#component_name').value.replace(/ /g,"_");
-                console.log(component_name);
                 ipcRenderer.send('component->main', {name: component_name});
 
                 //Close the window on button press.

@@ -215,7 +215,7 @@ function addNewComponent(posX, posY) {
             component.draw();
             // open window for editing
             console.log("Open window for editing component details");
-            ipcRend.send("change_component_details", {component: component_obj, konva: component_group});
+            ipcRend.send("change_component_details", {component_name: component_obj.name});
         };
     });
 
@@ -223,5 +223,5 @@ function addNewComponent(posX, posY) {
 
 // Catch new component name from ipcMain
 ipcRend.on("component->renderer", function(event, args) {
-    changeComponentName(args.component, args.name);
+    changeComponentName(args.component_name, args.name);
 });

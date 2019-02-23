@@ -235,9 +235,9 @@ function removeConnectionKonva(dependency_obj){
 }
 
 // Function to change component name
-function changeComponentName(component, new_comp_name) {
+function changeComponentName(component_name, new_comp_name) {
     for (var i = 0; i < component_list.length; i++) {
-        if (component_list[i].name == component.name) {
+        if (component_list[i].name == component_name) {
             component_list[i].name = new_comp_name;
         }
     };
