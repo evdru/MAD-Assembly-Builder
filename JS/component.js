@@ -1,5 +1,3 @@
-// const ipc = require("electron").ipcRenderer;
-
 // Adds a new component to the stage
 function addNewComponent(posX, posY) {
     

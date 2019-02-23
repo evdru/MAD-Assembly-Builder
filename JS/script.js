@@ -211,6 +211,7 @@ function removeDependencyObj(component_obj, dependency_obj){
     // check if dependency has a connection with it
     if(dependency_obj.connection_obj){
         console.log("its removing connection")
+        removeConnectionObj(dependency_obj.connection_obj);
         removeConnectionKonva(dependency_obj);
     }
     console.log("Before " + component_obj.dependency_list);
@@ -218,6 +219,10 @@ function removeDependencyObj(component_obj, dependency_obj){
     component_obj.dependency_list.splice( component_obj.dependency_list.indexOf(dependency_obj), 1 );
     console.log("After " + component_obj.dependency_list);
 };
+
+function removeConnectionObj(connection_obj){
+    connection_list.splice( connection_list.indexOf(connection_obj), 1 );
+}
 
 // function to remove connection konva group
 function removeConnectionKonva(dependency_obj){

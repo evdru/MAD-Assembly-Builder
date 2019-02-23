@@ -33,6 +33,10 @@ function addNewServiceDependency(component, source_element, source_obj, componen
     dependency_obj.source_obj = source_obj;
     console.log("This dependencys source obj is " + dependency_obj.source_obj.name);
 
+    // increment source obj dependency count
+    source_obj.dependency_count++;
+    console.log(source_obj.name + " dependency count is now " + source_obj.dependency_count);
+
     var dependency = new Konva.Line({
         points: [source_element.getX(), source_element.getY(), (component.getX() + offset * component.scaleX()), source_element.getY()],
         stroke: 'black',
@@ -330,6 +334,10 @@ function addNewDataDependency(component, source_element, source_obj, component_o
     // set source obj of dependency stub
     dependency_obj.source_obj = source_obj;
     console.log("This dependencys source obj is " + dependency_obj.source_obj.name);
+
+    // increment source obj dependency count
+    source_obj.dependency_count++;
+    console.log(source_obj.name + " dependency count is now " + source_obj.dependency_count);
 
     var dependency = new Konva.Line({
         points: [source_element.getX(), source_element.getY(), (component.getX() + offset * component.scaleX()), source_element.getY()],

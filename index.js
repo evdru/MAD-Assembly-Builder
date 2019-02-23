@@ -110,6 +110,39 @@ if(process.env.NODE_ENV !== 'production'){
 	});
 }
 
+// Catch dependency port right clk
+ipcMain.on("set_dependency_type", function(event, args) {
+	console.log("Logging: set_dependency_type from main thread");
+	// Create new dialog
+	const {dialog} = require('electron');
+
+	const options = {
+		type: 'question',
+		buttons: ['Cancel', 'SERVICE', 'DATA'],
+		title: 'Question',
+		message: 'What kind of dependency port do you wish to create?'
+	};
+
+	//Synchronous usage
+	let response = dialog.showMessageBox(options)
+	console.log(response)
+	var dependency_type;
+	switch(response){
+		case 0:
+			dependency_type = 'cancel';
+			break;
+		case 1:
+			dependency_type = 'service';
+			break;
+		case 2:
+			dependency_type = 'data';
+			break;
+		default:
+			dependency_type = 'cancel';
+	}
+	event.returnValue = dependency_type;
+});
+
 // Catch place right click
 ipcMain.on("change_place_details", function(event, args) {
 	console.log("Logging: change_place_details from main thread");
@@ -147,13 +180,7 @@ ipcMain.on("change_component_details", function(event, args) {
 });
 
 ipcMain.on("component->main", function(event, args) {
-	// delete component
-	if (args.remove){
-		console.log("Deleting...")
-		window.webContents.send("component->renderer", {component: component_args.component, konva: component_args.konva, remove: args.remove});
-	} else {
-		window.webContents.send("component->renderer", {component: component_args.component, name: args.name, konva: component_args.konva, remove: args.remove});
-	}
+	window.webContents.send("component->renderer", {component: component_args.component, name: args.name, konva: component_args.konva});
 });
 
 // Catch transition right click

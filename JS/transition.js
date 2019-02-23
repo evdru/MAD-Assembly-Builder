@@ -169,8 +169,10 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
             if(source_transition_konva != null){
                 source_transition_obj.dependency = true;
                 
-                // TODO: prompt for dependency type
-                var type = 'service';
+                // prompt for dependency type
+                console.log("Open window for setting port type (sync)");
+                var type = ipcRend.sendSync("set_dependency_type");
+                console.log("type: " + type);
 
                 if(type ==  'service' ){
                     type = 'USE';

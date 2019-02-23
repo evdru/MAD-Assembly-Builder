@@ -92,7 +92,9 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
             if(source_konva != null){
                 source_obj.dependency = true;
                 // prompt for dependency type
-                var type = 'service';
+                console.log("Open window for setting port type (sync)");
+                var type = ipcRend.sendSync("set_dependency_type");
+                console.log("type: " + type);
 
                 if(type ==  'service' ){
                     type = 'PROVIDE';
