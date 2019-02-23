@@ -1,7 +1,12 @@
 // Add new place function, should only be called by component
 function addNewPlace(component_group, component, placePos, component_obj, tooltipLayer, use_selection_area, provide_selection_area) {
-    var index = component_obj.place_list.length;
-    var place_obj = new Place('Place', "Place_" + (index + 1), index);
+    var index;
+    if (component_obj.place_list.length == 0){
+        index = 1;
+    } else {
+        index = component_obj.place_list[component_obj.place_list.length - 1].index + 1;
+    }
+    var place_obj = new Place('Place', "Place_" + index, index);
     component_obj.place_list.push(place_obj);
 
     var place = new Konva.Circle({
