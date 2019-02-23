@@ -70,12 +70,16 @@ function addNewConnection(provide_component_obj, provide_source_obj, provide_stu
     // create pointer to connection_obj from use_dependency_obj
     use_dependency_obj.connection_obj = connection_obj;
 
+    // add connection to global list
+    connection_list.push(connection_obj);
+    console.log(connection_list);
+
     // when the provide dependency moves
     provide_stub_konva.on('xChange yChange', (e) => {
         // recalculate the midpoint
         midpoint_x = getMidPointX();
         midpoint_y = getMidPointY();
-        connection.setPoints([provide_stub_konva.getAbsolutePosition().x + provide_offset, 
+        connection.setPoints([provide_stub_konva.getAbsolutePosition().x + provide_offset,
                               provide_stub_konva.getAbsolutePosition().y, 
                               midpoint_x,
                               provide_stub_konva.getAbsolutePosition().y,

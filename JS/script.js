@@ -8,6 +8,7 @@ const ipcRend = require('electron').ipcRenderer;
 var layer = "global";
 var stage = "global";
 var component_list = [];
+var connection_list = [];
 var blockSnapSize = 10;
 var source_transition = null;
 var dest_transition = null;
