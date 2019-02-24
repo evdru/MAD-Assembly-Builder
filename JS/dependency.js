@@ -233,6 +233,8 @@ function addNewServiceDependency(component, source_element, source_obj, componen
                 provide_component_group = component_group;
                 provide_symbol = symbol;
                 provide_dependency_obj = dependency_obj;
+                // set pointer to dependency obj stub/symbol
+                provide_dependency_obj.dep_stub_konva = provide_symbol;
                 provide_dependency_type = source_obj.dependency_type;
                 console.log("PROVIDE dependency type is " + provide_dependency_type);
                 // set source selected true
@@ -255,6 +257,8 @@ function addNewServiceDependency(component, source_element, source_obj, componen
                             use_stub_konva = stub;
                             use_component_group = component_group;
                             use_dependency_obj = dependency_obj;
+                            // set pointer to dependency obj stub/symbol
+                            use_dependency_obj.dep_stub_konva = use_stub_konva;
                             // check if arc is visible
                             if(provide_symbol.opacity() == 0){
                                 // make it visible
@@ -616,6 +620,8 @@ function addNewDataDependency(component, source_element, source_obj, component_o
                 provide_symbol = data_symbol_provide;
                 provide_dependency_type = source_obj.dependency_type;
                 provide_dependency_obj = dependency_obj;
+                // set pointer to dependency obj stub/symbol
+                provide_dependency_obj.dep_stub_konva = provide_symbol;
                 console.log("PROVIDE dependency type is " + provide_dependency_type);
                 // set source selected true
                 source_selected = true;
@@ -639,6 +645,8 @@ function addNewDataDependency(component, source_element, source_obj, component_o
                             use_stub_konva = stub;
                             use_component_group = component_group;
                             use_dependency_obj = dependency_obj;
+                            // set pointer to dependency obj stub/symbol
+                            use_dependency_obj.dep_stub_konva = data_stub_use;
                             // make things visible
                             provide_symbol.opacity(1);
                             data_stub_use.opacity(1);

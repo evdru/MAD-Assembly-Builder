@@ -64,6 +64,7 @@ class Dependency {
         this.type = type;
         this.name = name;
         this.dep_group_konva;
+        this.dep_stub_konva;
         this.source_obj;
         this.connection_obj;
     };
@@ -221,6 +222,9 @@ function removeDependencyObj(component_obj, dependency_obj){
 };
 
 function removeConnectionObj(connection_obj){
+    // set opacity to 0 for dependencies
+    connection_obj.provide_port_obj.dep_stub_konva.opacity(0);
+    connection_obj.use_port_obj.dep_stub_konva.opacity(0);
     // remove connection from connection list
     connection_list.splice( connection_list.indexOf(connection_obj), 1 );
 }
