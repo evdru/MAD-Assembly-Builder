@@ -168,14 +168,16 @@ function removeOutboundAndInboundTransitions(component_obj, place_obj){
 
 // Function to change place name
 function changePlaceName(component, place, new_place_name) {
-    for (var i = 0; i < component_list.length; i++) {
-        if (component_list[i].name == component) {
-            for (var j = 0; j < component_list[i].place_list.length; j++) {
-                if (component_list[i].place_list[j].name == place) {
-                    component_list[i].place_list[j].name = new_place_name;
-                }
-            }
-        }
+    // find the component obj
+    var found_component_obj = component_list.find(function(element) {
+        return element.name == component;
+        });
+    var found_place_obj = found_component_obj.place_list.find(function(element) {
+        return element.name == place;
+        });
+    if(found_place_obj){
+        // set place obj to its new name
+        found_place_obj.name = new_place_name;
     }
 };
 
@@ -241,11 +243,13 @@ function removeConnectionKonva(dependency_obj){
 
 // Function to change component name
 function changeComponentName(component_name, new_comp_name) {
-    for (var i = 0; i < component_list.length; i++) {
-        if (component_list[i].name == component_name) {
-            component_list[i].name = new_comp_name;
-        }
-    };
+     // find the component obj
+    var found_component_obj = component_list.find(function(element) {
+        return element.name == component_name;
+    });
+    if(found_component_obj){
+        found_component_obj.name = new_comp_name;
+    }
 };
 
 function removeComponentObj(component_obj) {
@@ -268,14 +272,15 @@ function removeComponentObj(component_obj) {
 
 // Function to change transition name
 function changeTransitionName(component, old_name, new_name) {
-    for (var i = 0; i < component_list.length; i++) {
-        if (component_list[i].name == component) {
-            for (var j = 0; j < component_list[i].transition_list.length; j++) {
-                if (component_list[i].transition_list[j].name == old_name) {
-                    component_list[i].transition_list[j].name = new_name;
-                }
-            }
-        }
+    // find the component obj
+    var found_component_obj = component_list.find(function(element) {
+        return element.name == component;
+        });
+    var found_transition_obj = found_component_obj.transition_list.find(function(element) {
+        return element.name == old_name;
+        });
+    if (found_transition_obj){
+        found_transition_obj.name = new_name;
     }
 };
 
@@ -285,14 +290,15 @@ function changeTransitionFunc(component, old_func, new_func) {
     console.log(component);
     console.log(old_func);
     console.log(new_func);
-    for (var i = 0; i < component_list.length; i++) {
-        if (component_list[i].name == component) {
-            for (var j = 0; j < component_list[i].transition_list.length; j++) {
-                if (component_list[i].transition_list[j].func == old_func) {
-                    component_list[i].transition_list[j].func = new_func;
-                }
-            }
-        }
+    // find the component obj
+    var found_component_obj = component_list.find(function(element) {
+        return element.name == component;
+        });
+    var found_transition_obj = found_component_obj.transition_list.find(function(element) {
+        return element.func == old_func;
+        });
+    if (found_transition_obj){
+        found_transition_obj.func = new_func;
     }
 };
 
@@ -350,13 +356,14 @@ function changeTransitionDependencyType(component, transition, dependency_type) 
 
 // Function to change stub name
 function changeStubName(component, stub_name, new_stub_name) {
-    for (var i = 0; i < component_list.length; i++) {
-        if (component_list[i].name == component) {
-            for (var j = 0; j < component_list[i].dependency_list.length; j++) {
-                if (component_list[i].dependency_list[j].name == stub_name) {
-                    component_list[i].dependency_list[j].name = new_stub_name;
-                }
-            }
-        }
+    // find the component obj
+    var found_component_obj = component_list.find(function(element) {
+        return element.name == component;
+        });
+    var found_dependency_obj = found_component_obj.dependency_list.find(function(element) {
+        return element.name == stub_name;
+        });
+    if (found_dependency_obj){
+        found_dependency_obj.name = new_stub_name;
     }
 };
