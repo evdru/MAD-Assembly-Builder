@@ -221,6 +221,7 @@ function removeDependencyObj(component_obj, dependency_obj){
 };
 
 function removeConnectionObj(connection_obj){
+    // remove connection from connection list
     connection_list.splice( connection_list.indexOf(connection_obj), 1 );
 }
 
@@ -244,6 +245,17 @@ function changeComponentName(component_name, new_comp_name) {
 };
 
 function removeComponentObj(component_obj) {
+    // check if connection is connected to this component
+    for (var i = 0; i < connection_list.length; i++) {
+        if(connection_list[i].provide_port_obj.component_obj == component_obj){
+            removeConnectionKonva(connection_list[i].provide_port_obj);
+            removeConnectionObj(connection_list[i]);
+        }
+        else if (connection_list[i].use_port_obj.component_obj == component_obj){
+            removeConnectionKonva(connection_list[i].use_port_obj);
+            removeConnectionObj(connection_list[i]);
+        }
+    }
     console.log("Before " + component_list);
     // find index of component in component_list and remove
     component_list.splice( component_list.indexOf(component_obj), 1 );
