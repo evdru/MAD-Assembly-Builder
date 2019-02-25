@@ -32,10 +32,20 @@ function loadAssembly() {
     // load components
     for(var i = 0; i < la_comp_list.length; i++) {
 
-        var posX = la_comp_list[i].posX;
-        var posY = la_comp_list[i].posY;
+        loaded_component = la_comp_list[i];
 
+        var posX = loaded_component.posX;
+        var posY = loaded_component.posY;
+        var scaleX = loaded_component.scaleX;
+        var scaleY = loaded_component.scaleY;
+
+        // create component in GUI, modify scale and position correctly
         addNewComponent(posX, posY);
+        component_list[i].konva_component.scaleX(scaleX);
+        component_list[i].konva_component.scaleY(scaleY);
+        component_list[i].group.position({x:posX,y:posY});
+
+        layer.batchDraw();
 
     }
 

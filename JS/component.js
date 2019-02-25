@@ -39,7 +39,7 @@ function addNewComponent(posX, posY) {
     stage.add(tooltipLayer);
 
     // create a component object and add it to the global list
-    var component_obj = new Component('Component', "Component_" + (component_list.length + 1), posX, posY, component_group, component, tooltipLayer);
+    var component_obj = new Component('Component', "Component_" + (component_list.length + 1), component_group, component, tooltipLayer);
     component_list.push(component_obj);
 
     component_group.add(component);
@@ -85,8 +85,6 @@ function addNewComponent(posX, posY) {
           x: posX,
           y: posY
         });
-        component_obj.posX = posX;
-        component_obj.posY = posY;
         layer.batchDraw();
     });
 

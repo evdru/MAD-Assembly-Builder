@@ -16,15 +16,13 @@ var dest_obj = null;
 var highlighted = false;
 
 class Component {
-    constructor(type, name, posX, posY, group, konva_component, tooltipLayer){
+    constructor(type, name, group, konva_component, tooltipLayer){
         this.type = type;
         this.name = name;
         this.place_list = [];
         this.transition_list = [];
         this.transition_dictionary = {};
         this.dependency_list = [];
-        this.posX = posX;
-        this.posY = posY;
         this.group = group;
         this.konva_component = konva_component;
         this.tooltipLayer = tooltipLayer;
