@@ -7,7 +7,7 @@ function addNewConnection(provide_component_obj, provide_source_obj, provide_stu
     var midpoint_y = getMidPointY();
 
     var connection = new Konva.Line({
-        points: [provide_stub_konva.getAbsolutePosition().x + provide_offset, 
+        points: [provide_stub_konva.getAbsolutePosition().x + provide_offset,
                  provide_stub_konva.getAbsolutePosition().y, 
                  midpoint_x,
                  provide_stub_konva.getAbsolutePosition().y,

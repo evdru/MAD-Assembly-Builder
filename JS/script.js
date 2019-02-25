@@ -15,6 +15,7 @@ var dest_transition = null;
 var source_obj = null;
 var dest_obj = null;
 var highlighted = false;
+const max_transition_count = 3; // const global max transition count coming out of any one place
 
 class Component {
     constructor(type, name){
@@ -169,16 +170,10 @@ function removeOutboundAndInboundTransitions(component_obj, place_obj){
 // Function to change place name
 function changePlaceName(component, place, new_place_name) {
     // find the component obj
-    var found_component_obj = component_list.find(function(element) {
-        return element.name == component;
-        });
-    var found_place_obj = found_component_obj.place_list.find(function(element) {
-        return element.name == place;
-        });
-    if(found_place_obj){
-        // set place obj to its new name
-        found_place_obj.name = new_place_name;
-    }
+    var found_component_obj = component_list.find(function(element) { return element.name == component; });
+    var found_place_obj = found_component_obj.place_list.find(function(element) { return element.name == place; });
+    // set place obj to its new name
+    if(found_place_obj){ found_place_obj.name = new_place_name; }
 };
 
 // Function to change place's dependency status
@@ -259,7 +254,7 @@ function removeComponentObj(component_obj) {
             removeConnectionKonva(connection_list[i].provide_port_obj);
             removeConnectionObj(connection_list[i]);
         }
-        else if (connection_list[i].use_port_obj.component_obj == component_obj){
+        if (connection_list[i].use_port_obj.component_obj == component_obj){
             removeConnectionKonva(connection_list[i].use_port_obj);
             removeConnectionObj(connection_list[i]);
         }
