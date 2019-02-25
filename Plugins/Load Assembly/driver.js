@@ -29,6 +29,14 @@ function loadAssembly() {
     data = la_fs.readFileSync(fileName.toString());
     la_comp_list = la_yaml.safeLoadAll(data)[0];
 
+    loadComponents(la_comp_list);
+    loadPlaces(la_comp_list);
+    loadTransitions(la_comp_list);
+
+};
+
+function loadComponents(la_comp_list) {
+
     // load components
     for(var i = 0; i < la_comp_list.length; i++) {
 
@@ -48,12 +56,15 @@ function loadAssembly() {
         layer.batchDraw();
 
     }
+}
+
+function loadPlaces(la_comp_list) {
 
     // load places
-    for(var i = 0; i < component_list.length; i++) {
+    for(var i = 0; i < la_comp_list.length; i++) {
 
-        component = component_list[i]; // global components in which we will add places
         loaded_component = la_comp_list[i]; // components parsed from .yaml file, which has info about places
+        component = component_list[i]; // global components in which we will add places
 
         for(var j = 0; j < loaded_component.place_list.length; j++ ) {
             loaded_place = loaded_component.place_list[j];
@@ -63,12 +74,16 @@ function loadAssembly() {
 
     }
 
+};
+
+function loadTransitions(la_comp_list) {
+
     // load transitions
-    for(var i = 0; i < component_list.length; i++) {
+    for(var i = 0; i < la_comp_list.length; i++) {
 
         offsetCtr = 0;
-        component = component_list[i]; // global components in which we will add transitions
         loaded_component = la_comp_list[i]; // components parsed from .yaml file, which has info about transitions
+        component = component_list[i]; // global components in which we will add transitions
 
         for(var j = 0; j < loaded_component.transition_list.length; j++) {
 
@@ -91,5 +106,4 @@ function loadAssembly() {
             offsetCtr++;
         }
     }
-
 };

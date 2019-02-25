@@ -36,8 +36,6 @@ function saveAssembly() {
         return;
     }
 
-    console.log(sa_comp_list);
-
     sa_fs.writeFileSync(fileName, saveContent);
 
 };
