@@ -31,11 +31,10 @@ class Component {
 
 // @todo: add fields
 // [ ] ?: offset
-// [ ] Circle: circle
-// [x] ?: placePos
+// [x] Circle: circle
 
 class Place {
-    constructor(type, name, index, posX, posY) {
+    constructor(type, name, index, konva_place) {
         this.type = type;
         this.name = name;
         this.index = index;
@@ -43,14 +42,10 @@ class Place {
         this.dependency = false;
         this.dependency_type = '';
         this.provide_dependency_list = [];
-        this.posX = posX;
-        this.posY = posY;
+        this.konva_place = konva_place;
     };
 };
 
-// @todo: add fields
-// [ ] Circle: source_konva
-// [ ] Circle: dest_konva
 class Transition {
     constructor(type, name, src, dest, func) {
         this.type = type;

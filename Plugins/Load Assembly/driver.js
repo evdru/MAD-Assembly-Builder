@@ -63,6 +63,33 @@ function loadAssembly() {
 
     }
 
-    console.log(component_list);
+    // load transitions
+    for(var i = 0; i < component_list.length; i++) {
+
+        offsetCtr = 0;
+        component = component_list[i]; // global components in which we will add transitions
+        loaded_component = la_comp_list[i]; // components parsed from .yaml file, which has info about transitions
+
+        for(var j = 0; j < loaded_component.transition_list.length; j++) {
+
+            loaded_transition = loaded_component.transition_list[j];
+
+            // @todo: is there a way to make this more robust?
+            for(var k = 0; k < loaded_component.place_list.length; k++) {
+                if(loaded_transition.src.name == component.place_list[k].name) {
+                    var src = component.place_list[k];
+                }
+                if(loaded_transition.dest.name == component.place_list[k].name) {
+                    var dest = component.place_list[k];
+                }
+            }
+
+            if(offsetCtr == 0) { var offset = 0; }
+            if(offsetCtr == 1) { var offset = 30; }
+            if(offsetCtr == 2) { var offset = -30; }
+            addNewTransition(offset, src.konva_place, dest.konva_place, src, dest, component, component.group, component.konva_component, component.tooltipLayer);
+            offsetCtr++;
+        }
+    }
 
 };
