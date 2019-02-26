@@ -3,7 +3,7 @@ const url = require('url');
 const path = require('path');
 const ipcMain = require('electron').remote.ipcMain;
 const remote = require('electron').remote;
-const ipcElectron = require('electron').ipcRenderer;
+const ipcRend = require('electron').ipcRenderer;
 
 var layer = "global";
 var stage = "global";

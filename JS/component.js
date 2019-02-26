@@ -1,6 +1,6 @@
 // Adds a new component to the stage
 function addNewComponent(posX, posY) {
-
+    
     // create a new component group every time a component is created
     var component_group = new Konva.Group({
         x: posX,
@@ -47,6 +47,7 @@ function addNewComponent(posX, posY) {
     component_list.push(component_obj);
     // add konva component element to component_obj
     component_obj.component_group_konva = component_group;
+    
     // use_selection_area.moveToBottom();
     // provide_selection_area.moveToBottom();
     component_group.add(component);
@@ -70,7 +71,7 @@ function addNewComponent(posX, posY) {
             // remove old transformers
             // TODO: we can skip it if current rect is already selected
             stage.find('Transformer').destroy();
-
+        
             // create new transformer
             var tr = new Konva.Transformer({rotateEnabled: false});
             e.target.getParent().add(tr);
@@ -128,7 +129,7 @@ function addNewComponent(posX, posY) {
         })
         provide_selection_area.height(component.getHeight() * component.scaleY());
     });
-    
+
     // when component is being dragged
     component_group.on('dragmove', (e) => {
         tooltip.hide();
@@ -138,11 +139,9 @@ function addNewComponent(posX, posY) {
     // When drag end entire component group snap to grid
     // easier alignment for component connections
     component_group.on('dragend', (e) => {
-        posX = snapToGrid(component_group.x());
-        posY = snapToGrid(component_group.y());
         component_group.position({
-          x: posX,
-          y: posY
+          x: snapToGrid(component_group.x()),
+          y: snapToGrid(component_group.y())
         });
         layer.batchDraw();
     });
@@ -160,6 +159,25 @@ function addNewComponent(posX, posY) {
         tooltipLayer.batchDraw();
     });
 
+    function removeComponent(ev){
+        // keyCode Delete key
+        if (ev.keyCode === 46) {
+            if (confirm('Are you sure you want to delete this Component? You will lose everything inside of it.')){
+                // Delete it!
+                component_obj.component_group_konva.destroy();
+                removeComponentObj();
+                layer.draw();
+            } else {
+                // Do nothing!
+                return;
+            }   
+        }
+    };
+
+    component.on("mouseover", function(e){
+        window.addEventListener('keydown', removeComponent);
+    });
+    
     // hide the tooltip on mouse out
     component.on("mouseout", function(){
         //console.log(component_obj.name + " out");
@@ -168,6 +186,7 @@ function addNewComponent(posX, posY) {
         tooltip.hide();
         tooltipLayer.draw();
         //layer.draw();
+        window.removeEventListener('keydown', removeComponent);
     });
 
     // if double click on component
@@ -182,7 +201,7 @@ function addNewComponent(posX, posY) {
             var pos = stage.getPointerPosition();
             var placePos = transform.point(pos);
             // grow component here
-            var place = addNewPlace(component_group, component, placePos, component_obj, tooltipLayer);
+            var place = addNewPlace(component_group, component, placePos, component_obj, tooltipLayer, use_selection_area, provide_selection_area);
             //layer.add(component_group);
             layer.draw();
         }
@@ -196,12 +215,13 @@ function addNewComponent(posX, posY) {
             component.draw();
             // open window for editing
             console.log("Open window for editing component details");
-            ipcRenderer.send("change_component_details", {component: component_obj.name});
+            ipcRend.send("change_component_details", {component_name: component_obj.name});
         };
     });
+
 };
 
 // Catch new component name from ipcMain
 ipcRend.on("component->renderer", function(event, args) {
-    changeComponentName(args.component, args.name);
+    changeComponentName(args.component_name, args.name);
 });

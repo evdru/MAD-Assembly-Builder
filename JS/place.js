@@ -70,14 +70,10 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
     stage.add(tooltipLayer);
 
     place.on('dragend', (e) => {
-        posX = snapToGrid(place.x());
-        posY = snapToGrid(place.y());
         place.position({
-          x: posX,
-          y: posY
+          x: snapToGrid(place.x()),
+          y: snapToGrid(place.y())
         });
-        place_obj.posX = posX;
-        place_obj.posY = posY;
         layer.batchDraw();
     });
 
@@ -93,6 +89,53 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
         tooltipLayer.batchDraw();
     });
 
+    // if provide_selection_area gets clicked on
+    provide_selection_area.on("click", function(e){
+        // right click
+        if(e.evt.button === 2){
+            // if source obj has been assigned with a left click prior
+            if(source_konva != null){
+                source_obj.dependency = true;
+                // prompt for dependency type
+                console.log("Open window for setting port type (sync)");
+                var type = ipcRend.sendSync("set_dependency_type");
+                console.log("type: " + type);
+
+                if(type ==  'service' ){
+                    type = 'PROVIDE';
+                    // set the type
+                    source_obj.dependency_type = type
+                    createDependencyPort(component, source_component, component_group, source_obj, source_konva, tooltipLayer);
+                } else if (type == 'data'){
+                    type = 'DATA_PROVIDE';
+                    // set the type
+                    source_obj.dependency_type = type
+                    createDependencyPort(component, source_component, component_group, source_obj, source_konva, tooltipLayer);
+                }
+                
+                // reset the source obj to null
+                source_konva = null;
+            }
+        }
+    });
+
+    provide_selection_area.on("mouseover", function() {
+        // if source konva has been selected show green provide selection area on mouse enter
+        if(source_konva != null){
+            provide_selection_area.fill('green');
+            provide_selection_area.opacity(1);
+            layer.batchDraw();
+        }
+    });
+
+    provide_selection_area.on("mouseout", function() {
+        // if provide selection area was visible, hide it!
+        if(provide_selection_area.opacity() === 1){
+            provide_selection_area.opacity(0);
+            layer.batchDraw();
+        }
+    });
+
     // if a click over place occurs
     place.on("click", function(e){
         if (e.evt.button === 0){
@@ -100,7 +143,8 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
             console.log("Left clicked place: ", place_obj.name);
             // get its component parent
             source_component = component_obj;
-            source_transition = place;
+            // source konva is the left clk source element
+            source_konva = place;
             source_obj = place_obj;
             // highlight selection
             highlighted = true;
@@ -115,28 +159,35 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
             dest_transition = place;
             dest_obj = place_obj;
             console.log("Source has been selected");
-            if(source_transition != null){
+            if(source_konva != null){
                 // check the index and both places are in same component
                 if(source_obj.index < dest_obj.index && source_component == dest_component){
                     var offset = 0;
                     // check if this source -> dest combo has been added prior
                     if(source_component.transition_dictionary[source_obj.name + dest_obj.name]){
                         // set offset based on its value in the dictionary
+                        console.log("The current tran count is " + source_component.transition_dictionary[source_obj.name + dest_obj.name] + " before creation");
                         if(source_component.transition_dictionary[source_obj.name + dest_obj.name] == 1){
                             offset = 30;
                             // iterate the count for this transition
-                            source_component.transition_dictionary[source_obj.name + dest_obj.name] = 2;
+                            source_component.transition_dictionary[source_obj.name + dest_obj.name]++;
                         } else if (source_component.transition_dictionary[source_obj.name + dest_obj.name] == 2){
                             offset = -30;
+                            source_component.transition_dictionary[source_obj.name + dest_obj.name]++;
+                        } else {
+                            offset = 0;
                         }
                     } else {
                         // add the source -> dest combo into the components dictionary
                         source_component.transition_dictionary[source_obj.name + dest_obj.name] = 1;
                     }
-
+                   
                     console.log("Source place transition out count: ", source_obj.transition_count);
                     returned_transition_obj = addNewTransition(offset, source_konva, dest_transition, source_obj, dest_obj, component_obj, component_group, component, tooltipLayer, use_selection_area, provide_selection_area);
-                }
+                    // add the transition obj to both souce place and dest place transition_connected list
+                    source_obj.transition_outbound_list.push(returned_transition_obj);
+                    dest_obj.transition_inbound_list.push(returned_transition_obj);
+                } 
             } else {
                 // highlight the place
                 highlighted = true;
@@ -145,10 +196,10 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
                 place.draw();
                 // right clk source was not selected, open window for editing
                 console.log("Open window for editing place details");
-                ipcRenderer.send("change_place_details", {component: component_obj.name, place: place_obj.name});
+                ipcRend.send("change_place_details", {component: component_obj.name, place: place_obj.name});
 
             }
-            source_transition = null;
+            source_konva = null;
             dest_transition = null;
         }
     });
@@ -162,12 +213,12 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
     place.on("mouseenter", function(){
         stage.container().style.cursor = 'pointer';
         // checks if this place is valid
-        if(source_transition != null && source_obj.index < place_obj.index && source_component == component_obj){
+        if(source_konva != null && source_obj.index < place_obj.index && source_component == component_obj){
             highlighted = true;
             place.stroke('green');
             place.strokeWidth(3);
             place.draw();
-        } else if (source_transition != null && source_obj.index >= place_obj.index && source_component == component_obj){
+        } else if (source_konva != null && source_obj.index >= place_obj.index && source_component == component_obj){
             highlighted = true;
             place.stroke('red');
             place.strokeWidth(3);
@@ -184,7 +235,7 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
         if(highlighted == true){
             place.stroke('black');
             place.strokeWidth(1);
-            layer.draw();
+            layer.batchDraw();
             highlighted = false;
         }
     });
@@ -197,6 +248,70 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
         window.removeEventListener('keydown', removePlace);
     });
 
+    function removePlace(ev){
+        // keyCode Delete key = 46
+        if (ev.keyCode === 46) {
+            if (confirm('Are you sure you want to delete this Place?')){
+                // Delete it!
+                place.destroy();
+                tooltip.destroy();
+                layer.draw();
+
+                // remove all transitions that are connected to this place
+                removeOutboundAndInboundTransitions(component_obj, place_obj);
+
+                // remove dependency stub if created
+                if(place_obj.dependency){
+                    console.log("It had a dependency attached!")
+
+                }
+
+                // remove the place obj from its components place list
+                removePlaceObj(component_obj, place_obj);
+                layer.batchDraw();
+            } else {
+                // Do nothing!
+                return;
+            }   
+        }
+    };
+    
     // return konva object back to its parent component
     return place;
 };
+
+function createDependencyPort(component, component_obj, component_group, place_obj, place, tooltipLayer){
+    // create dependency here if set true
+    if(place_obj.dependency){
+        // determine which type of dependency
+        console.log("I entered the if statement ");
+        switch(place_obj.dependency_type) {
+            case 'PROVIDE':
+                // Creating service provide dependency
+                console.log("Creating service provide dependency");
+                dependency_group = addNewServiceDependency(component, place, place_obj, component_obj, component_group, tooltipLayer);
+                // add the return dependency konva elements 
+                place_obj.dependency_konva_list.push(dependency_group);
+                break;
+            case 'DATA_PROVIDE':
+                // Creating service provide dependency
+                console.log("Creating data provide dependency");
+                dependency_group = addNewDataDependency(component, place, place_obj, component_obj, component_group, tooltipLayer);
+                place_obj.dependency_konva_list.push(dependency_group);
+                break;
+            case '':
+                alert("Dependency type has not been specified");
+                break;
+            default:
+                // invalid dependency type
+                alert("Invalid dependency type: " + place_obj.dependency_type);
+        }
+    }
+};
+
+// Catch new place name from ipcMain
+ipcRend.on("place->renderer", function(event, args) {
+    if (args.name != '') {
+        changePlaceName(args.component, args.place, args.name);
+    };
+});
