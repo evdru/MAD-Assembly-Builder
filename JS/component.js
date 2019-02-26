@@ -22,6 +22,26 @@ function addNewComponent(posX, posY) {
         strokeWidth: 0.5
     });
 
+    // selection area used for created USE dependences from this component
+    var use_selection_area = new Konva.Rect({
+        x: 0,
+        y: 0,
+        width: 15,
+        height: 350,
+        opacity: 0,
+        name: 'use_selection_area'
+    });
+
+    // selection area used for created USE dependences from this component
+    var provide_selection_area = new Konva.Rect({
+        x: component.getWidth() - 15,
+        y: 0,
+        width: 15,
+        height: 350,
+        opacity: 0,
+        name: 'provide_selection_area'
+    });
+
     // tooltip to display name of object
     var tooltip = new Konva.Text({
         text: "",
@@ -39,7 +59,7 @@ function addNewComponent(posX, posY) {
     stage.add(tooltipLayer);
 
     // create a component object and add it to the global list
-    var component_obj = new Component('Component', "Component_" + (component_list.length + 1), component_group, component, tooltipLayer);
+    var component_obj = new Component('Component', "Component_" + (component_list.length + 1));
     component_list.push(component_obj);
 
     component_group.add(component);
