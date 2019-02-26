@@ -36,6 +36,9 @@ class Place {
         this.transition_count = 0;
         this.dependency = false;
         this.dependency_type = '';
+        this.dependency_konva_list = [];
+        this.transition_outbound_list = [];
+        this.transition_inbound_list = [];
     };
 };
 
