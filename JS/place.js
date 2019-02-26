@@ -46,6 +46,12 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
         }
     });
 
+    // initial values to null 
+    source_konva = null;
+
+    // add the place_konva to place_obj
+    place_obj.place_konva = place;
+    // add the konva place to the component group
     component_group.add(place);
 
     // tooltip to display name of object
@@ -167,6 +173,8 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
             place.strokeWidth(3);
             place.draw();
         }
+        // event listener for deletion
+        window.addEventListener('keydown', removePlace);
     });
 
     // changes the cursor back to default
@@ -185,46 +193,9 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
     place.on("mouseout", function(){
         tooltip.hide();
         tooltipLayer.draw();
+        // remove event listener for deletion
+        window.removeEventListener('keydown', removePlace);
     });
-
-    // Catch new place name from ipcMain
-    ipcRenderer.on("place->renderer", function(event, args) {
-        if (args.name != '') {
-            changePlaceName(args.component, args.place, args.name);
-        };
-        if (args.dependency_status != undefined) {
-            changePlaceDependencyStatus(args.component, args.place, args.dependency_status);
-        };
-        if (args.dependency_type != undefined) {
-            changePlaceDependencyType(args.component, args.place, args.dependency_type);
-        }
-    });
-
-    function checkDependencyStatus(){
-        // create dependency here if set true
-        if(place_obj.dependency){
-            // determine which type of dependency
-            console.log("I entered the if statement ");
-            switch(place_obj.dependency_type) {
-                case 'PROVIDE':
-                    // Creating service provide dependency
-                    console.log("Creating service provide dependency");
-                    dependency = addNewServiceDependency(component, place, place_obj, component_obj, component_group, tooltipLayer);
-                    break;
-                case 'DATA_PROVIDE':
-                    // Creating service provide dependency
-                    console.log("Creating data provide dependency");
-                    dependency = addNewDataDependency(component, place, place_obj, component_obj, component_group, tooltipLayer);
-                    break;
-                case '':
-                    alert("Dependency type has not been specified");
-                    break;
-                default:
-                    // invalid dependency type
-                    alert("Invalid dependency type: " + place_obj.dependency_type);
-            }
-        }
-    };
 
     // return konva object back to its parent component
     return place;

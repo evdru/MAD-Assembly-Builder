@@ -50,6 +50,8 @@ function addNewComponent(posX, posY) {
     // use_selection_area.moveToBottom();
     // provide_selection_area.moveToBottom();
     component_group.add(component);
+    component_group.add(use_selection_area);
+    component_group.add(provide_selection_area);
     layer.add(component_group);
     layer.draw();
 
@@ -93,6 +95,40 @@ function addNewComponent(posX, posY) {
     tooltipLayer.add(tooltip);
     stage.add(tooltipLayer);
 
+    use_selection_area.on('mousemove', function () {
+        //console.log(component_obj.name + " over");
+        var mousePos = stage.getPointerPosition();
+        tooltip.position({
+            x : mousePos.x + 10,
+            y : mousePos.y + 10
+        });
+        tooltip.text(component_obj.name + " USE selection area");
+        tooltip.show();
+        tooltipLayer.batchDraw();
+    });
+
+    // hide the tooltip on mouse out
+    use_selection_area.on("mouseout", function() {
+        tooltip.hide();
+        tooltipLayer.draw();
+    });
+
+    // when component moves
+    component.on('xChange yChange', function () {
+        // set use selection area position on component move or scale
+        use_selection_area.position({
+            x: component.getX(),
+            y: component.getY()
+        });
+        use_selection_area.height(component.getHeight() * component.scaleY());
+        // set provide selection area position on component move or scale
+        provide_selection_area.position({
+            x: component.getX() + (component.getWidth() * component.scaleX()) - 15,
+            y: component.getY()
+        })
+        provide_selection_area.height(component.getHeight() * component.scaleY());
+    });
+    
     // when component is being dragged
     component_group.on('dragmove', (e) => {
         tooltip.hide();
