@@ -50,7 +50,6 @@ function addNewComponent(posX, posY) {
 
     // use_selection_area.moveToBottom();
     // provide_selection_area.moveToBottom();
-
     component_group.add(component);
     layer.add(component_group);
     layer.draw();
