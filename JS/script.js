@@ -16,25 +16,21 @@ var dest_obj = null;
 var highlighted = false;
 
 class Component {
-    constructor(type, name, group, konva_component, tooltipLayer){
+    constructor(type, name){
         this.type = type;
         this.name = name;
         this.place_list = [];
         this.transition_list = [];
         this.transition_dictionary = {};
         this.dependency_list = [];
-        this.group = group;
-        this.konva_component = konva_component;
-        this.tooltipLayer = tooltipLayer;
+        this.group;
+        this.konva_component;
+        this.tooltipLayer;
     };
 };
 
-// @todo: add fields
-// [ ] ?: offset
-// [x] Circle: circle
-
 class Place {
-    constructor(type, name, index, konva_place) {
+    constructor(type, name, index) {
         this.type = type;
         this.name = name;
         this.index = index;
@@ -42,7 +38,7 @@ class Place {
         this.dependency = false;
         this.dependency_type = '';
         this.provide_dependency_list = [];
-        this.konva_place = konva_place;
+        this.konva_place;
     };
 };
 
