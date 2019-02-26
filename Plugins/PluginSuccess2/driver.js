@@ -1,12 +1,7 @@
-const electron = require('electron');
-const ipcRenderer = electron.ipcRenderer;
-
-var success_data = 'PluginSuccess2 can give data';
-
 console.log('PluginSuccess2 has been activated.');
 
 ipcRenderer.on('pluginsuccess2', function() {
-    console.log('Testing')
+    window.alert('Plugin Success 2!');
 });
 console.log('PluginSuccess2 has been activated.');
 

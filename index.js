@@ -50,7 +50,7 @@ function populate_plugins() {
 					driver_path: plugin_manager[1][index],
 					plugin_number: index,
 					message: plugin_manager[0][index].toLocaleLowerCase().replace(/ /g,"_"),
-					click(MenuItem){			
+					click(MenuItem){
 						window.webContents.send(MenuItem.message);
 						console.log('The following Plugin has been activated: ' + MenuItem.label);
 					}

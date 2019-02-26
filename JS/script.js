@@ -26,6 +26,8 @@ class Component {
         this.transition_list = [];
         this.transition_dictionary = {};
         this.dependency_list = [];
+        this.konva_component;
+        this.tooltipLayer;
     };
 };
 
@@ -89,13 +91,13 @@ function snapToGrid(pos){
 function initialize() {
     var width = window.innerWidth;
     var height = window.innerHeight;
-    
+
     stage = new Konva.Stage({
         container: 'container',
         width: width,
         height: height
     });
-    
+
     layer = new Konva.Layer();
     stage.add(layer);
     var container = stage.container();
@@ -117,7 +119,7 @@ function drop(ev) {
         addNewComponent(posX, posY);
     }
 };
-  
+
 function drag(ev) {
     ev.dataTransfer.setData("text", ev.target.id);
 };
