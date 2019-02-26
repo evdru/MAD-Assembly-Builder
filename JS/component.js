@@ -47,7 +47,6 @@ function addNewComponent(posX, posY) {
     component_list.push(component_obj);
     // add konva component element to component_obj
     component_obj.component_group_konva = component_group;
-
     // use_selection_area.moveToBottom();
     // provide_selection_area.moveToBottom();
     component_group.add(component);
