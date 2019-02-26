@@ -23,7 +23,6 @@ class Component {
         this.transition_list = [];
         this.transition_dictionary = {};
         this.dependency_list = [];
-        this.group;
         this.konva_component;
         this.tooltipLayer;
     };
@@ -37,8 +36,6 @@ class Place {
         this.transition_count = 0;
         this.dependency = false;
         this.dependency_type = '';
-        this.provide_dependency_list = [];
-        this.konva_place;
     };
 };
 
