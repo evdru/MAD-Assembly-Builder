@@ -1,5 +1,5 @@
 // Add new place function, should only be called by component
-function addNewPlace(component_group, component, placePos, component_obj, tooltipLayer) {
+function addNewPlace(component_group, component, placePos, component_obj, tooltipLayer, use_selection_area, provide_selection_area) {
     var index;
     if (component_obj.place_list.length == 0){
         index = 1;
@@ -129,7 +129,7 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
                     }
 
                     console.log("Source place transition out count: ", source_obj.transition_count);
-                    transition = addNewTransition(offset, source_transition, dest_transition, source_obj, dest_obj, component_obj, component_group, component, tooltipLayer);
+                    returned_transition_obj = addNewTransition(offset, source_konva, dest_transition, source_obj, dest_obj, component_obj, component_group, component, tooltipLayer, use_selection_area, provide_selection_area);
                 }
             } else {
                 // highlight the place
@@ -198,8 +198,6 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
         if (args.dependency_type != undefined) {
             changePlaceDependencyType(args.component, args.place, args.dependency_type);
         }
-        // check if dependency stub needs to be created
-        checkDependencyStatus();
     });
 
     function checkDependencyStatus(){
