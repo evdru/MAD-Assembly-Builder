@@ -46,7 +46,7 @@ class Place {
 };
 
 class Transition {
-    constructor(type, name, src, tran_konva, dest, func) {
+    constructor(type, name, src, dest, func) {
         this.type = type;
         this.name = name;
         this.src = src;
