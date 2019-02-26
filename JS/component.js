@@ -42,25 +42,14 @@ function addNewComponent(posX, posY) {
         name: 'provide_selection_area'
     });
 
-    // tooltip to display name of object
-    var tooltip = new Konva.Text({
-        text: "",
-        fontFamily: "Calibri",
-        fontSize: 12,
-        padding: 5,
-        textFill: "white",
-        fill: "black",
-        alpha: 0.75,
-        visible: false
-    });
-
-    var tooltipLayer = new Konva.Layer();
-    tooltipLayer.add(tooltip);
-    stage.add(tooltipLayer);
-
     // create a component object and add it to the global list
     var component_obj = new Component('Component', "Component_" + (component_list.length + 1));
     component_list.push(component_obj);
+    // add konva component element to component_obj
+    component_obj.component_group_konva = component_group;
+
+    // use_selection_area.moveToBottom();
+    // provide_selection_area.moveToBottom();
 
     component_group.add(component);
     layer.add(component_group);
@@ -89,6 +78,22 @@ function addNewComponent(posX, posY) {
             layer.draw();
         }
     });
+
+    // tooltip to display name of object
+    var tooltip = new Konva.Text({
+        text: "",
+        fontFamily: "Calibri",
+        fontSize: 12,
+        padding: 5,
+        textFill: "white",
+        fill: "black",
+        alpha: 0.75,
+        visible: false
+    });
+
+    var tooltipLayer = new Konva.Layer();
+    tooltipLayer.add(tooltip);
+    stage.add(tooltipLayer);
 
     // when component is being dragged
     component_group.on('dragmove', (e) => {
@@ -160,9 +165,9 @@ function addNewComponent(posX, posY) {
             ipcRenderer.send("change_component_details", {component: component_obj.name});
         };
     });
-
-    // Catch new component name from ipcMain
-    ipcRenderer.on("component->renderer", function(event, args) {
-        changeComponentName(args.component, args.name);
-    });
 };
+
+// Catch new component name from ipcMain
+ipcRend.on("component->renderer", function(event, args) {
+    changeComponentName(args.component, args.name);
+});
