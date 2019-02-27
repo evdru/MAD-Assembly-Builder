@@ -33,6 +33,9 @@ function addNewServiceDependency(component, source_element, source_obj, componen
     dependency_obj.source_obj = source_obj;
     console.log("This dependencys source obj is " + dependency_obj.source_obj.name);
 
+    // set pointer to depedencies component obj
+    dependency_obj.component_obj = component_obj;
+
     // increment source obj dependency count
     source_obj.dependency_count++;
     console.log(source_obj.name + " dependency count is now " + source_obj.dependency_count);

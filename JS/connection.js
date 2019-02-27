@@ -65,9 +65,9 @@ function addNewConnection(provide_component_obj, provide_source_obj, provide_stu
     connection_obj.gate2_konva = gate2;
     // create pointer to entire connection group
     connection_obj.connection_group_konva = connection_group;
-    // create pointer to connection_obj from provide_dependency_obj
+    // // create pointer to connection_obj from provide_dependency_obj
     provide_dependency_obj.connection_obj = connection_obj;
-    // create pointer to connection_obj from use_dependency_obj
+    // // create pointer to connection_obj from use_dependency_obj
     use_dependency_obj.connection_obj = connection_obj;
 
     // add connection to global list

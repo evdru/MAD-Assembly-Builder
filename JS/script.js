@@ -238,6 +238,7 @@ function removeConnectionKonva(dependency_obj){
 
     // destroy the connection group
     dependency_obj.connection_obj.connection_group_konva.destroy();
+    layer.batchDraw();
 }
 
 // Function to change component name
@@ -252,13 +253,14 @@ function changeComponentName(component_name, new_comp_name) {
 };
 
 function removeComponentObj(component_obj) {
+    console.log("The connection list is: " + connection_list);
     // check if connection is connected to this component
     for (var i = 0; i < connection_list.length; i++) {
-        if(connection_list[i].provide_port_obj.component_obj == component_obj){
+        if(component_obj.dependency_list.indexOf(connection_list[i].provide_port_obj) != -1){
             removeConnectionKonva(connection_list[i].provide_port_obj);
             removeConnectionObj(connection_list[i]);
         }
-        if (connection_list[i].use_port_obj.component_obj == component_obj){
+        else if(component_obj.dependency_list.indexOf(connection_list[i].use_port_obj) != -1){
             removeConnectionKonva(connection_list[i].use_port_obj);
             removeConnectionObj(connection_list[i]);
         }
