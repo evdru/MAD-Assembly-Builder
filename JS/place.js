@@ -123,7 +123,7 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
 
     provide_selection_area.on("mouseover", function() {
         // if source konva has been selected show green provide selection area on mouse enter
-        if(source_konva != null){
+        if(source_konva == place){
             provide_selection_area.fill('green');
             provide_selection_area.opacity(1);
             layer.batchDraw();

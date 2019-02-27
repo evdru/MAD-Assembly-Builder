@@ -110,24 +110,6 @@ function addNewComponent(posX, posY) {
 
     component_obj.tooltipLayer = tooltipLayer;
 
-    use_selection_area.on('mousemove', function () {
-        //console.log(component_obj.name + " over");
-        var mousePos = stage.getPointerPosition();
-        tooltip.position({
-            x : mousePos.x + 10,
-            y : mousePos.y + 10
-        });
-        tooltip.text(component_obj.name + " USE selection area");
-        tooltip.show();
-        tooltipLayer.batchDraw();
-    });
-
-    // hide the tooltip on mouse out
-    use_selection_area.on("mouseout", function() {
-        tooltip.hide();
-        tooltipLayer.draw();
-    });
-
     // when component moves
     component.on('xChange yChange', function () {
         // set use selection area position on component move or scale

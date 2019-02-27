@@ -27,7 +27,7 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
         points: [source_konva.getX(), source_konva.getY(), ((source_konva.getX() + dest_konva.getX()) / 2) + offset, (source_konva.getY() + dest_konva.getY()) / 2, dest_konva.getX(), dest_konva.getY()],
         stroke: 'black',
         strokeWidth: 1,
-        name: transition_obj.name,
+        name: 'transition',
         tension: 1
     });
 
@@ -37,7 +37,7 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
         radius: 15,
         opacity: 0,
         text: transition.name,
-        name: 'Transition_hover'
+        name: 'Transition'
     });
 
     // create a new transition group
@@ -106,7 +106,7 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
 
     use_selection_area.on("mouseover", function() {
         // if source konva has been selected show green provide selection area on mouse enter
-        if(source_transition_konva != null){
+        if(source_transition_konva == transition_selection_area){
             use_selection_area.fill('green');
             use_selection_area.opacity(1);
             layer.batchDraw();
@@ -114,7 +114,7 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
     });
 
     use_selection_area.on("mouseout", function() {
-        // if provide selection area was visible, hide it!
+        // if use_selection_area was visible, hide it!
         if(use_selection_area.opacity() === 1){
             use_selection_area.opacity(0);
             layer.batchDraw();
