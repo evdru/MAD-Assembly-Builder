@@ -245,12 +245,8 @@ function removeConnectionKonva(connection_obj){
 // Function to change component name
 function changeComponentName(component_name, new_comp_name) {
      // find the component obj
-    var found_component_obj = component_list.find(function(element) {
-        return element.name == component_name;
-    });
-    if(found_component_obj){
-        found_component_obj.name = new_comp_name;
-    }
+    var found_component_obj = component_list.find(function(element) { return element.name == component_name; });
+    if(found_component_obj){ found_component_obj.name = new_comp_name; }
 };
 
 function removeComponentObj(component_obj) {
@@ -273,33 +269,17 @@ function removeComponentObj(component_obj) {
 // Function to change transition name
 function changeTransitionName(component, old_name, new_name) {
     // find the component obj
-    var found_component_obj = component_list.find(function(element) {
-        return element.name == component;
-        });
-    var found_transition_obj = found_component_obj.transition_list.find(function(element) {
-        return element.name == old_name;
-        });
-    if (found_transition_obj){
-        found_transition_obj.name = new_name;
-    }
+    var found_component_obj = component_list.find(function(element) { return element.name == component; });
+    var found_transition_obj = found_component_obj.transition_list.find(function(element) { return element.name == old_name; });
+    if (found_transition_obj){ found_transition_obj.name = new_name; }
 };
 
 // Function to change transition function
 function changeTransitionFunc(component, old_func, new_func) {
-    console.log("Changing func name in script.js");
-    console.log(component);
-    console.log(old_func);
-    console.log(new_func);
     // find the component obj
-    var found_component_obj = component_list.find(function(element) {
-        return element.name == component;
-        });
-    var found_transition_obj = found_component_obj.transition_list.find(function(element) {
-        return element.func == old_func;
-        });
-    if (found_transition_obj){
-        found_transition_obj.func = new_func;
-    }
+    var found_component_obj = component_list.find(function(element) { return element.name == component; });
+    var found_transition_obj = found_component_obj.transition_list.find(function(element) { return element.func == old_func; });
+    if (found_transition_obj){ found_transition_obj.func = new_func; }
 };
 
 function removeTransitionObj(component_obj, transition_obj) {
@@ -357,13 +337,7 @@ function changeTransitionDependencyType(component, transition, dependency_type) 
 // Function to change stub name
 function changeStubName(component, stub_name, new_stub_name) {
     // find the component obj
-    var found_component_obj = component_list.find(function(element) {
-        return element.name == component;
-        });
-    var found_dependency_obj = found_component_obj.dependency_list.find(function(element) {
-        return element.name == stub_name;
-        });
-    if (found_dependency_obj){
-        found_dependency_obj.name = new_stub_name;
-    }
+    var found_component_obj = component_list.find(function(element) { return element.name == component; });
+    var found_dependency_obj = found_component_obj.dependency_list.find(function(element) { return element.name == stub_name; });
+    if (found_dependency_obj){ found_dependency_obj.name = new_stub_name; }
 };
