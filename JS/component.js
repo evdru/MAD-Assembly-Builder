@@ -170,8 +170,8 @@ function addNewComponent(posX, posY) {
             if (confirm('Are you sure you want to delete this Component? You will lose everything inside of it.')){
                 // Delete it!
                 component_obj.component_group_konva.destroy();
-                removeComponentObj();
-                layer.draw();
+                removeComponentObj(component_obj);
+                layer.batchDraw();
             } else {
                 // Do nothing!
                 return;

@@ -214,7 +214,7 @@ function removeDependencyObj(component_obj, dependency_obj){
     if(dependency_obj.connection_obj){
         console.log("its removing connection")
         removeConnectionObj(dependency_obj.connection_obj);
-        removeConnectionKonva(dependency_obj);
+        removeConnectionKonva(dependency_obj.connection_obj);
     }
     console.log("Before " + component_obj.dependency_list);
     // find index of dependency_obj in component_list.dependency_list and remove
@@ -231,13 +231,13 @@ function removeConnectionObj(connection_obj){
 }
 
 // function to remove connection konva group
-function removeConnectionKonva(dependency_obj){
+function removeConnectionKonva(connection_obj){
     // change opacity of provide and use ports
     // dependency_obj.connection_obj.provide_port_obj.dep_group_konva.provide_symbol.opacity(0);
     // dependency_obj.connection_obj.use_port_obj.dep_group_konva.use_stub_konva.opacity(0);
 
     // destroy the connection group
-    dependency_obj.connection_obj.connection_group_konva.destroy();
+    connection_obj.connection_group_konva.destroy();
     layer.batchDraw();
 }
 
@@ -256,12 +256,8 @@ function removeComponentObj(component_obj) {
     console.log("The connection list is: " + connection_list);
     // check if connection is connected to this component
     for (var i = 0; i < connection_list.length; i++) {
-        if(component_obj.dependency_list.indexOf(connection_list[i].provide_port_obj) != -1){
-            removeConnectionKonva(connection_list[i].provide_port_obj);
-            removeConnectionObj(connection_list[i]);
-        }
-        else if(component_obj.dependency_list.indexOf(connection_list[i].use_port_obj) != -1){
-            removeConnectionKonva(connection_list[i].use_port_obj);
+        if (component_obj.dependency_list.indexOf(connection_list[i].provide_port_obj) != -1 || component_obj.dependency_list.indexOf(connection_list[i].use_port_obj) != -1){
+            removeConnectionKonva(connection_list[i]);
             removeConnectionObj(connection_list[i]);
         }
     }
