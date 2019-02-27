@@ -346,6 +346,8 @@ function addNewDataDependency(component, source_element, source_obj, component_o
     source_obj.dependency_count++;
     console.log(source_obj.name + " dependency count is now " + source_obj.dependency_count);
 
+    dependency_obj.component_obj = component_obj;
+
     var dependency = new Konva.Line({
         points: [source_element.getX(), source_element.getY(), (component.getX() + offset * component.scaleX()), source_element.getY()],
         stroke: 'black',

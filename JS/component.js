@@ -169,8 +169,8 @@ function addNewComponent(posX, posY) {
         if (ev.keyCode === 46) {
             if (confirm('Are you sure you want to delete this Component? You will lose everything inside of it.')){
                 // Delete it!
-                component_obj.component_group_konva.destroy();
                 removeComponentObj(component_obj);
+                component_obj.component_group_konva.destroy();
                 layer.batchDraw();
             } else {
                 // Do nothing!

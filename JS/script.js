@@ -72,6 +72,7 @@ class Dependency {
         this.dep_stub_konva;
         this.source_obj;
         this.connection_obj;
+        this.component_obj;
     };
 };
 
@@ -255,10 +256,12 @@ function changeComponentName(component_name, new_comp_name) {
 function removeComponentObj(component_obj) {
     console.log("The connection list is: " + connection_list);
     // check if connection is connected to this component
-    for (var i = 0; i < connection_list.length; i++) {
-        if (component_obj.dependency_list.indexOf(connection_list[i].provide_port_obj) != -1 || component_obj.dependency_list.indexOf(connection_list[i].use_port_obj) != -1){
-            removeConnectionKonva(connection_list[i]);
-            removeConnectionObj(connection_list[i]);
+    for (var i = 0; i < component_obj.dependency_list.length; i++){
+        for (var j = 0; j < connection_list.length; j++) {
+            if (connection_list[j].provide_port_obj == component_obj.dependency_list[i] || connection_list[j].use_port_obj == component_obj.dependency_list[i]){
+                removeConnectionKonva(connection_list[j]);
+                removeConnectionObj(connection_list[j]);
+            }
         }
     }
     console.log("Before " + component_list);
