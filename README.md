@@ -43,7 +43,7 @@ Navigate to the desired directory, perform:
 git clone https://bitbucket.org/team_amadeus/mab_electron.git
 ```
 
-## Runnin MAB
+## Running MAB
 
 To run MAB, in your Terminal/PowerShell/Command Prompt, navigate to your newly cloned repository and run:
 
