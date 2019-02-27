@@ -43,9 +43,15 @@ Navigate to the desired directory, perform:
 git clone https://bitbucket.org/team_amadeus/mab_electron.git
 ```
 
-## Deployment
+## Runnin MAB
 
-TBD
+To run MAB, in your Terminal/PowerShell/Command Prompt, navigate to your newly cloned repository and run:
+
+```
+npm start
+```
+
+Future iterations will run via a platform specific executable.
 
 ## Built With
 
