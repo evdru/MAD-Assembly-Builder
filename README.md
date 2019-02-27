@@ -10,8 +10,6 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
-
 ```
 Node.js
 Electron
@@ -29,11 +27,11 @@ GOTO: https://nodejs.org/en/download/ - Download and install
 
 Install Electron, Konva, and JS-YAML:
 
-Once node.js has been installed, perform the following commands in your Terminal/PowerShell/Command Prompt (the -g will perform a global installation of the package).
+Once node.js has been installed, perform the following commands in your Terminal/PowerShell/Command Prompt ("-g" will perform a global installation of the package). If you do not want a global installation, clone the repository first, and then perform the following commands in the newly created directory without the "-g" flag.
 
 ```
 npm install electron -g
-npm install konva -g
+npm install konva-node -g
 npm install js-yaml -g
 ```
 
