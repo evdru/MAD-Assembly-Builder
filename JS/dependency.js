@@ -5,10 +5,18 @@ function addNewServiceDependency(component, source_element, source_obj, componen
     var stub_x;
     source_selected = null;
 
+    // get index
+    var index;
+    if (component_obj.dependency_list.length == 0){
+        index = 1;
+    } else {
+        index = component_obj.dependency_list[component_obj.dependency_list.length - 1].index + 1;
+    }
+
     // provide connection going right of a place
     if(source_obj.type == 'Place') {
         // create the dependency object
-        var dependency_obj = new Dependency('PROVIDE', "Dependency_" + (component_obj.dependency_list.length + 1));
+        var dependency_obj = new Dependency('PROVIDE', "Dependency_" + index);
         // add dep obj to comp_obj.dep_list
         component_obj.dependency_list.push(dependency_obj);
         console.log('Created new PROVIDE dependency dock'); 
@@ -18,7 +26,7 @@ function addNewServiceDependency(component, source_element, source_obj, componen
         stub_x = 0;
     } else if (source_obj.type == 'Transition') {
         // create the dependency object
-        var dependency_obj = new Dependency('USE', "Dependency_" + (component_obj.dependency_list.length + 1));
+        var dependency_obj = new Dependency('USE', "Dependency_" + index);
         // add dep obj to comp_obj.dep_list
         component_obj.dependency_list.push(dependency_obj);
         console.log('Created new USE dependency dock');
@@ -28,6 +36,9 @@ function addNewServiceDependency(component, source_element, source_obj, componen
         add = -20;
         stub_x = -15;
     };
+
+    // set index
+    dependency_obj.index = index;
 
     // set source obj of dependency stub
     dependency_obj.source_obj = source_obj;
@@ -316,27 +327,38 @@ function addNewDataDependency(component, source_element, source_obj, component_o
     var data_stub_use;
     var data_symbol_use;
 
+    // get index
+    var index;
+    if (component_obj.dependency_list.length == 0){
+        index = 1;
+    } else {
+        index = component_obj.dependency_list[component_obj.dependency_list.length - 1].index + 1;
+    }
+
     // provide connection going right of a place
     if(source_obj.type == 'Place'){
         // create the dependency object
-        var dependency_obj = new Dependency('DATA_PROVIDE', "Dependency_" + (component_obj.dependency_list.length + 1));
+        var dependency_obj = new Dependency('DATA_PROVIDE', "Dependency_" + index);
         component_obj.dependency_list.push(dependency_obj);
         console.log('Created new DATA_PROVIDE dependency dock');
         offset = component.getWidth();
         add = 20;
         stub_x = -5;
-        depedency_name = dependency_obj.type + " Provide Dependency from " + source_obj.name;
+        dependency_name = dependency_obj.type + " Provide Dependency from " + source_obj.name;
     } else if (source_obj.type == 'Transition') {
         // create the dependency object
-        var dependency_obj = new Dependency('DATA_USE', "Dependency_" + (component_obj.dependency_list.length + 1));
+        var dependency_obj = new Dependency('DATA_USE', "Dependency_" + index);
         component_obj.dependency_list.push(dependency_obj);
         console.log('Created new DATA_USE dependency dock');
         // use connection going left of a transition
         offset = 0;
         add = -20;
         stub_x = 0;
-        depedency_name = dependency_obj.type + " Use Dependency from " + source_obj.name;
+        dependency_name = dependency_obj.type + " Use Dependency from " + source_obj.name;
     };
+
+    // set index
+    dependency_obj.index = index;
 
     // set source obj of dependency stub
     dependency_obj.source_obj = source_obj;

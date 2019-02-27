@@ -6,11 +6,23 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
         alert("Cant create more than 3 transitions from " + source_obj.name);
         return;
     }
+
+    // get index
+    var index;
+    if (component_obj.transition_list.length == 0){
+        index = 1;
+    } else {
+        index = component_obj.transition_list[component_obj.transition_list.length - 1].index + 1;
+    }
+
     // Transition Creation arguments: type, name, src, src_konva, dest, dest_konva, func
-    var transition_obj = new Transition('Transition', "Transition_" + (component_obj.transition_list.length + 1), 
-                                        source_obj, dest_obj, "defaultFunction_" + (component_obj.transition_list.length + 1));
+    var transition_obj = new Transition('Transition', "Transition_" + index, 
+                                        source_obj, dest_obj, "defaultFunction_" + index);
     component_obj.transition_list.push(transition_obj);
-    
+
+    // set index
+    transition_obj.index = index;
+
     var transition = new Konva.Line({
         points: [source_konva.getX(), source_konva.getY(), ((source_konva.getX() + dest_konva.getX()) / 2) + offset, (source_konva.getY() + dest_konva.getY()) / 2, dest_konva.getX(), dest_konva.getY()],
         stroke: 'black',

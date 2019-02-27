@@ -21,6 +21,7 @@ class Component {
     constructor(type, name){
         this.type = type;
         this.name = name;
+        this.index;
         this.place_list = [];
         this.component_group_konva;
         this.transition_list = [];
@@ -53,6 +54,7 @@ class Transition {
     constructor(type, name, src, dest, func) {
         this.type = type;
         this.name = name;
+        this.index;
         this.src = src;
         this.tran_group_konva;
         this.dest = dest;
@@ -68,6 +70,7 @@ class Dependency {
     constructor(type, name) {
         this.type = type;
         this.name = name;
+        this.index;
         this.dep_group_konva;
         this.dep_stub_konva;
         this.source_obj;
