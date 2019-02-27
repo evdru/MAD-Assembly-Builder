@@ -68,7 +68,7 @@ function loadPlaces(la_comp_list) {
 
         for(var j = 0; j < loaded_component.place_list.length; j++ ) {
             loaded_place = loaded_component.place_list[j];
-            addNewPlace(component.group, component.konva_component, {x: loaded_place.posX, y: loaded_place.posY}, component, component.tooltipLayer);
+            addNewPlace(component.component_group_konva, component.konva_component, {x: loaded_place.posX, y: loaded_place.posY}, component, component.tooltipLayer, component.use_selection_area, component.provide_selection_area);
             layer.batchDraw();
         }
 

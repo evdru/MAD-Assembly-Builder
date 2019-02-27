@@ -1,6 +1,6 @@
 // Adds a new component to the stage
 function addNewComponent(posX, posY) {
-    
+
     // create a new component group every time a component is created
     var component_group = new Konva.Group({
         x: posX,
@@ -48,7 +48,9 @@ function addNewComponent(posX, posY) {
     // add konva component element to component_obj
     component_obj.component_group_konva = component_group;
     component_obj.konva_component = component;
-    
+    component_obj.use_selection_area = use_selection_area;
+    component_obj.provide_selection_area = provide_selection_area;
+
     // use_selection_area.moveToBottom();
     // provide_selection_area.moveToBottom();
     component_group.add(component);
@@ -72,7 +74,7 @@ function addNewComponent(posX, posY) {
             // remove old transformers
             // TODO: we can skip it if current rect is already selected
             stage.find('Transformer').destroy();
-        
+
             // create new transformer
             var tr = new Konva.Transformer({rotateEnabled: false});
             e.target.getParent().add(tr);
@@ -96,6 +98,8 @@ function addNewComponent(posX, posY) {
     var tooltipLayer = new Konva.Layer();
     tooltipLayer.add(tooltip);
     stage.add(tooltipLayer);
+
+    component_obj.tooltipLayer = tooltipLayer;
 
     use_selection_area.on('mousemove', function () {
         //console.log(component_obj.name + " over");
@@ -171,14 +175,14 @@ function addNewComponent(posX, posY) {
             } else {
                 // Do nothing!
                 return;
-            }   
+            }
         }
     };
 
     component.on("mouseover", function(e){
         window.addEventListener('keydown', removeComponent);
     });
-    
+
     // hide the tooltip on mouse out
     component.on("mouseout", function(){
         //console.log(component_obj.name + " out");

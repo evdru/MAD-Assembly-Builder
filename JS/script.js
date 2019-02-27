@@ -28,6 +28,8 @@ class Component {
         this.dependency_list = [];
         this.konva_component;
         this.tooltipLayer;
+        this.use_selection_area;
+        this.provide_selection_area;
     };
 };
 
@@ -314,7 +316,7 @@ function removeTransitionObj(component_obj, transition_obj) {
     // check the transition dictionary for parallel transitions
     if(component_obj.transition_dictionary[transition_obj.src.name + transition_obj.dest.name] > 0){
         console.log("Decrementing dictionary keys")
-        // decrement the trans dict 
+        // decrement the trans dict
         component_obj.transition_dictionary[transition_obj.src.name + transition_obj.dest.name]--;
     }
     // decrement the transition count of source
