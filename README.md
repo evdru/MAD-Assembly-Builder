@@ -21,13 +21,15 @@ JS-YAML
 
 ### Installing
 
-Say what the step will be
+Install node.js
 
 ```
 GOTO: https://nodejs.org/en/download/ - Download and install
 ```
 
-Once node.js has been installed, perform the following commands in your Terminal/PowerShell/Command Prompt in the folder you are going to 
+Install Electron, Konva, and JS-YAML:
+
+Once node.js has been installed, perform the following commands in your Terminal/PowerShell/Command Prompt (the -g will perform a global installation of the package).
 
 ```
 npm install electron -g
@@ -37,7 +39,7 @@ npm install js-yaml -g
 
 ### Cloning the repository
 
-Navigate to the desired folder, perform:
+Navigate to the desired directory, perform:
 
 ```
 git clone https://bitbucket.org/team_amadeus/mab_electron.git
@@ -45,7 +47,7 @@ git clone https://bitbucket.org/team_amadeus/mab_electron.git
 
 ## Deployment
 
-Add additional notes about how to deploy this on a live system are TBD
+TBD
 
 ## Built With
 
@@ -70,3 +72,4 @@ TBD
 
 * Dr. Frédéric Loulergue - NAU - SICCS
 * Dr. Hélène Coullon - IMT Atlantique
+* Austin Sanders - NAU - Graduate Mentor
