@@ -102,7 +102,7 @@ function loadTransitions(la_comp_list) {
             if(offsetCtr == 0) { var offset = 0; }
             if(offsetCtr == 1) { var offset = 30; }
             if(offsetCtr == 2) { var offset = -30; }
-            addNewTransition(offset, src.konva_place, dest.konva_place, src, dest, component, component.group, component.konva_component, component.tooltipLayer);
+            addNewTransition(offset, src.place_konva, dest.place_konva, src, dest, component, component.component_group_konva, component.konva_component, component.tooltipLayer, component.use_selection_area, component.provide_selection_area);
             offsetCtr++;
         }
     }

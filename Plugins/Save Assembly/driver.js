@@ -40,7 +40,25 @@ function saveAssembly() {
 
 };
 
-function placeToSaveObj(place) {
+function placeToSaveObj(place, transitions=true) {
+
+    if(transitions) {
+        save_transition_outbound_list = [];
+        save_transition_inbound_list = [];
+
+        for(var i = 0; i < place.transition_outbound_list.length; i++) {
+            transition = place.transition_outbound_list[i];
+            save_transition_obj = transitionToSaveObj(transition);
+            save_transition_outbound_list[i];
+        }
+
+        for(var i = 0; i < place.transition_inbound_list.length; i++) {
+            transition = place.transition_inbound_list[i];
+            save_transition_obj = transitionToSaveObj(transition);
+            save_transition_inbound_list[i];
+        }
+    }
+
     return {
         type: place.type,
         name: place.name,
@@ -50,8 +68,8 @@ function placeToSaveObj(place) {
         dependency: place.dependency,
         dependency_type: place.dependency_type,
         dependency_konva_list: place.dependency_konva_list,
-        transition_outbound_list: place.transition_outbound_list,
-        transition_inbound_list: place.transition_inbound_list,
+        transition_outbound_list: save_transition_outbound_list,
+        transition_inbound_list: save_transition_inbound_list,
         posX: place.place_konva.x(),
         posY: place.place_konva.y()
     };
@@ -59,14 +77,13 @@ function placeToSaveObj(place) {
 
 function transitionToSaveObj(transition) {
 
-    save_src_obj = placeToSaveObj(transition.src);
-    save_dest_obj = placeToSaveObj(transition.dest);
+    save_src_obj = placeToSaveObj(transition.src, false);
+    save_dest_obj = placeToSaveObj(transition.dest, false);
 
     return {
         type: transition.type,
         name: transition.name,
         src: save_src_obj,
-        tran_group_konva: this.tran_group_konva,
         dest: save_dest_obj,
         func: transition.func,
         dependency_count: transition.dependency_count,
