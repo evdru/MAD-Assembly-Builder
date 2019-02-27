@@ -48,7 +48,7 @@ function placeToSaveObj(place) {
         transition_count: place.transition_count,
         dependency: place.dependency,
         dependency_type: place.dependency_type,
-        provide_dependency_list: place.provide_dependency_list,
+        provide_dependency_list: place.dependency_konva_list,
         posX: place.place_konva.x(),
         posY: place.place_konva.y()
     };
