@@ -51,7 +51,7 @@ function loadComponents(la_comp_list) {
         addNewComponent(posX, posY);
         component_list[i].konva_component.scaleX(scaleX);
         component_list[i].konva_component.scaleY(scaleY);
-        component_list[i].group.position({x:posX,y:posY});
+        component_list[i].component_group_konva.position({x:posX,y:posY});
 
         layer.batchDraw();
 

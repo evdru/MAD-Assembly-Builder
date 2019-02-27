@@ -101,8 +101,8 @@ function componentToSaveObj(component) {
         transition_list: save_transition_list,
         transition_dictionary: component.transition_dictionary,
         dependency_list: component.dependency_list,
-        posX: component.group.x(),
-        posY: component.group.y(),
+        posX: component.component_group_konva.x(),
+        posY: component.component_group_konva.y(),
         scaleX: component.konva_component.scaleX(),
         scaleY: component.konva_component.scaleY()
     };
