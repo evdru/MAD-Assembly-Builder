@@ -50,7 +50,7 @@ function populate_plugins() {
 					driver_path: plugin_manager[1][index],
 					plugin_number: index,
 					message: plugin_manager[0][index].toLocaleLowerCase().replace(/ /g,"_"),
-					click(MenuItem){			
+					click(MenuItem){
 						window.webContents.send(MenuItem.message);
 						console.log('The following Plugin has been activated: ' + MenuItem.label);
 					}
@@ -110,6 +110,39 @@ if(process.env.NODE_ENV !== 'production'){
 	});
 }
 
+// Catch dependency port right clk
+ipcMain.on("set_dependency_type", function(event, args) {
+	console.log("Logging: set_dependency_type from main thread");
+	// Create new dialog
+	const {dialog} = require('electron');
+
+	const options = {
+		type: 'question',
+		buttons: ['Cancel', 'SERVICE', 'DATA'],
+		title: 'Question',
+		message: 'What kind of dependency port do you wish to create?'
+	};
+
+	//Synchronous usage
+	let response = dialog.showMessageBox(options)
+	console.log(response)
+	var dependency_type;
+	switch(response){
+		case 0:
+			dependency_type = 'cancel';
+			break;
+		case 1:
+			dependency_type = 'service';
+			break;
+		case 2:
+			dependency_type = 'data';
+			break;
+		default:
+			dependency_type = 'cancel';
+	}
+	event.returnValue = dependency_type;
+});
+
 // Catch place right click
 ipcMain.on("change_place_details", function(event, args) {
 	console.log("Logging: change_place_details from main thread");
@@ -127,8 +160,7 @@ ipcMain.on("change_place_details", function(event, args) {
 });
 
 ipcMain.on("place->main", function(event, args) {
-	console.log()
-	window.webContents.send("place->renderer", {component: place_args.component, place: place_args.place, name: args.name, dependency_status: args.dependency_status, dependency_type: args.dependency_type});
+	window.webContents.send("place->renderer", {component: place_args.component, place: place_args.place, name: args.name});
 });
 
 // Catch component right click
@@ -148,9 +180,7 @@ ipcMain.on("change_component_details", function(event, args) {
 });
 
 ipcMain.on("component->main", function(event, args) {
-	console.log(component_args.component);
-	console.log(args.name);
-	window.webContents.send("component->renderer", {component: component_args.component, name: args.name});
+	window.webContents.send("component->renderer", {component_name: component_args.component_name, name: args.name});
 });
 
 // Catch transition right click

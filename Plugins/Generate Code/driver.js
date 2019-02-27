@@ -4,12 +4,10 @@ const ipcRenderer = electron.ipcRenderer;
 var fs = require('fs'); // Load the File System to execute our common tasks (CRUD)
 var app = electron.remote; 
 var dialog = app.dialog;
-
 var comp_list = component_list;
 
 ipcRenderer.on('generate_code', function() {
     console.log("Made it to Script_2. :D");
-
     /** Loop through the component list, for every component create a new file
      * string, open the dialog box, save that string to the newly chosen file 
      */
@@ -57,7 +55,16 @@ function createString(component) {
     content += "\t\t}\n\n";
 
     //Create dependencies dictionary
-    content += "\t\tself.dependencies = {}\n\n";
+    content += "\t\tself.dependencies = {\n";
+    console.log(component.dependency_list.length);
+    for (var k = 0; k < component.dependency_list.length; k++) {
+        if (k == component.dependency_list.length - 1) {
+            content += "\t\t\t'" + component.dependency_list[k].name + "': (DepType." + component.dependency_list[k].type + ", ['place_name'])\n"
+        } else {
+            content += "\t\t\t'" + component.dependency_list[k].name + "': (DepType." + component.dependency_list[k].type + ", ['place_name']),\n"
+        };
+    };
+    content += "\t\t}\n\n"
 
     //Create functions
     for (var k = 0; k < component.transition_list.length; k++) {
