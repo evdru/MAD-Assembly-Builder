@@ -22,9 +22,7 @@ function createComponentString(component) {
     var content = "";
     //Append to content
 	content += "from mad import *\n";
-	content += "import time\n";
-	content += "import os\n";
-	content += "import subprocess\n\n";
+	content += "import time\n\n";
     content += "class " + component.name + "(Component):\n";
 
     //Create places list
@@ -67,20 +65,18 @@ function createComponentString(component) {
     };
 
     //Second check for use dependencies
+    for (var l = 0; l < con_list.length; l++) {
+        if (con_list[l].use_port_obj.component_obj.name === component.name) {
+            content += "\t\t\t'" + con_list[l].use_port_obj.name + "': (DepType." + con_list[l].use_port_obj.type + ", ['" + con_list[l].use_port_obj.source_obj.name + "']),\n"
+        }
+    };
 
-    // for (var k = 0; k < component.dependency_list.length; k++) {
-    //     if (k == component.dependency_list.length - 1) {
-    //         content += "\t\t\t'" + component.dependency_list[k].name + "': (DepType." + component.dependency_list[k].type + ", ['place_name'])\n"
-    //     } else {
-    //         content += "\t\t\t'" + component.dependency_list[k].name + "': (DepType." + component.dependency_list[k].type + ", ['place_name']),\n"
-    //     };
-    // };
     content += "\t\t}\n\n"
 
     //Create functions
-    for (var l = 0; l < component.transition_list.length; l++) {
-        if (component.transition_list[l].type === "Transition") {
-            content += "\tdef " + component.transition_list[l].func + "(self):\n";
+    for (var m = 0; m < component.transition_list.length; m++) {
+        if (component.transition_list[m].type === "Transition") {
+            content += "\tdef " + component.transition_list[m].func + "(self):\n";
             content += "\t\ttime.sleep(" + getRndInteger(0, 11) + ")\n\n";
         };
     };
@@ -135,23 +131,20 @@ function createAssemblyString(comp_list) {
         content += "\t" + comp_list[j].name.toLowerCase() + " = " + comp_list[j].name + "()\n\n";
     }
 
-    //Create and add to the assembly
+    //Add components to the assembly
     content += "\tassembly = Assembly()\n";
     for (var k = 0; k < comp_list.length; k++) {
         content += "\tassembly.addComponent('" + comp_list[k].name.toLowerCase() + "', " + comp_list[k].name.toLowerCase() + ")\n";
-        if (k == comp_list.length - 1) {
+    }
+
+    //Add connections to the assembly
+    for (var l = 0; l < con_list.length; l++) {
+        connection = con_list[l];
+        content += "\tassembly.addConnection(" + connection.provide_port_obj.component_obj.name.toLowerCase() + ", '" + connection.provide_port_obj.name + "', " + connection.use_port_obj.component_obj.name.toLowerCase() + ", '" + connection.use_port_obj.name + "')\n";
+        if (l == con_list.length - 1) {
             content += "\n";
         }
     }
-
-    //Add dependencies to the assembly
-    // assembly.addConnection(apache, 'ipprov', maria, 'ip')
-    // assembly.addConnection(apache, 'service', maria, 'service')
-    // for (var l = 0; l < comp_list.length; l++) {
-    //     for (var m = 0; m < comp_list[l].dependency_list.length; m++) {
-    //         content += "\tassembly.addConnection(" + comp_list[l].name.toLowerCase() + ", '"
-    //     }
-    // }
 
     content += "\tmad = Mad(assembly)\n";
     content += "\tmad.run()\n";
