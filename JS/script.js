@@ -42,6 +42,7 @@ class Place {
         this.place_konva;
         this.transition_count = 0; // 3 max
         this.dependency_count = 0; // 3 max
+        this.offset = 0; // offset is for transitions coming out of this place
         this.dependency = false;
         this.dependency_type = '';
         this.dependency_konva_list = [];
@@ -298,10 +299,10 @@ function removeTransitionObj(component_obj, transition_obj) {
         }
     }
     // check the transition dictionary for parallel transitions
-    if(component_obj.transition_dictionary[transition_obj.src.name + transition_obj.dest.name] > 0){
+    if(component_obj.transition_dictionary[transition_obj.src[transition_obj.dest]] > 0){
         console.log("Decrementing dictionary keys")
         // decrement the trans dict
-        component_obj.transition_dictionary[transition_obj.src.name + transition_obj.dest.name]--;
+        component_obj.transition_dictionary[transition_obj.src[transition_obj.dest]]--;
     }
     // decrement the transition count of source
     transition_obj.src.transition_count--;

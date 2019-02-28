@@ -164,27 +164,9 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
             if(source_konva != null){
                 // check the index and both places are in same component
                 if(source_obj.index < dest_obj.index && source_component == dest_component){
-                    var offset = 0;
-                    // check if this source -> dest combo has been added prior
-                    if(source_component.transition_dictionary[source_obj.name + dest_obj.name]){
-                        // set offset based on its value in the dictionary
-                        console.log("The current tran count is " + source_component.transition_dictionary[source_obj.name + dest_obj.name] + " before creation");
-                        if(source_component.transition_dictionary[source_obj.name + dest_obj.name] == 1){
-                            offset = 30;
-                            // iterate the count for this transition
-                            source_component.transition_dictionary[source_obj.name + dest_obj.name]++;
-                        } else if (source_component.transition_dictionary[source_obj.name + dest_obj.name] == 2){
-                            offset = -30;
-                            source_component.transition_dictionary[source_obj.name + dest_obj.name]++;
-                        } else {
-                            offset = 0;
-                        }
-                    } else {
-                        // add the source -> dest combo into the components dictionary
-                        source_component.transition_dictionary[source_obj.name + dest_obj.name] = 1;
-                    }
-                   
-                    console.log("Source place transition out count: ", source_obj.transition_count);
+                    // set transition offset
+                    var offset = setTransitionOffset(source_component, source_obj, dest_obj);
+                    console.log("Offset is " + offset);
                     returned_transition_obj = addNewTransition(offset, source_konva, dest_transition, source_obj, dest_obj, component_obj, component_group, component, tooltipLayer, use_selection_area, provide_selection_area);
                     // add the transition obj to both souce place and dest place transition_connected list
                     source_obj.transition_outbound_list.push(returned_transition_obj);
@@ -310,6 +292,30 @@ function createDependencyPort(component, component_obj, component_group, place_o
         }
     }
 };
+
+// set the offset of the transition
+function setTransitionOffset(source_component, source_obj, dest_obj){
+    // check if this source -> dest combo has been added prior
+    // (((test || {}).level1 || {}).level2 || {}).level3;
+    if((source_component.transition_dictionary || {}.source_obj || {}).dest_obj){
+        // set offset based on its value in the dictionary
+        console.log("The current tran dictionary value is " + source_component.transition_dictionary[source_obj][dest_obj] + " for this src and dest combo");
+        if(source_component.transition_dictionary[source_obj][dest_obj] == 1){
+            console.log("Source and Dest had ONE existing transition");
+            // iterate the count for this transition
+            source_component.transition_dictionary[source_obj][dest_obj]++;
+            return 30;
+        } else if (source_component.transition_dictionary[source_obj][dest_obj] == 2){
+            console.log("Source and Dest had TWO existing transition");
+            source_component.transition_dictionary[source_obj][dest_obj]++;
+            return -30;
+        }
+    } else {
+        // add the source -> dest combo into the components dictionary
+        source_component.transition_dictionary = {source_obj: {dest_obj: 1}};
+        return 0;
+    }
+}
 
 // Catch new place name from ipcMain
 ipcRend.on("place->renderer", function(event, args) {
