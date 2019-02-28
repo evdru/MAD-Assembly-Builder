@@ -150,7 +150,7 @@ ipcMain.on("change_place_details", function(event, args) {
 	// Create new window
 	var place_window = new BrowserWindow({
 		width: 350,
-		height: 400
+		height: 200
 	})
 	place_window.loadURL(url.format({
 		pathname: path.join(__dirname, './HTML/change_place_details.html'),
@@ -190,7 +190,7 @@ ipcMain.on("change_transition_details", function(event, args) {
 	// Create new window
 	var transition_window = new BrowserWindow({
 		width: 400,
-		height: 450
+		height: 225
 	})
 	transition_window.loadURL(url.format({
 		pathname: path.join(__dirname, './HTML/change_transition_details.html'),
