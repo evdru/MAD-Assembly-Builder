@@ -297,24 +297,28 @@ function createDependencyPort(component, component_obj, component_group, place_o
 function setTransitionOffset(source_component, source_obj, dest_obj){
     // check if this source -> dest combo has been added prior
     // (((test || {}).level1 || {}).level2 || {}).level3;
-    if((source_component.transition_dictionary || {}.source_obj || {}).dest_obj){
+    if(source_component.transition_dictionary.source_obj && source_component.transition_dictionary.source_obj.dest_obj){
         // set offset based on its value in the dictionary
-        console.log("The current tran dictionary value is " + source_component.transition_dictionary[source_obj][dest_obj] + " for this src and dest combo");
-        if(source_component.transition_dictionary[source_obj][dest_obj] == 1){
-            console.log("Source and Dest had ONE existing transition");
-            // iterate the count for this transition
-            source_component.transition_dictionary[source_obj][dest_obj]++;
-            return 30;
-        } else if (source_component.transition_dictionary[source_obj][dest_obj] == 2){
-            console.log("Source and Dest had TWO existing transition");
-            source_component.transition_dictionary[source_obj][dest_obj]++;
-            return -30;
+        console.log("The current tran dictionary value is " + source_component.transition_dictionary.source_obj.dest_obj + " for this src and dest combo");
+        switch (source_component.transition_dictionary.source_obj.dest_obj){
+            case 1:
+                console.log("Source and Dest had ONE existing transition");
+                // iterate the count for this transition
+                source_component.transition_dictionary.source_obj[dest_obj] = 2;
+                source_obj.offset = 30;
+                break;
+            case 2:
+                console.log("Source and Dest had TWO existing transition");
+                source_component.transition_dictionary.source_obj[dest_obj] = 3;
+                source_obj.offset = -30;
+                break;
         }
     } else {
         // add the source -> dest combo into the components dictionary
-        source_component.transition_dictionary = {source_obj: {dest_obj: 1}};
-        return 0;
+        source_component.transition_dictionary.source_obj = {dest_obj: 1};
+        source_obj.offset = 0;
     }
+    return source_obj.offset;
 }
 
 // Catch new place name from ipcMain

@@ -298,14 +298,16 @@ function removeTransitionObj(component_obj, transition_obj) {
             layer.batchDraw();
         }
     }
+    let source_obj = transition_obj.src;
+    let dest_obj = transition_obj.dest;
     // check the transition dictionary for parallel transitions
-    if(component_obj.transition_dictionary[transition_obj.src[transition_obj.dest]] > 0){
+    if(component_obj.transition_dictionary.source_obj && component_obj.transition_dictionary.source_obj.dest_obj ){
         console.log("Decrementing dictionary keys")
         // decrement the trans dict
-        component_obj.transition_dictionary[transition_obj.src[transition_obj.dest]]--;
+        component_obj.transition_dictionary.source_obj.dest_obj--;
     }
     // decrement the transition count of source
-    transition_obj.src.transition_count--;
+    source_obj.transition_count--;
     // find index of component in component_list and remove
     component_obj.transition_list.splice( component_obj.transition_list.indexOf(transition_obj), 1 );
 };
