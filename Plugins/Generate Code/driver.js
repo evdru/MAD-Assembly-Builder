@@ -5,6 +5,7 @@ var fs = require('fs'); // Load the File System to execute our common tasks (CRU
 var app = electron.remote; 
 var dialog = app.dialog;
 var comp_list = component_list;
+var con_list = connection_list;
 
 ipcRenderer.on('generate_code', function() {
     console.log("Made it to Script_2. :D");
@@ -25,8 +26,7 @@ function createComponentString(component) {
 	content += "import os\n";
 	content += "import subprocess\n\n";
     content += "class " + component.name + "(Component):\n";
-    console.log(component.name);
-    
+
     //Create places list
     content += "\tdef create(self):\n";
     content += "\t\tself.places = [\n";
@@ -54,22 +54,33 @@ function createComponentString(component) {
     };
     content += "\t\t}\n\n";
 
-    //Create dependencies dictionary
+    //Create dependencies dictionary via connection list
     content += "\t\tself.dependencies = {\n";
-    console.log(component.dependency_list.length);
-    for (var k = 0; k < component.dependency_list.length; k++) {
-        if (k == component.dependency_list.length - 1) {
-            content += "\t\t\t'" + component.dependency_list[k].name + "': (DepType." + component.dependency_list[k].type + ", ['place_name'])\n"
-        } else {
-            content += "\t\t\t'" + component.dependency_list[k].name + "': (DepType." + component.dependency_list[k].type + ", ['place_name']),\n"
-        };
+    console.log(con_list);
+    console.log(component.name);
+
+    //First check for provide depencencies
+    for (var k = 0; k < con_list.length; k++) {
+        if (con_list[k].provide_port_obj.component_obj.name === component.name) {
+            content += "\t\t\t'" + con_list[k].provide_port_obj.name + "': (DepType." + con_list[k].provide_port_obj.type + ", ['" + con_list[k].provide_port_obj.source_obj.name + "']),\n"
+        }
     };
+
+    //Second check for use dependencies
+
+    // for (var k = 0; k < component.dependency_list.length; k++) {
+    //     if (k == component.dependency_list.length - 1) {
+    //         content += "\t\t\t'" + component.dependency_list[k].name + "': (DepType." + component.dependency_list[k].type + ", ['place_name'])\n"
+    //     } else {
+    //         content += "\t\t\t'" + component.dependency_list[k].name + "': (DepType." + component.dependency_list[k].type + ", ['place_name']),\n"
+    //     };
+    // };
     content += "\t\t}\n\n"
 
     //Create functions
-    for (var k = 0; k < component.transition_list.length; k++) {
-        if (component.transition_list[k].type === "Transition") {
-            content += "\tdef " + component.transition_list[k].func + "(self):\n";
+    for (var l = 0; l < component.transition_list.length; l++) {
+        if (component.transition_list[l].type === "Transition") {
+            content += "\tdef " + component.transition_list[l].func + "(self):\n";
             content += "\t\ttime.sleep(" + getRndInteger(0, 11) + ")\n\n";
         };
     };
