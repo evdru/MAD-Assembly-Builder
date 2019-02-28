@@ -5,28 +5,25 @@ var fs = require('fs'); // Load the File System to execute our common tasks (CRU
 var app = electron.remote; 
 var dialog = app.dialog;
 var comp_list = component_list;
+var con_list = connection_list;
 
 ipcRenderer.on('generate_code', function() {
-    console.log("Made it to Script_2. :D");
     /** Loop through the component list, for every component create a new file
      * string, open the dialog box, save that string to the newly chosen file 
      */
     for (var i = 0; i < comp_list.length; i++) {
-        createString(comp_list[i]);
+        createComponentString(comp_list[i]);
     };
     createAssemblyString(comp_list);
 });
 
-function createString(component) {
+function createComponentString(component) {
     var content = "";
     //Append to content
 	content += "from mad import *\n";
-	content += "import time\n";
-	content += "import os\n";
-	content += "import subprocess\n\n";
+	content += "import time\n\n";
     content += "class " + component.name + "(Component):\n";
-    console.log(component.name);
-    
+
     //Create places list
     content += "\tdef create(self):\n";
     content += "\t\tself.places = [\n";
@@ -54,22 +51,39 @@ function createString(component) {
     };
     content += "\t\t}\n\n";
 
-    //Create dependencies dictionary
+    //Create dependencies dictionary via connection list
     content += "\t\tself.dependencies = {\n";
-    console.log(component.dependency_list.length);
-    for (var k = 0; k < component.dependency_list.length; k++) {
-        if (k == component.dependency_list.length - 1) {
-            content += "\t\t\t'" + component.dependency_list[k].name + "': (DepType." + component.dependency_list[k].type + ", ['place_name'])\n"
-        } else {
-            content += "\t\t\t'" + component.dependency_list[k].name + "': (DepType." + component.dependency_list[k].type + ", ['place_name']),\n"
+    console.log(con_list);
+    console.log(component.name);
+
+    //First check for provide depencencies
+    for (var k = 0; k < con_list.length; k++) {
+        if (con_list[k].provide_port_obj.component_obj.name === component.name) {
+            if (k == con_list.length - 1) {
+                content += "\t\t\t'" + con_list[k].provide_port_obj.name + "': (DepType." + con_list[k].provide_port_obj.type + ", ['" + con_list[k].provide_port_obj.source_obj.name + "'])\n"
+            } else {
+                content += "\t\t\t'" + con_list[k].provide_port_obj.name + "': (DepType." + con_list[k].provide_port_obj.type + ", ['" + con_list[k].provide_port_obj.source_obj.name + "']),\n"
+            }
         };
     };
+
+    //Second check for use dependencies
+    for (var l = 0; l < con_list.length; l++) {
+        if (con_list[l].use_port_obj.component_obj.name === component.name) {
+            if (k == con_list.length - 1) {
+                content += "\t\t\t'" + con_list[l].use_port_obj.name + "': (DepType." + con_list[l].use_port_obj.type + ", ['" + con_list[l].use_port_obj.source_obj.name + "'])\n"
+            } else {
+                content += "\t\t\t'" + con_list[l].use_port_obj.name + "': (DepType." + con_list[l].use_port_obj.type + ", ['" + con_list[l].use_port_obj.source_obj.name + "']),\n"
+            }
+        };
+    };
+
     content += "\t\t}\n\n"
 
     //Create functions
-    for (var k = 0; k < component.transition_list.length; k++) {
-        if (component.transition_list[k].type === "Transition") {
-            content += "\tdef " + component.transition_list[k].func + "(self):\n";
+    for (var m = 0; m < component.transition_list.length; m++) {
+        if (component.transition_list[m].type === "Transition") {
+            content += "\tdef " + component.transition_list[m].func + "(self):\n";
             content += "\t\ttime.sleep(" + getRndInteger(0, 11) + ")\n\n";
         };
     };
@@ -104,8 +118,10 @@ function getRndInteger(min, max) {
 
 function createAssemblyString(comp_list) {
     var content = "";
+    
     //Import MAD
     content += "from mad import *\n\n";
+    
     //Import component files and classes
     for (var i = 0; i < comp_list.length; i++) {
         content += "from " + comp_list[i].name.toLowerCase() + " import " + comp_list[i].name + "\n";
@@ -113,17 +129,26 @@ function createAssemblyString(comp_list) {
             content += "\n";
         }
     }
+    
     //Add actual functionality
     content += "if __name__ == '__main__':\n";
+    
     //Create new classes of imported types
     for (var j = 0; j < comp_list.length; j++) {
         content += "\t" + comp_list[j].name.toLowerCase() + " = " + comp_list[j].name + "()\n\n";
     }
-    //Create and add to the assembly
+
+    //Add components to the assembly
     content += "\tassembly = Assembly()\n";
     for (var k = 0; k < comp_list.length; k++) {
         content += "\tassembly.addComponent('" + comp_list[k].name.toLowerCase() + "', " + comp_list[k].name.toLowerCase() + ")\n";
-        if (k == comp_list.length - 1) {
+    }
+
+    //Add connections to the assembly
+    for (var l = 0; l < con_list.length; l++) {
+        connection = con_list[l];
+        content += "\tassembly.addConnection(" + connection.provide_port_obj.component_obj.name.toLowerCase() + ", '" + connection.provide_port_obj.name + "', " + connection.use_port_obj.component_obj.name.toLowerCase() + ", '" + connection.use_port_obj.name + "')\n";
+        if (l == con_list.length - 1) {
             content += "\n";
         }
     }
