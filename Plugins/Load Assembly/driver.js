@@ -32,6 +32,7 @@ function loadAssembly() {
     loadComponents(la_comp_list);
     loadPlaces(la_comp_list);
     loadTransitions(la_comp_list);
+    loadDependencies(la_comp_list);
 
 };
 
@@ -107,3 +108,51 @@ function loadTransitions(la_comp_list) {
         }
     }
 };
+
+function loadDependencies(la_comp_list) {
+
+
+    for(var i = 0; i < la_comp_list.length; i++) {
+
+        loaded_component = la_comp_list[i];
+        var component = component_list[i];
+
+        for(var j = 0; j < loaded_component.dependency_list.length; j++) {
+
+            loaded_dependency = loaded_component.dependency_list[j];
+            console.log(loaded_dependency);
+            switch(loaded_dependency.source_obj.type) {
+                case ("Transition"):
+                    for(var k = 0; k < component.transition_list.length; k++) {
+                        if(component.transition_list[k].name == loaded_dependency.source_obj.name) {
+                            source_obj = component.transition_list[k];
+                        }
+                    }
+                    break;
+                case("Place"):
+                    for(var k = 0; k < component.place_list.length; k++) {
+                        if(component.place_list[k].name == loaded_dependency.source_obj.name) {
+                            source_obj = component.place_list[k];
+                        }
+                    }
+                    break;
+            }
+
+            source_obj.dependency = true;
+            source_obj.dependency_type = loaded_dependency.type;
+
+            console.log(source_obj);
+            switch(loaded_dependency.type) {
+                case("USE" || "DATA_USE"):
+                    createDependencyUsePort(component.konva_component, component, component.component_group_konva, source_obj, source_obj.tran_group_konva, component.tooltipLayer);
+                    break;
+                case("PROVIDE" || "DATA_PROVIDE"):
+                    createDependencyPort(component.konva_component, component, component.component_group_konva, source_obj, source_obj.place_konva, component.tooltipLayer);
+                    break;
+            }
+
+        }
+
+    }
+
+}
