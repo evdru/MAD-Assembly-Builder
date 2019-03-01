@@ -4,7 +4,7 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
     // max number of transitions out of the same source = 3
     if(source_obj.transition_count >= max_transition_count){
         alert("Cant create more than 3 transitions from " + source_obj.name);
-        return;
+        return false;
     }
 
     // get index
@@ -49,8 +49,6 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
     transition_group.add(transition);
     transition_group.add(transition_selection_area)
     component_group.add(transition_group);
-    // component_group.add(transition);
-    // component_group.add(transition_selection_area);
 
     // add the konva group to transition obj attribute
     transition_obj.tran_group_konva = transition_group;

@@ -298,8 +298,8 @@ function removeTransitionObj(component_obj, transition_obj) {
             layer.batchDraw();
         }
     }
-    let source_obj = transition_obj.src;
-    let dest_obj = transition_obj.dest;
+    var source_obj = transition_obj.src;
+    var dest_obj = transition_obj.dest;
     // check the transition dictionary for parallel transitions
     if(component_obj.transition_dictionary.source_obj && component_obj.transition_dictionary.source_obj.dest_obj ){
         console.log("Decrementing dictionary keys")
