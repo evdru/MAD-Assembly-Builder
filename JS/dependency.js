@@ -27,6 +27,8 @@ function addNewServiceDependency(component, source_element, source_obj, componen
     } else if (source_obj.type == 'Transition') {
         // create the dependency object
         var dependency_obj = new Dependency('USE', "Dependency_" + index);
+        // set transition selection area opacity to 1
+        // source_obj
         // add dep obj to comp_obj.dep_list
         component_obj.dependency_list.push(dependency_obj);
         console.log('Created new USE dependency dock');
