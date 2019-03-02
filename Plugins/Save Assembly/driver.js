@@ -40,11 +40,54 @@ function saveAssembly() {
 
 };
 
+function componentToSaveObj(component) {
+
+    save_place_list = [];
+    save_transition_list = [];
+    save_dependency_list = [];
+
+    // saving each place in a component
+    for(var i = 0; i < component.place_list.length; i++) {
+        current_place = component.place_list[i];
+        save_place_obj = placeToSaveObj(current_place);
+        save_place_list[i] = save_place_obj;
+    }
+
+    // saving each transition in a component
+    for(var i = 0; i < component.transition_list.length; i++) {
+        current_transition = component.transition_list[i];
+        save_transition_obj = transitionToSaveObj(current_transition);
+        save_transition_list[i] = save_transition_obj;
+    }
+
+    // saving each dependency into a component
+    for(var i = 0; i < component.dependency_list.length; i++) {
+        current_dependency = component.dependency_list[i];
+        save_dependency_obj = dependencyToSaveObj(current_dependency);
+        save_dependency_list[i] = save_dependency_obj;
+    }
+
+    return {
+        type: component.type,
+        name: component.name,
+        place_list: save_place_list,
+        transition_list: save_transition_list,
+        transition_dictionary: component.transition_dictionary,
+        dependency_list: save_dependency_list,
+        posX: component.component_group_konva.x(),
+        posY: component.component_group_konva.y(),
+        scaleX: component.konva_component.scaleX(),
+        scaleY: component.konva_component.scaleY()
+    };
+
+};
+
 function placeToSaveObj(place, transitions=true) {
 
+    save_transition_outbound_list = [];
+    save_transition_inbound_list = [];
+
     if(transitions) {
-        save_transition_outbound_list = [];
-        save_transition_inbound_list = [];
 
         for(var i = 0; i < place.transition_outbound_list.length; i++) {
             transition = place.transition_outbound_list[i];
@@ -64,10 +107,9 @@ function placeToSaveObj(place, transitions=true) {
         name: place.name,
         index: place.index,
         transition_count: place.transition_count,
-        dependency_count: place.dependency,
+        dependency_count: place.dependency_count,
         dependency: place.dependency,
         dependency_type: place.dependency_type,
-        dependency_konva_list: place.dependency_konva_list,
         transition_outbound_list: save_transition_outbound_list,
         transition_inbound_list: save_transition_inbound_list,
         posX: place.place_konva.x(),
@@ -89,41 +131,48 @@ function transitionToSaveObj(transition) {
         dependency_count: transition.dependency_count,
         dependency: transition.dependency,
         dependency_type: transition.dependency_type,
-        dependency_konva_list: transition.dependency_konva_list
     };
 
 };
 
-function componentToSaveObj(component) {
+function dependencyToSaveObj(dependency, connections=true) {
 
-    save_place_list = [];
-    save_transition_list = [];
-
-    // saving each place in a component
-    for(var i = 0; i < component.place_list.length; i++) {
-        current_place = component.place_list[i];
-        save_place_obj = placeToSaveObj(current_place);
-        save_place_list[i] = save_place_obj;
+    var save_src_obj;
+    switch(dependency.source_obj.type) {
+        case "Transition":
+            save_src_obj = transitionToSaveObj(dependency.source_obj);
+            break;
+        case "Place":
+            save_src_obj = placeToSaveObj(dependency.source_obj);
+            break;
     }
+    console.log(save_src_obj);
 
-    // saving each transition in a component
-    for(var i = 0; i < component.transition_list.length; i++) {
-        current_transition = component.transition_list[i];
-        save_transition_obj = transitionToSaveObj(current_transition);
-        save_transition_list[i] = save_transition_obj;
+    if(connections && typeof dependency.connection_obj !== 'undefined') {
+        save_connection_obj = connectionToSaveObj(dependency.connection_obj);
+    } else {
+        save_connection_obj = 'undefined';
     }
 
     return {
-        type: component.type,
-        name: component.name,
-        place_list: save_place_list,
-        transition_list: save_transition_list,
-        transition_dictionary: component.transition_dictionary,
-        dependency_list: component.dependency_list,
-        posX: component.component_group_konva.x(),
-        posY: component.component_group_konva.y(),
-        scaleX: component.konva_component.scaleX(),
-        scaleY: component.konva_component.scaleY()
+        type: dependency.type,
+        name: dependency.name,
+        index: dependency.index,
+        source_obj: save_src_obj,
+        connection_obj: save_connection_obj,
+    };
+
+};
+
+function connectionToSaveObj(connection) {
+
+    save_provide_port_obj = dependencyToSaveObj(connection.provide_port_obj, false);
+    save_use_port_obj = dependencyToSaveObj(connection.use_port_obj, false);
+
+    return {
+        enabled: connection.enabled,
+        provide_port_obj: save_provide_port_obj,
+        use_port_obj: save_use_port_obj
     };
 
 };

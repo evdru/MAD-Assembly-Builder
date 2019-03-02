@@ -97,7 +97,7 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
         if(e.evt.button === 2){
             // if source obj has been assigned with a left click prior
             if(source_konva != null){
-                source_obj.dependency = true;
+                src.dependency = true;
                 // prompt for dependency type
                 console.log("Open window for setting port type (sync)");
                 var type = ipcRend.sendSync("set_dependency_type");
@@ -106,13 +106,13 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
                 if(type ==  'service' ){
                     type = 'PROVIDE';
                     // set the type
-                    source_obj.dependency_type = type
-                    createDependencyPort(component, source_component, component_group, source_obj, source_konva, tooltipLayer);
+                    src.dependency_type = type
+                    createDependencyPort(component, source_component, component_group, src, source_konva, tooltipLayer);
                 } else if (type == 'data'){
                     type = 'DATA_PROVIDE';
                     // set the type
-                    source_obj.dependency_type = type
-                    createDependencyPort(component, source_component, component_group, source_obj, source_konva, tooltipLayer);
+                    src.dependency_type = type
+                    createDependencyPort(component, source_component, component_group, src, source_konva, tooltipLayer);
                 }
                 
                 // reset the source obj to null
@@ -147,7 +147,7 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
             source_component = component_obj;
             // source konva is the left clk source element
             source_konva = place;
-            source_obj = place_obj;
+            src = place_obj;
             // highlight selection
             highlighted = true;
             place.stroke('blue');
@@ -163,32 +163,18 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
             console.log("Source has been selected");
             if(source_konva != null){
                 // check the index and both places are in same component
-                if(source_obj.index < dest_obj.index && source_component == dest_component){
-                    var offset = 0;
-                    // check if this source -> dest combo has been added prior
-                    if(source_component.transition_dictionary[source_obj.name + dest_obj.name]){
-                        // set offset based on its value in the dictionary
-                        console.log("The current tran count is " + source_component.transition_dictionary[source_obj.name + dest_obj.name] + " before creation");
-                        if(source_component.transition_dictionary[source_obj.name + dest_obj.name] == 1){
-                            offset = 30;
-                            // iterate the count for this transition
-                            source_component.transition_dictionary[source_obj.name + dest_obj.name]++;
-                        } else if (source_component.transition_dictionary[source_obj.name + dest_obj.name] == 2){
-                            offset = -30;
-                            source_component.transition_dictionary[source_obj.name + dest_obj.name]++;
-                        } else {
-                            offset = 0;
-                        }
-                    } else {
-                        // add the source -> dest combo into the components dictionary
-                        source_component.transition_dictionary[source_obj.name + dest_obj.name] = 1;
-                    }
-                   
-                    console.log("Source place transition out count: ", source_obj.transition_count);
-                    returned_transition_obj = addNewTransition(offset, source_konva, dest_transition, source_obj, dest_obj, component_obj, component_group, component, tooltipLayer, use_selection_area, provide_selection_area);
+                if(src.index < dest_obj.index && source_component == dest_component){
+                    // set transition offset
+                    let num_occurences = pushTransitionDictionary(component_obj, src, dest_obj);
+                    var offset = setTransitionOffset(num_occurences);
+                    console.log("Offset is " + offset);
+                    src.offset = offset;
+                    returned_transition_obj = addNewTransition(offset, source_konva, dest_transition, src, dest_obj, component_obj, component_group, component, tooltipLayer, use_selection_area, provide_selection_area);
                     // add the transition obj to both souce place and dest place transition_connected list
-                    source_obj.transition_outbound_list.push(returned_transition_obj);
-                    dest_obj.transition_inbound_list.push(returned_transition_obj);
+                    if (returned_transition_obj != false){
+                        src.transition_outbound_list.push(returned_transition_obj);
+                        dest_obj.transition_inbound_list.push(returned_transition_obj);
+                    }
                 } 
             } else {
                 // highlight the place
@@ -215,12 +201,12 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
     place.on("mouseenter", function(){
         stage.container().style.cursor = 'pointer';
         // checks if this place is valid
-        if(source_konva != null && source_obj.index < place_obj.index && source_component == component_obj){
+        if(source_konva != null && src.index < place_obj.index && source_component == component_obj){
             highlighted = true;
             place.stroke('green');
             place.strokeWidth(3);
             place.draw();
-        } else if (source_konva != null && source_obj.index >= place_obj.index && source_component == component_obj){
+        } else if (source_konva != null && src.index >= place_obj.index && source_component == component_obj){
             highlighted = true;
             place.stroke('red');
             place.strokeWidth(3);
@@ -310,6 +296,47 @@ function createDependencyPort(component, component_obj, component_group, place_o
         }
     }
 };
+
+// set the offset of the transition
+function setTransitionOffset(num_occurences){
+
+    let offset;
+
+    switch (num_occurences){
+        case 1:
+            offset = 0
+            break;
+        case 2:
+            offset = 30;
+            break;
+        case 3:
+            offset = -30;
+            break;
+        default:
+            // what are you doing here!?
+            offset = 0;
+    }
+    return offset;
+}
+
+// set Transition dictionary value
+function pushTransitionDictionary(source_component, source_obj, dest_obj){
+    console.log("Key is " + source_obj.name);
+    let src = source_obj.name;
+    console.log("value is " + dest_obj.name)
+    let dest = dest_obj.name;
+    // check if this source -> dest combo has been added prior
+    if(source_component.transition_dictionary[src] && source_component.transition_dictionary[src][dest]){
+        source_component.transition_dictionary[src][dest]++;
+    } else {
+        source_component.transition_dictionary[src] = {};
+        source_component.transition_dictionary[src][dest] = 1;
+    }
+    source_obj.offset = source_component.transition_dictionary[src][dest];
+    console.log(Object.entries(source_component.transition_dictionary));
+    let count = source_component.transition_dictionary[src][dest]
+    return count;
+}
 
 // Catch new place name from ipcMain
 ipcRend.on("place->renderer", function(event, args) {

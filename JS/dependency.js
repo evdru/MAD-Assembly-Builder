@@ -27,6 +27,8 @@ function addNewServiceDependency(component, source_element, source_obj, componen
     } else if (source_obj.type == 'Transition') {
         // create the dependency object
         var dependency_obj = new Dependency('USE', "Dependency_" + index);
+        // set transition selection area opacity to 1
+        // source_obj
         // add dep obj to comp_obj.dep_list
         component_obj.dependency_list.push(dependency_obj);
         console.log('Created new USE dependency dock');
@@ -273,14 +275,19 @@ function addNewServiceDependency(component, source_element, source_obj, componen
                             use_dependency_obj = dependency_obj;
                             // set pointer to dependency obj stub/symbol
                             use_dependency_obj.dep_stub_konva = use_stub_konva;
-                            // check if arc is visible
-                            if(provide_symbol.opacity() == 0){
-                                // make it visible
-                                provide_symbol.opacity(1);
-                                use_stub_konva.opacity(1);
+                            // check if connection already exists between these two depedencies
+                            if(!checkConnectionExist(provide_dependency_obj, use_dependency_obj)){
+                                // check if arc is visible
+                                if(provide_symbol.opacity() == 0){
+                                    // make it visible
+                                    provide_symbol.opacity(1);
+                                    use_stub_konva.opacity(1);
+                                }
+                                // create new connection here
+                                connection_obj = addNewConnection(provide_component_obj, provide_source_obj, provide_stub_konva, provide_component_group, use_component_obj, use_source_obj, use_stub_konva, use_component_group, provide_dependency_obj, use_dependency_obj);
+                            } else {
+                                alert("Connection already exists between these two dependencies");
                             }
-                            // create new connection here
-                            connection_obj = addNewConnection(provide_component_obj, provide_source_obj, provide_stub_konva, provide_component_group, use_component_obj, use_source_obj, use_stub_konva, use_component_group, provide_dependency_obj, use_dependency_obj);
                         } else {
                             alert("Cant create connection from " + provide_component_obj.name + " to " + use_component_obj.name);
                         }
@@ -674,11 +681,19 @@ function addNewDataDependency(component, source_element, source_obj, component_o
                             use_dependency_obj = dependency_obj;
                             // set pointer to dependency obj stub/symbol
                             use_dependency_obj.dep_stub_konva = data_stub_use;
-                            // make things visible
-                            provide_symbol.opacity(1);
-                            data_stub_use.opacity(1);
-                            // create new connection here
-                            connection_obj = addNewConnection(provide_component_obj, provide_source_obj, provide_stub_konva, provide_component_group, use_component_obj, use_source_obj, use_stub_konva, use_component_group, provide_dependency_obj, use_dependency_obj);
+                            // check if connection already exists between these two depedencies
+                            if(!checkConnectionExist(provide_dependency_obj, use_dependency_obj)){
+                                // check if arc is visible
+                                if(provide_symbol.opacity() == 0){
+                                    // make things visible
+                                    provide_symbol.opacity(1);
+                                    data_stub_use.opacity(1);
+                                }
+                                // create new connection here
+                                connection_obj = addNewConnection(provide_component_obj, provide_source_obj, provide_stub_konva, provide_component_group, use_component_obj, use_source_obj, use_stub_konva, use_component_group, provide_dependency_obj, use_dependency_obj);
+                            } else {
+                                alert("Connection already exists between these two dependencies");
+                            }
                         } else {
                             alert("Cant create connection from " + provide_component_obj.name + " to " + use_component_obj.name);
                         }
@@ -711,6 +726,15 @@ function addNewDataDependency(component, source_element, source_obj, component_o
     return dependency_group;
 }
 
+// func to check if connection already exists in connection list
+function checkConnectionExist(provide_dependency_obj, use_dependency_obj){
+    for (var i = 0; i < connection_list.length; i++){
+        if(connection_list[i].provide_port_obj == provide_dependency_obj && connection_list[i].use_port_obj == use_dependency_obj){
+            return true;
+        }
+    }
+    return false;
+}
 // Catch new stub name from ipcMain
 ipcRend.on("stub->renderer", function(event, args) {
     changeStubName(args.component, args.old_name, args.new_name);

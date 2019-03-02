@@ -4,7 +4,7 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
     // max number of transitions out of the same source = 3
     if(source_obj.transition_count >= max_transition_count){
         alert("Cant create more than 3 transitions from " + source_obj.name);
-        return;
+        return false;
     }
 
     // get index
@@ -34,8 +34,9 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
     var transition_selection_area = new Konva.Circle({
         x: ((source_konva.getX() + dest_konva.getX()) / 2) + offset,
         y: (source_konva.getY() + dest_konva.getY()) / 2,
-        radius: 15,
+        radius: 10,
         opacity: 0,
+        stroke: 1,
         text: transition.name,
         name: 'Transition'
     });
@@ -49,8 +50,6 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
     transition_group.add(transition);
     transition_group.add(transition_selection_area)
     component_group.add(transition_group);
-    // component_group.add(transition);
-    // component_group.add(transition_selection_area);
 
     // add the konva group to transition obj attribute
     transition_obj.tran_group_konva = transition_group;
@@ -121,11 +120,11 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
         }
     });
 
-    transition_selection_area.on('moveenter', function(){
+    transition_selection_area.on('moveenter', function() {
         stage.container().style.cursor = 'pointer';
     });
 
-    transition_selection_area.on('mouseover', function(){
+    transition_selection_area.on('mouseover', function() {
         window.addEventListener('keydown', removeTransition);
     });
 
@@ -215,10 +214,6 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
                 transition_selection_area.destroy();
                 tooltip.destroy();
                 layer.draw();
-                // decrement transition dictionary
-                component_obj.transition_dictionary[source_obj.name + dest_obj.name]--;
-                // decrement the transition count for source obj
-                source_obj.transition_count--;
                 // remove the transition obj from its components transition list
                 removeTransitionObj(component_obj, transition_obj);
             } else {
