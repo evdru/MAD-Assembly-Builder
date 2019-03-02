@@ -120,11 +120,11 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
         }
     });
 
-    transition_selection_area.on('moveenter', function(){
+    transition_selection_area.on('moveenter', function() {
         stage.container().style.cursor = 'pointer';
     });
 
-    transition_selection_area.on('mouseover', function(){
+    transition_selection_area.on('mouseover', function() {
         window.addEventListener('keydown', removeTransition);
     });
 
