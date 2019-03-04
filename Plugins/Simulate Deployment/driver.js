@@ -48,11 +48,18 @@ function createTokens(component, tokenGroup){
         x: tokenPos.x,
         y: tokenPos.y,
         radius: 8,
-        fill: 'red',
-        stroke: 'black',
-        strokeWidth: 1,
+        fill: getRandomColor(),
         opacity: 1
     });
     tokenGroup.add(token);
     //component.component_group_konva.add(token);
 }
+
+function getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
