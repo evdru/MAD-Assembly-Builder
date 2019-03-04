@@ -66,6 +66,9 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
     transition_obj.tran_group_konva = transition_group;
     transition_obj.transition_selection_area = transition_selection_area;
 
+    // set reference to transition
+    transition_obj.tran_konva = transition;
+
     // intilize selection variables to null
     source_transition_konva = null;
     source_transition_obj = null;

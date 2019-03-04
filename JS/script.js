@@ -60,6 +60,7 @@ class Transition {
         this.src = src;
         this.tran_group_konva;
         this.transition_selection_area;
+        this.tran_konva;
         this.dest = dest;
         this.func = func;
         this.dependency_count = 0; // 3 max
