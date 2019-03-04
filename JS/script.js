@@ -58,6 +58,7 @@ class Transition {
         this.index;
         this.src = src;
         this.tran_group_konva;
+        this.tran_konva;
         this.dest = dest;
         this.func = func;
         this.dependency_count = 0; // 3 max
