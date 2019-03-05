@@ -76,7 +76,8 @@ sd_ipcRenderer.on('simulate_deployment', function() {
             setNotListening(sd_comp_list[i]);
             // create a token for every component
             var place_num = 0;
-            var token = createTokens(sd_comp_list[i], playLabel, pauseLabel, resetLabel, place_num, animLayer);
+            var tokenColor = getRandomColor();
+            var token = createTokens(sd_comp_list[i], playLabel, pauseLabel, resetLabel, place_num, animLayer, tokenColor);
         } else {
             console.log(sd_comp_list[i].name + " did not have a place!");
         } 
@@ -209,13 +210,12 @@ function setListening(component){
     layer.drawHit();
 }
 
-function createTokens(component, playLabel, pauseLabel, resetLabel, place_num, animLayer){
+function createTokens(component, playLabel, pauseLabel, resetLabel, place_num, animLayer, tokenColor){
     // check if current component has first place
-    var tokenPos = component.place_list[0].place_konva.getAbsolutePosition();
+    var tokenPos = component.place_list[place_num].place_konva.getAbsolutePosition();
 
     console.log("Creating tokens for " + component.name + " at " + component.place_list[0].name);
     console.log("Place 1 position is " + tokenPos.x + " " + tokenPos.y);
-    var tokenColor = getRandomColor();
 
     // create token for every outbound transition
     for (var tran_num = 0; tran_num < component.place_list[place_num].transition_outbound_list.length; tran_num++){
@@ -234,30 +234,43 @@ function createTokens(component, playLabel, pauseLabel, resetLabel, place_num, a
         // add konva token to animLayer
         animLayer.add(token);
 
-        var transition = component.place_list[0].transition_outbound_list[0].tran_konva;
+        var transition = component.place_list[place_num].transition_outbound_list[tran_num].tran_konva;
         var tran_pos = transition.getAbsolutePosition();
-        var dest_pos_x = tran_pos.x + transition.points()[2];
-        var dest_post_y = tran_pos.y + transition.points()[3];
+        // var dest_pos_x = tran_pos.x + transition.points()[2];
+        // var dest_post_y = tran_pos.y + transition.points()[3];
         //moveToken(token, dest_pos_x, dest_post_y, playLabel, pauseLabel);
         var dest_pos_x = tran_pos.x + transition.points()[4];
         var dest_post_y = tran_pos.y + transition.points()[5];
-        moveToken(token, dest_pos_x, dest_post_y, playLabel, pauseLabel, resetLabel);
+        moveToken(component, token, dest_pos_x, dest_post_y, playLabel, pauseLabel, resetLabel, place_num, tran_num, tokenColor, animLayer);
+
     }
     return token;
 }
 
-function moveToken(token, dest_pos_x, dest_post_y, playLabel, pauseLabel, resetLabel){
+function moveToken(component, token, dest_pos_x, dest_post_y, playLabel, pauseLabel, resetLabel, place_num, tran_num, tokenColor, animLayer){
+    // get new place for every transition
+    var new_pos = component.place_list[place_num].transition_outbound_list[tran_num].dest;
+    console.log("new place name is " + new_pos.name + " and index is " + new_pos.index);
     // the tween has to be created after the node has been added to the layer
     var tween = new Konva.Tween({
         node: token,
-        duration: 3,
+        duration: 4,
         x: dest_pos_x,
         y: dest_post_y,
         opacity: 1,
-        // onFinish: function() {
-        //     tween.destroy();
-        // }
+        onFinish: function() {
+            // check if new pos has outbound transitions
+            if (new_pos.transition_outbound_list.length > 0){
+                token.destroy();
+                animLayer.batchDraw();
+                createTokens(component, playLabel, pauseLabel, resetLabel, new_pos.index - 1, animLayer, tokenColor);
+            }
+        }
     });
+
+    if (place_num != 0){
+        tween.play();
+    }
 
     playLabel.on('click', function(e){
         tween.play();
@@ -270,7 +283,7 @@ function moveToken(token, dest_pos_x, dest_post_y, playLabel, pauseLabel, resetL
     });
 
     resetLabel.on('click', function(e){
-        token.position({x: token.x, y: token.y});
+        tween.reset();
         console.log("clicked on reset label");
     });
 }
