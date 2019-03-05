@@ -27,12 +27,15 @@ function loadAssembly() {
     }
 
     data = la_fs.readFileSync(fileName.toString());
-    la_comp_list = la_yaml.safeLoadAll(data)[0];
+    la_load_list = la_yaml.safeLoadAll(data)[0];
+    la_comp_list = la_load_list[0];
+    la_conn_list = la_load_list[1];
 
     loadComponents(la_comp_list);
     loadPlaces(la_comp_list);
     loadTransitions(la_comp_list);
     loadDependencies(la_comp_list);
+    loadConnections(la_conn_list);
 
 };
 
@@ -141,18 +144,64 @@ function loadDependencies(la_comp_list) {
             source_obj.dependency = true;
             source_obj.dependency_type = loaded_dependency.type;
 
-            console.log(source_obj);
-            switch(loaded_dependency.type) {
-                case("USE" || "DATA_USE"):
-                    createDependencyUsePort(component.konva_component, component, component.component_group_konva, source_obj, source_obj.tran_group_konva, component.tooltipLayer);
-                    break;
-                case("PROVIDE" || "DATA_PROVIDE"):
-                    createDependencyPort(component.konva_component, component, component.component_group_konva, source_obj, source_obj.place_konva, component.tooltipLayer);
-                    break;
+            if(loaded_dependency.type == "USE" || loaded_dependency.type == "DATA_USE") {
+                createDependencyUsePort(component.konva_component, component, component.component_group_konva, source_obj, source_obj.tran_group_konva, component.tooltipLayer);
+            }
+            else if(loaded_dependency.type == "PROVIDE" || loaded_dependency.type == "DATA_PROVIDE") {
+                createDependencyPort(component.konva_component, component, component.component_group_konva, source_obj, source_obj.place_konva, component.tooltipLayer);
             }
 
         }
 
     }
 
-}
+};
+
+function loadConnections(la_conn_list) {
+
+    for(var conn_ctr = 0; conn_ctr < la_conn_list.length; conn_ctr++) {
+        var provide_component;
+        var provide_obj;
+        var provide_dependency;
+
+        var use_component;
+        var use_obj;
+        var use_dependency;
+
+        var loaded_connection = la_conn_list[conn_ctr];
+
+        // get components
+        for(var comp_ctr = 0; comp_ctr < component_list.length; comp_ctr++) {
+            component = component_list[comp_ctr];
+            if(loaded_connection.provide_component_name == component.name) {
+                provide_component = component;
+            }
+            if(loaded_connection.use_component_name == component.name) {
+                use_component = component;
+            }
+        }
+
+        // get provide stuff
+        for(var dep_ctr = 0; dep_ctr < provide_component.dependency_list.length; dep_ctr++) {
+            dependency = provide_component.dependency_list[dep_ctr];
+            if(dependency.name == loaded_connection.provide_port_obj.name) {
+                provide_dependency = dependency;
+                provide_obj = provide_dependency.source_obj;
+            }
+        }
+
+        // get use stuff
+        for(var dep_ctr = 0; dep_ctr < use_component.dependency_list.length; dep_ctr++) {
+            dependency = use_component.dependency_list[dep_ctr];
+            if(dependency.name == loaded_connection.use_port_obj.name) {
+                use_dependency = dependency;
+                use_obj = use_dependency.source_obj;
+            }
+        }
+
+        addNewConnection(provide_component, provide_obj, provide_dependency.dep_stub_konva, provide_component.component_group_konva,
+                         use_component, use_obj, use_dependency.dep_stub_konva, use_component.component_group_konva,
+                         provide_dependency, use_dependency);
+    }
+
+};

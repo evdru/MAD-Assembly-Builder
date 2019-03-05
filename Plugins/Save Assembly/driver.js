@@ -18,16 +18,11 @@ sa_ipcRenderer.on('save_assembly', function() {
 
 function saveAssembly() {
 
-    // saving each component
-    for(var i = 0; i < component_list.length; i++) {
+    var save_comp_list = saveComponents(component_list);
+    var save_conn_list = saveConnections(connection_list);
+    var save_list = [save_comp_list, save_conn_list];
 
-        current_component = component_list[i];
-        save_component_obj = componentToSaveObj(current_component);
-        sa_comp_list[i] = save_component_obj;
-
-    }
-
-    var saveContent = sa_yaml.safeDump(sa_comp_list);
+    var saveContent = sa_yaml.safeDump(save_list);
 
     fileName = sa_dialog.showSaveDialog( {defaultPath: "~/*.yaml"} );
 
@@ -39,6 +34,40 @@ function saveAssembly() {
     sa_fs.writeFileSync(fileName, saveContent);
 
 };
+
+function saveComponents(component_list) {
+
+    var save_comp_list = [];
+
+    // saving each component
+    for(var i = 0; i < component_list.length; i++) {
+
+        current_component = component_list[i];
+        save_component_obj = componentToSaveObj(current_component);
+        save_comp_list[i] = save_component_obj;
+
+    }
+
+    return save_comp_list;
+
+}
+
+function saveConnections(connection_list) {
+
+        var save_conn_list = [];
+
+        // saving each component
+        for(var i = 0; i < connection_list.length; i++) {
+
+            current_connection = connection_list[i];
+            save_connection_obj = connectionToSaveObj(current_connection);
+            save_conn_list[i] = save_connection_obj;
+
+        }
+
+        return save_conn_list;
+
+}
 
 function componentToSaveObj(component) {
 
@@ -146,7 +175,6 @@ function dependencyToSaveObj(dependency, connections=true) {
             save_src_obj = placeToSaveObj(dependency.source_obj);
             break;
     }
-    console.log(save_src_obj);
 
     if(connections && typeof dependency.connection_obj !== 'undefined') {
         save_connection_obj = connectionToSaveObj(dependency.connection_obj);
@@ -172,7 +200,9 @@ function connectionToSaveObj(connection) {
     return {
         enabled: connection.enabled,
         provide_port_obj: save_provide_port_obj,
-        use_port_obj: save_use_port_obj
+        use_port_obj: save_use_port_obj,
+        provide_component_name: connection.provide_component_name,
+        use_component_name: connection.use_component_name
     };
 
 };

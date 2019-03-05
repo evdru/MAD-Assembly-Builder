@@ -88,6 +88,8 @@ class Connection {
         this.enabled = false;
         this.provide_port_obj;
         this.use_port_obj;
+        this.provide_component_name;
+        this.use_component_name;
     }
 };
 
