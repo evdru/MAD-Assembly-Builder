@@ -32,23 +32,25 @@ sd_ipcRenderer.on('simulate_deployment', function() {
         return;
     }
     // create a konva group for tokens
-    var tokenGroup = new Konva.Group();
+    var simulationGroup = new Konva.Group();
 
     // create simulator button
     simulatorLabel = createSimulatorLabel();
-    animLayer.add(simulatorLabel);
+    simulationGroup.add(simulatorLabel);
     // create play button
     playLabel = createPlayButton();
-    animLayer.add(playLabel);
+    simulationGroup.add(playLabel);
     // create pause button
     pauseLabel = createPauseButton();
-    animLayer.add(pauseLabel);
+    simulationGroup.add(pauseLabel);
     // create reset button
     resetLabel = createResetButton();
-    animLayer.add(resetLabel);
+    simulationGroup.add(resetLabel);
     // create edit mode button
     editButton = createEditModeButton();
-    animLayer.add(editButton);
+    simulationGroup.add(editButton);
+
+    animLayer.add(simulationGroup);
 
     editButton.on('click', function(e){
         // for every component
@@ -56,6 +58,9 @@ sd_ipcRenderer.on('simulate_deployment', function() {
             setListening(sd_comp_list[i]);
             simulator_mode = false;
         }
+        destroyTokens();
+        simulationGroup.destroy();
+        animLayer.destroy();
         console.log("clicked on edit mode label");
     });
 
@@ -97,7 +102,9 @@ function createPlayButton(){
     });
 
     playLabel.add(new Konva.Tag({
-        fill: 'green'
+        fill: 'green',
+        stroke: 'black',
+       strokeWidth: 2
     }));
 
     playLabel.add(new Konva.Text({
@@ -119,7 +126,9 @@ function createPauseButton(){
     });
 
     pauseLabel.add(new Konva.Tag({
-        fill: 'RED'
+        fill: 'RED',
+        stroke: 'black',
+       strokeWidth: 2
     }));
 
     pauseLabel.add(new Konva.Text({
@@ -198,6 +207,13 @@ function createEditModeButton(){
         fill: 'black'
     }));
     return editLabel;
+}
+
+function destroyTokens(){
+    for (var i = 0; i < token_list.length; i++) {
+        token_list[i].konva_circle.destroy();
+    }
+    token_list = [];
 }
 
 function setNotListening(component){
@@ -284,6 +300,7 @@ function moveToken(component, token, dest_pos_x, dest_post_y, playLabel, pauseLa
 
     resetLabel.on('click', function(e){
         tween.reset();
+        animLayer.batchDraw();
         console.log("clicked on reset label");
     });
 }
