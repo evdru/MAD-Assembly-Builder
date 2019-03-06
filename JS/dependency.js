@@ -415,7 +415,7 @@ function addNewDataDependency(component, source_element, source_obj, component_o
         // symbol is invisbile until connection has been established
         data_symbol_provide = getDataSymbolProvide();
         data_symbol_provide.opacity(0);
-        dependency_obj.dep_stub_konva = data_stub_provide;
+        dependency_obj.dep_stub_konva = stub;
         // add all to dependency group
         dependency_group.add(stub);
         dependency_group.add(data_stub_provide);
