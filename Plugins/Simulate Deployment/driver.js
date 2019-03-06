@@ -58,6 +58,7 @@ sd_ipcRenderer.on('simulate_deployment', function() {
             setListening(sd_comp_list[i]);
             simulator_mode = false;
         }
+        resetPlaces();
         destroyTokens();
         simulationGroup.destroy();
         animLayer.destroy();
@@ -209,6 +210,18 @@ function createEditModeButton(){
     return editLabel;
 }
 
+function resetPlaces(){
+    for (var i = 0; i < sd_comp_list.length; i++) {
+        for (var j = 0; j < sd_comp_list[i].place_list.length; j++){
+            // show that the new place has been reached
+            sd_comp_list[i].place_list[j].place_konva.stroke('black');
+            sd_comp_list[i].place_list[j].place_konva.strokeWidth(1);
+            
+        }
+    }
+    layer.draw();
+}
+
 function destroyTokens(){
     for (var i = 0; i < token_list.length; i++) {
         token_list[i].konva_circle.destroy();
@@ -266,6 +279,14 @@ function createTokens(component, playLabel, pauseLabel, resetLabel, place_num, a
 function moveToken(component, token, dest_pos_x, dest_post_y, playLabel, pauseLabel, resetLabel, place_num, tran_num, tokenColor, animLayer){
     // get new place for every transition
     var new_pos = component.place_list[place_num].transition_outbound_list[tran_num].dest;
+    
+    if(place_num == 0){
+        // show that the place has been reached
+        component.place_list[place_num].place_konva.stroke('green');
+        component.place_list[place_num].place_konva.strokeWidth(5);
+        component.place_list[place_num].place_konva.draw();
+    }
+
     console.log("new place name is " + new_pos.name + " and index is " + new_pos.index);
     // the tween has to be created after the node has been added to the layer
     var tween = new Konva.Tween({
@@ -275,6 +296,10 @@ function moveToken(component, token, dest_pos_x, dest_post_y, playLabel, pauseLa
         y: dest_post_y,
         opacity: 1,
         onFinish: function() {
+            // show that the new place has been reached
+            new_pos.place_konva.stroke('green');
+            new_pos.place_konva.strokeWidth(5);
+            new_pos.place_konva.draw();
             // check if new pos has outbound transitions
             if (new_pos.transition_outbound_list.length > 0){
                 token.destroy();
@@ -299,8 +324,9 @@ function moveToken(component, token, dest_pos_x, dest_post_y, playLabel, pauseLa
     });
 
     resetLabel.on('click', function(e){
-        tween.reset();
-        animLayer.batchDraw();
+        // tween.reset();
+        // resetPlaces();
+        // animLayer.batchDraw();
         console.log("clicked on reset label");
     });
 }
