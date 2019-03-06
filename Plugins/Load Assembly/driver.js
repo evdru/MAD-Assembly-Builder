@@ -123,29 +123,18 @@ function loadDependencies(la_comp_list) {
         for(var j = 0; j < loaded_component.dependency_list.length; j++) {
 
             loaded_dependency = loaded_component.dependency_list[j];
-            console.log(loaded_dependency);
-            switch(loaded_dependency.source_obj.type) {
-                case ("Transition"):
-                    for(var k = 0; k < component.transition_list.length; k++) {
-                        if(component.transition_list[k].name == loaded_dependency.source_obj.name) {
-                            source_obj = component.transition_list[k];
-                        }
-                    }
-                    break;
-                case("Place"):
-                    for(var k = 0; k < component.place_list.length; k++) {
-                        if(component.place_list[k].name == loaded_dependency.source_obj.name) {
-                            source_obj = component.place_list[k];
-                        }
-                    }
-                    break;
+
+            if(loaded_dependency.source_obj.type == "Transition") {
+                source_obj = matchTransition(component.transition_list, loaded_dependency.source_obj);
+            } else if(loaded_dependency.source_obj.type == "Place") {
+                source_obj = matchPlace(component.place_list, loaded_dependency.source_obj);
             }
 
             source_obj.dependency = true;
             source_obj.dependency_type = loaded_dependency.type;
 
             if(loaded_dependency.type == "USE" || loaded_dependency.type == "DATA_USE") {
-                createDependencyUsePort(component.konva_component, component, component.component_group_konva, source_obj, source_obj.tran_group_konva, component.tooltipLayer);
+                createDependencyUsePort(component.konva_component, component, component.component_group_konva, source_obj, source_obj.transition_selection_area, component.tooltipLayer);
             }
             else if(loaded_dependency.type == "PROVIDE" || loaded_dependency.type == "DATA_PROVIDE") {
                 createDependencyPort(component.konva_component, component, component.component_group_konva, source_obj, source_obj.place_konva, component.tooltipLayer);
@@ -155,6 +144,27 @@ function loadDependencies(la_comp_list) {
 
     }
 
+};
+
+function matchTransition(transition_list, loaded_transition) {
+
+    for(var trans_ctr = 0; trans_ctr < transition_list.length; trans_ctr++) {
+        transition = transition_list[trans_ctr];
+        if(transition.name == loaded_transition.name) {
+            return transition;
+        }
+    }
+
+};
+
+function matchPlace(place_list, loaded_place) {
+
+    for(var place_ctr = 0; place_ctr < place_list.length; place_ctr++) {
+        place = place_list[place_ctr];
+        if(place.name == loaded_place.name) {
+            return place;
+        }
+    }
 };
 
 function loadConnections(la_conn_list) {
