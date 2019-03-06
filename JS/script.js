@@ -310,6 +310,12 @@ function removeTransitionObj(component_obj, transition_obj) {
             layer.batchDraw();
         }
     }
+    // remove itself from its src outbound list
+    transition_obj.src.transition_outbound_list.splice( transition_obj.src.transition_outbound_list.indexOf(transition_obj), 1 );
+
+    // remove itself from its dest inbound list
+    transition_obj.dest.transition_inbound_list.splice( transition_obj.dest.transition_inbound_list.indexOf(transition_obj), 1 );
+
     var source_obj_name = transition_obj.src.name;
     var dest_obj_name = transition_obj.dest.name;
     // check the transition dictionary for parallel transitions

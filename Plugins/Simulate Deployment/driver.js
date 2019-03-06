@@ -6,8 +6,8 @@ const sd_ipcRenderer = sd_electron.ipcRenderer;
 
 var sd_app = electron.remote; 
 var sd_dialog = app.dialog;
-var sd_comp_list = component_list;
-var sd_con_list = connection_list;
+var sd_comp_list = [];
+var sd_con_list = [];
 var token_list = [];
 var simulator_mode = true;
 
@@ -21,6 +21,9 @@ class Token{
 
 sd_ipcRenderer.on('simulate_deployment', function() {
 
+    // set references to global lists
+    sd_comp_list = component_list;
+    sd_con_list = connection_list;
     // check if component exists
     if(sd_comp_list.length > 0) {
         console.log("Creating and adding animation layer to stage...");
@@ -58,21 +61,23 @@ sd_ipcRenderer.on('simulate_deployment', function() {
             setListening(sd_comp_list[i]);
             simulator_mode = false;
         }
-        resetPlaces();
+        resetHighlights();
         destroyTokens();
         simulationGroup.destroy();
         animLayer.destroy();
+        sd_comp_list = [];
+        sd_con_list = [];
         console.log("clicked on edit mode label");
     });
 
-    simulatorLabel.on('click', function(e){
-        // for every component
-        for (var i = 0; i < sd_comp_list.length; i++) {
-            setNotListening(sd_comp_list[i]);
-            simulator_mode = true;
-        }
-        console.log("clicked on simulator mode label");
-    });
+    // simulatorLabel.on('click', function(e){
+    //     // for every component
+    //     for (var i = 0; i < sd_comp_list.length; i++) {
+    //         setNotListening(sd_comp_list[i]);
+    //         simulator_mode = true;
+    //     }
+    //     console.log("clicked on simulator mode label");
+    // });
     
     // for every component
     for (var i = 0; i < sd_comp_list.length; i++) {
@@ -210,13 +215,12 @@ function createEditModeButton(){
     return editLabel;
 }
 
-function resetPlaces(){
+function resetHighlights(){
     for (var i = 0; i < sd_comp_list.length; i++) {
         for (var j = 0; j < sd_comp_list[i].place_list.length; j++){
             // show that the new place has been reached
             sd_comp_list[i].place_list[j].place_konva.stroke('black');
             sd_comp_list[i].place_list[j].place_konva.strokeWidth(1);
-            
         }
     }
     layer.draw();
@@ -225,8 +229,8 @@ function resetPlaces(){
 function destroyTokens(){
     for (var i = 0; i < token_list.length; i++) {
         token_list[i].konva_circle.destroy();
+        token_list.splice( token_list.indexOf(token_list[i]), 1 );
     }
-    token_list = [];
 }
 
 function setNotListening(component){
@@ -283,7 +287,7 @@ function moveToken(component, token, dest_pos_x, dest_post_y, playLabel, pauseLa
     if(place_num == 0){
         // show that the place has been reached
         component.place_list[place_num].place_konva.stroke('green');
-        component.place_list[place_num].place_konva.strokeWidth(5);
+        component.place_list[place_num].place_konva.strokeWidth(3);
         component.place_list[place_num].place_konva.draw();
     }
 
@@ -296,10 +300,12 @@ function moveToken(component, token, dest_pos_x, dest_post_y, playLabel, pauseLa
         y: dest_post_y,
         opacity: 1,
         onFinish: function() {
-            // show that the new place has been reached
-            new_pos.place_konva.stroke('green');
-            new_pos.place_konva.strokeWidth(5);
-            new_pos.place_konva.draw();
+            if(new_pos.place_konva.stroke() == 'black'){
+                // show that the new place has been reached
+                new_pos.place_konva.stroke('green');
+                new_pos.place_konva.strokeWidth(3);
+                new_pos.place_konva.draw();
+            }
             // check if new pos has outbound transitions
             if (new_pos.transition_outbound_list.length > 0){
                 token.destroy();
