@@ -66,6 +66,8 @@ class Transition {
         this.dependency = false;
         this.dependency_type = '';
         this.dependency_konva_list = [];
+        this.duration_min = 1;
+        this.duration_max = 2;
     };
 };
 

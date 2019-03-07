@@ -2,6 +2,7 @@
 // or else the plugin will not work
 
 const sd_electron = require('electron');
+const Timer = require('tiny-timer');
 const sd_ipcRenderer = sd_electron.ipcRenderer;
 
 var sd_app = electron.remote; 
@@ -70,19 +71,16 @@ sd_ipcRenderer.on('simulate_deployment', function() {
         console.log("clicked on edit mode label");
     });
 
-    // simulatorLabel.on('click', function(e){
-    //     // for every component
-    //     for (var i = 0; i < sd_comp_list.length; i++) {
-    //         setNotListening(sd_comp_list[i]);
-    //         simulator_mode = true;
-    //     }
-    //     console.log("clicked on simulator mode label");
-    // });
+    // create global timer
+    let timer = new Timer({ interval: 500, stopwatch: true });
     
     // for every component
     for (var i = 0; i < sd_comp_list.length; i++) {
         // check if component has places
         if (sd_comp_list[i].place_list.length > 0){
+            // create timer label
+            timerLabel = createTimerLabel(sd_comp_list[i].component_group_konva, sd_comp_list[i].konva_component);
+            simulationGroup.add(timerLabel);
             // set not listening 
             setNotListening(sd_comp_list[i]);
             // create a token for every component
@@ -94,10 +92,35 @@ sd_ipcRenderer.on('simulate_deployment', function() {
         } 
     };
 
+    // timer event listeners
+    // timer.on('tick', (ms) => console.log('tick', ms))
+    timer.on('tick', (ms) =>  timerLabel.text(ms));
+    timer.on('done', () => console.log('done!'))
+    timer.on('statusChanged', (status) => console.log('status:', status))
+    // timer.start(5000) // run for 5 seconds
+
     // animLayer.add(tokenGroup);
     animLayer.draw();
     return;
 });
+
+function createTimerLabel(component_group, component_konva){
+
+    var comp_absolute_pos = component_konva.getAbsolutePosition();
+
+    var timer = new Konva.Text({
+        x: comp_absolute_pos.x + ((component_konva.getWidth() / 2) * component_konva.scaleX()) - 70,
+        y: comp_absolute_pos.y + (component_konva.getHeight() * component_konva.scaleY()),
+        opacity: 1,
+        text: '00:00:00',
+        fontFamily: 'Calibri',
+        fontSize: 36,
+        padding: 5,
+        fill: 'black'
+    });
+
+    return timer;
+}
 
 function createPlayButton(){
      // play label
@@ -110,7 +133,7 @@ function createPlayButton(){
     playLabel.add(new Konva.Tag({
         fill: 'green',
         stroke: 'black',
-       strokeWidth: 2
+        strokeWidth: 2
     }));
 
     playLabel.add(new Konva.Text({
@@ -134,7 +157,7 @@ function createPauseButton(){
     pauseLabel.add(new Konva.Tag({
         fill: 'RED',
         stroke: 'black',
-       strokeWidth: 2
+        strokeWidth: 2
     }));
 
     pauseLabel.add(new Konva.Text({
@@ -243,13 +266,17 @@ function setListening(component){
     layer.drawHit();
 }
 
-function isIndex(index, object) {
-    return index == object;
-}
-
 function createTokens(component, playLabel, pauseLabel, resetLabel, place_num, animLayer, tokenColor){
-    // check if current component has first place
+    // get position of current place
     var tokenPos = component.place_list[place_num].place_konva.getAbsolutePosition();
+
+    // if first place
+    if(place_num == 0){
+        // show that the place has been reached
+        component.place_list[place_num].place_konva.stroke('green');
+        component.place_list[place_num].place_konva.strokeWidth(3);
+        component.place_list[place_num].place_konva.draw();
+    }
 
     console.log("Creating tokens for " + component.name + " at " + component.place_list[0].name);
     console.log("Place 1 position is " + tokenPos.x + " " + tokenPos.y);
@@ -285,27 +312,26 @@ function createTokens(component, playLabel, pauseLabel, resetLabel, place_num, a
 }
 
 function moveToken(component, token, dest_pos_x, dest_post_y, playLabel, pauseLabel, resetLabel, place_num, tran_num, tokenColor, animLayer){
-    // get new place for every transition
-    var new_pos = component.place_list[place_num].transition_outbound_list[tran_num].dest;
+    
+    // get current tran obj
+    var curr_tran_obj = component.place_list[place_num].transition_outbound_list[tran_num];
+    // get new place for current transition
+    var new_pos = curr_tran_obj.dest;
     // find index of dest place
     var next_index = component.place_list.indexOf(component.place_list[place_num].transition_outbound_list[tran_num].dest);
     console.log("next index is " + next_index);
-    
-    // if first place
-    if(place_num == 0){
-        // show that the place has been reached
-        component.place_list[place_num].place_konva.stroke('green');
-        component.place_list[place_num].place_konva.strokeWidth(3);
-        component.place_list[place_num].place_konva.draw();
-    }
+
+    // get this transitions duration
+    var tran_duration = getRandomDuration(curr_tran_obj.duration_min, curr_tran_obj.duration_max);
 
     console.log("new place name is " + new_pos.name + " and index is " + new_pos.index);
     // the tween has to be created after the node has been added to the layer
     var tween = new Konva.Tween({
         node: token,
-        duration: 4,
+        duration: tran_duration,
         x: dest_pos_x,
         y: dest_post_y,
+        easing: Konva.Easings.EaseInOut,
         opacity: 1,
         onFinish: function() {
             if(new_pos.place_konva.stroke() == 'black'){
@@ -316,10 +342,14 @@ function moveToken(component, token, dest_pos_x, dest_post_y, playLabel, pauseLa
             }
             // check if new pos has outbound transitions
             if (new_pos.transition_outbound_list.length > 0){
-                token.destroy();
-                animLayer.batchDraw();
                 createTokens(component, playLabel, pauseLabel, resetLabel, next_index, animLayer, tokenColor);
             }
+            if(new_pos == component.place_list[component.place_list.length - 1]){
+                componentFinishedAnim(component);
+                console.log("Last place reached in this component");
+            }
+            token.destroy();
+            animLayer.batchDraw();
         }
     });
 
@@ -345,25 +375,29 @@ function moveToken(component, token, dest_pos_x, dest_post_y, playLabel, pauseLa
     });
 }
 
-function finishTransition(token, dest_pos_x, dest_post_y, playLabel, pauseLabel){
-    // the tween has to be created after the node has been added to the layer
+function componentFinishedAnim(component){
+    console.log("created component tween");
     var tween = new Konva.Tween({
-        node: token,
-        duration: 3,
-        x: dest_pos_x,
-        y: dest_post_y,
-        opacity: 1,
+        node: component.konva_component,
+        duration: 2,
+        stroke: 'green',
+        strokeWidth: 1,
+        shadowColor: 'black',
+        shadowBlur: 5,
+        shadowOpacity: 0.5,
+        easing: Konva.Easings.EaseInOut,
+        onFinish: function() {
+            setTimeout(function(){ tween.reverse(); }, 3000);
+        }
     });
+    tween.play();
+}
 
-    playLabel.on('click', function(e){
-        tween.play();
-        console.log("clicked on play label");
-    });
-
-    pauseLabel.on('click', function(e){
-        tween.pause();
-        console.log("clicked on pause label");
-    });
+// returns a random time between a lower and upper bound
+function getRandomDuration(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
 }
 
 function getRandomColor() {
@@ -373,4 +407,19 @@ function getRandomColor() {
       color += letters[Math.floor(Math.random() * 16)];
     }
     return color;
+}
+
+function start(startTime) {
+  startTime = new Date();
+};
+
+function end(endTime) {
+  endTime = new Date();
+  var timeDiff = endTime - startTime; //in ms
+  // strip the ms
+  timeDiff /= 1000;
+
+  // get seconds 
+  var seconds = Math.round(timeDiff);
+  console.log(seconds + " seconds");
 }
