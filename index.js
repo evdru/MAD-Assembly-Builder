@@ -205,7 +205,9 @@ ipcMain.on("change_transition_details", function(event, args) {
 });
 
 ipcMain.on("transition->main", function(event, args) {
-	window.webContents.send("transition->renderer", {component: transition_args.component, transition: transition_args.transition, name: args.name, old_func: transition_args.function,  new_func: args.function, dependency_status: args.dependency_status, dependency_type: args.dependency_type});
+	window.webContents.send("transition->renderer", {component: transition_args.component, transition: transition_args.transition, old_name: transition_args.name,
+													 name: args.name, old_func: transition_args.function,  new_func: args.function, 
+													 new_duration_min: args.duration_min, new_duration_max: args.duration_max});
 });
 
 // Catch stub right click

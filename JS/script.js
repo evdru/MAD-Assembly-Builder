@@ -310,6 +310,24 @@ function changeTransitionFunc(component, old_func, new_func) {
     if (found_transition_obj){ found_transition_obj.func = new_func; }
 };
 
+function changeTransitionDurationMin(component, transition_name, new_min_duration) {
+    // find the component obj
+    var found_component_obj = component_list.find(function(element) { return element.name == component; });
+    var found_transition_obj = found_component_obj.transition_list.find(function(element) { return element.transition_name == transition_name; });
+    console.log(found_transition_obj.name + " old min duration is " + found_transition_obj.duration_min);
+    if (found_transition_obj){ found_transition_obj.duration_min = new_min_duration; }
+    console.log(found_transition_obj.name + " new min duration is " + found_transition_obj.duration_min);
+}
+
+function changeTransitionDurationMax(component, transition_name, new_max_duration) {
+    // find the component obj
+    var found_component_obj = component_list.find(function(element) { return element.name == component; });
+    var found_transition_obj = found_component_obj.transition_list.find(function(element) { return element.transition_name == transition_name; });
+    console.log(found_transition_obj.name + " old max duration is " + found_transition_obj.duration_max);
+    if (found_transition_obj){ found_transition_obj.duration_max = new_max_duration; }
+    console.log(found_transition_obj.name + " new max duration is " + found_transition_obj.duration_max);
+}
+
 function removeTransitionObj(component_obj, transition_obj) {
     // remove all dependencies belonging to this transition_obj
     for(var i = 0; i < component_obj.dependency_list.length; i++){
