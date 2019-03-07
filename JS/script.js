@@ -71,7 +71,12 @@ class Transition {
         this.dependency = false;
         this.dependency_type = '';
         this.dependency_konva_list = [];
+<<<<<<< HEAD
         this.offset;
+=======
+        this.duration_min = 1;
+        this.duration_max = 2;
+>>>>>>> Added comp animation when sim has reached its final place, created timer stubs per component, added tran min and max duration, defaults to 1 - 2 sec
     };
 };
 
