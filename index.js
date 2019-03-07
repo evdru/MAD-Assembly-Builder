@@ -189,8 +189,8 @@ ipcMain.on("change_transition_details", function(event, args) {
 	transition_args = args;
 	// Create new window
 	var transition_window = new BrowserWindow({
-		width: 400,
-		height: 225
+		width: 470,
+		height: 275
 	})
 	transition_window.loadURL(url.format({
 		pathname: path.join(__dirname, './HTML/change_transition_details.html'),
