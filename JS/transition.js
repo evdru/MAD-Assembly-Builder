@@ -301,20 +301,9 @@ function createDependencyUsePort(component, component_obj, component_group, tran
 ipcRend.on("transition->renderer", function(event, args) {
     console.log("Made it to transition->renderer.");
     console.log(args.name);
-    //If the name is changed
-    if (args.name != '') {
-        //Time to change transition name
-        console.log("Change transition name");
-        changeTransitionName(args.component, args.transition, args.name, args.old_func, args.new_func);
-        // If the name is changed and the func/dependency status/dependency type is changed (use new transition name)
-        if (args.new_func != '') {
-            console.log("Time to change the transition function after changing the name.")
-            changeTransitionFunc(args.component, args.old_func, args.new_func);
-        };
-    }
-    // If the name is not changed and the func/dep status/dep type are, then use the old transition name
-    else if (args.new_func != '') {
-        console.log("Time to change the transition function name.");
+    // change tran func
+    if (args.new_func != '') {
+        console.log("Changing the transition function name.");
         changeTransitionFunc(args.component, args.old_func, args.new_func);
     }
     // change duration min
@@ -326,5 +315,11 @@ ipcRend.on("transition->renderer", function(event, args) {
     if (args.duration_max != '') {
         changeTransitionDurationMax(args.component, args.old_name, args.new_duration_max);
         //changeTransitionDurationMax(component, transition_name, new_max_duration)
+    }
+    // If the name is changed
+    if (args.name != '') {
+        //Time to change transition name
+        console.log("Change transition name");
+        changeTransitionName(args.component, args.transition, args.name);
     }
 });
