@@ -346,7 +346,6 @@ function moveToken(component, token, dest_pos_x, dest_post_y, playLabel, pauseLa
             }
             if(new_pos == component.place_list[component.place_list.length - 1]){
                 componentFinishedAnim(component);
-                console.log("Last place reached in this component");
             }
             token.destroy();
             animLayer.batchDraw();
@@ -381,13 +380,14 @@ function componentFinishedAnim(component){
         node: component.konva_component,
         duration: 2,
         stroke: 'green',
-        strokeWidth: 1,
+        strokeWidth: 0.5,
         shadowColor: 'black',
         shadowBlur: 5,
         shadowOpacity: 0.5,
         easing: Konva.Easings.EaseInOut,
         onFinish: function() {
             setTimeout(function(){ tween.reverse(); }, 3000);
+            layer.batchDraw();
         }
     });
     tween.play();

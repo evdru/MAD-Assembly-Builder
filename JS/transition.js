@@ -293,5 +293,15 @@ ipcRend.on("transition->renderer", function(event, args) {
     else if (args.new_func != '') {
         console.log("Time to change the transition function name.");
         changeTransitionFunc(args.component, args.old_func, args.new_func);
-    };
+    }
+    // change duration min
+    if (args.duration_min != '') {
+        changeTransitionDurationMin(args.component, args.old_name, args.new_duration_min);
+        //changeTransitionDurationMin(component, transition_name, new_min_duration)
+    }
+    // change duration max
+    if (args.duration_max != '') {
+        changeTransitionDurationMax(args.component, args.old_name, args.new_duration_max);
+        //changeTransitionDurationMax(component, transition_name, new_max_duration)
+    }
 });
