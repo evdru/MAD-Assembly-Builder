@@ -173,11 +173,11 @@ function removeOutboundAndInboundTransitions(component_obj, place_obj){
     }
     if(place_obj.transition_outbound_list.length > 0){
         // remove all outbound transitions from this place_obj
-        for (var i = 0; i < place_obj.transition_outbound_list.length; i++){
+        for (var j = 0; j < place_obj.transition_outbound_list.length; j++){
             // destroy the konva transition group
-            place_obj.transition_outbound_list[i].tran_group_konva.destroy();
+            place_obj.transition_outbound_list[j].tran_group_konva.destroy();
             // remove the transition obj
-            removeTransitionObj(component_obj, place_obj.transition_outbound_list[i]);
+            removeTransitionObj(component_obj, place_obj.transition_outbound_list[j]);
         }
     }
 };
@@ -310,14 +310,31 @@ function removeTransitionObj(component_obj, transition_obj) {
             layer.batchDraw();
         }
     }
+
+    removeOutboundTransitionObj(transition_obj);
+
+    removeInboundTransitionObj(transition_obj);
+
+    decrementPlaceTransitionDict(component_obj, transition_obj.src, transition_obj.dest);
+    // decrement the transition count of source place
+    transition_obj.src.transition_count--;
+    // find index of transition in component_list and remove
+    component_obj.transition_list.splice( component_obj.transition_list.indexOf(transition_obj), 1 );
+};
+
+function removeOutboundTransitionObj(transition_obj){
     // remove itself from its src outbound list
     transition_obj.src.transition_outbound_list.splice( transition_obj.src.transition_outbound_list.indexOf(transition_obj), 1 );
+}
 
+function removeInboundTransitionObj(transition_obj){
     // remove itself from its dest inbound list
     transition_obj.dest.transition_inbound_list.splice( transition_obj.dest.transition_inbound_list.indexOf(transition_obj), 1 );
+}
 
-    var source_obj_name = transition_obj.src.name;
-    var dest_obj_name = transition_obj.dest.name;
+function decrementPlaceTransitionDict(component_obj, source_place, dest_place){
+    var source_obj_name = source_place.name;
+    var dest_obj_name = dest_place.name;
     // check the transition dictionary for parallel transitions
     if(component_obj.transition_dictionary[source_obj_name] && component_obj.transition_dictionary[source_obj_name][dest_obj_name]){
         console.log("Decrementing dictionary keys");
@@ -327,11 +344,7 @@ function removeTransitionObj(component_obj, transition_obj) {
         // decrement the trans dict
         component_obj.transition_dictionary[source_obj_name][dest_obj_name]--;
     }
-    // decrement the transition count of source place
-    transition_obj.src.transition_count--;
-    // find index of component in component_list and remove
-    component_obj.transition_list.splice( component_obj.transition_list.indexOf(transition_obj), 1 );
-};
+}
 
 // Function to change transitions's dependency status
 function changeTransitionDependencyStatus(component, transition, dependency_status) {
