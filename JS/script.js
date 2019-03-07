@@ -58,6 +58,7 @@ class Transition {
         this.index;
         this.src = src;
         this.tran_group_konva;
+        this.tran_select_konva;
         this.tran_konva;
         this.dest = dest;
         this.func = func;
@@ -222,6 +223,9 @@ function removeDependencyObj(component_obj, dependency_obj){
         removeConnectionObj(dependency_obj.connection_obj);
         removeConnectionKonva(dependency_obj.connection_obj);
     }
+    // hide the circle on transition
+    if(dependency_obj.source_obj.type == 'Transition'){ dependency_obj.source_obj.tran_select_konva.opacity(0); }
+
     console.log("Before " + component_obj.dependency_list);
     // find index of dependency_obj in component_list.dependency_list and remove
     component_obj.dependency_list.splice( component_obj.dependency_list.indexOf(dependency_obj), 1 );
