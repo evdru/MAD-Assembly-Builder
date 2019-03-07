@@ -22,30 +22,32 @@ JS-YAML
 Install node.js
 
 ```
-GOTO: https://nodejs.org/en/download/ - Download and install
+GOTO: https://nodejs.org/en/download/ - Download and install (LTS or Current)
 ```
 
-Install Electron, Konva, and JS-YAML:
-
-Once node.js has been installed, perform the following commands in your Terminal/PowerShell/Command Prompt ("-g" will perform a global installation of the package). If you do not want a global installation, clone the repository first, and then perform the following commands in the newly created directory without the "-g" flag.
+Install Electron globally:
 
 ```
 npm install electron -g
-npm install konva-node -g
-npm install js-yaml -g
 ```
 
-### Cloning the repository
-
-Navigate to the desired directory, perform:
+#### Clone the repository
+Navigate to the desired directory and perform:
 
 ```
 git clone https://bitbucket.org/team_amadeus/mab_electron.git
 ```
 
+Once node.js & electron have been installed, navigate to the newly cloned repository and perform the following commands:
+
+```
+npm install konva
+npm install js-yaml
+```
+
 ## Running MAB
 
-To run MAB, in your Terminal/PowerShell/Command Prompt, navigate to your newly cloned repository and run:
+To run MAB, in your Terminal/PowerShell/Command Prompt, navigate to your cloned repository and run:
 
 ```
 npm start
