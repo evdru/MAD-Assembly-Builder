@@ -57,6 +57,11 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
     // set reference to transition
     transition_obj.tran_konva = transition;
 
+    // add the transition obj to both souce place and dest place transition_connected list
+    source_obj.transition_outbound_list.push(transition_obj);
+    dest_obj.transition_inbound_list.push(transition_obj);
+    
+
     // intilize selection variables to null
     source_transition_konva = null;
     source_transition_obj = null;

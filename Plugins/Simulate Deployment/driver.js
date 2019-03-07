@@ -243,6 +243,10 @@ function setListening(component){
     layer.drawHit();
 }
 
+function isIndex(index, object) {
+    return index == object;
+}
+
 function createTokens(component, playLabel, pauseLabel, resetLabel, place_num, animLayer, tokenColor){
     // check if current component has first place
     var tokenPos = component.place_list[place_num].place_konva.getAbsolutePosition();
@@ -283,7 +287,11 @@ function createTokens(component, playLabel, pauseLabel, resetLabel, place_num, a
 function moveToken(component, token, dest_pos_x, dest_post_y, playLabel, pauseLabel, resetLabel, place_num, tran_num, tokenColor, animLayer){
     // get new place for every transition
     var new_pos = component.place_list[place_num].transition_outbound_list[tran_num].dest;
+    // find index of dest place
+    var next_index = component.place_list.indexOf(component.place_list[place_num].transition_outbound_list[tran_num].dest);
+    console.log("next index is " + next_index);
     
+    // if first place
     if(place_num == 0){
         // show that the place has been reached
         component.place_list[place_num].place_konva.stroke('green');
@@ -310,7 +318,7 @@ function moveToken(component, token, dest_pos_x, dest_post_y, playLabel, pauseLa
             if (new_pos.transition_outbound_list.length > 0){
                 token.destroy();
                 animLayer.batchDraw();
-                createTokens(component, playLabel, pauseLabel, resetLabel, new_pos.index - 1, animLayer, tokenColor);
+                createTokens(component, playLabel, pauseLabel, resetLabel, next_index, animLayer, tokenColor);
             }
         }
     });

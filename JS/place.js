@@ -170,11 +170,6 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
                     console.log("Offset is " + offset);
                     src.offset = offset;
                     returned_transition_obj = addNewTransition(offset, source_konva, dest_transition, src, dest_obj, component_obj, component_group, component, tooltipLayer, use_selection_area, provide_selection_area);
-                    // add the transition obj to both souce place and dest place transition_connected list
-                    if (returned_transition_obj != false){
-                        src.transition_outbound_list.push(returned_transition_obj);
-                        dest_obj.transition_inbound_list.push(returned_transition_obj);
-                    }
                 } 
             } else {
                 // highlight the place
