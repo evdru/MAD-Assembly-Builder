@@ -59,7 +59,11 @@ class Transition {
         this.index;
         this.src = src;
         this.tran_group_konva;
+<<<<<<< HEAD
         this.transition_selection_area;
+=======
+        this.tran_select_konva;
+>>>>>>> Made transition_selection_area visible when dependency is created out of it, (hides when dependency is destroyed) as requested by Frederic
         this.tran_konva;
         this.dest = dest;
         this.func = func;
@@ -230,6 +234,9 @@ function removeDependencyObj(component_obj, dependency_obj){
         // toggle transition selection area opacity
         hideTransitionSelectionArea(dependency_obj.source_obj);
     }
+    // hide the circle on transition
+    if(dependency_obj.source_obj.type == 'Transition'){ dependency_obj.source_obj.tran_select_konva.opacity(0); }
+
     console.log("Before " + component_obj.dependency_list);
     // find index of dependency_obj in component_list.dependency_list and remove
     component_obj.dependency_list.splice( component_obj.dependency_list.indexOf(dependency_obj), 1 );

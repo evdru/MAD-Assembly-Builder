@@ -46,8 +46,8 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
         radius: 10,
         opacity: 0,
         stroke: 'black',
-        strokeWidth: 1,
         fill: 'white',
+        strokeWidth: 0.5,
         text: transition.name,
         name: 'Transition'
     });
@@ -65,6 +65,9 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
     // add the konva group to transition obj attribute
     transition_obj.tran_group_konva = transition_group;
     transition_obj.transition_selection_area = transition_selection_area;
+
+    // set reference to transition selection area
+    transition_obj.tran_select_konva = transition_selection_area;
 
     // set reference to transition
     transition_obj.tran_konva = transition;
@@ -209,12 +212,14 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
                     type = 'USE';
                     // set the type
                     source_transition_obj.dependency_type = type
+                    source_transition_konva.opacity(1);
                     // args: component, component_obj, component_group, transition_obj, transition_selection_area, tooltipLayer
                     createDependencyUsePort(component, component_obj, component_group, source_transition_obj, source_transition_konva, tooltipLayer);
                 } else if (type == 'data'){
                     type = 'DATA_USE';
                     // set the type
                     source_transition_obj.dependency_type = type
+                    source_transition_konva.opacity(1);
                     createDependencyUsePort(component, component_obj, component_group, source_transition_obj, source_transition_konva, tooltipLayer);
                 }
 
