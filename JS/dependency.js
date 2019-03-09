@@ -86,6 +86,7 @@ function addNewServiceDependency(component, source_element, source_obj, componen
         var symbol = getServiceSymbol();
         symbol.opacity(0);
         dependency_obj.dep_stub_konva = stub;
+        dependency_obj.dep_symbol_konva = symbol;
         // add stub and symbol to group for place
         dependency_group.add(stub);
         dependency_group.add(symbol);
@@ -95,7 +96,8 @@ function addNewServiceDependency(component, source_element, source_obj, componen
         var stub = getServiceStub();
         stub.opacity(0);
         var symbol = getServiceSymbol();
-        dependency_obj.dep_stub_konva = symbol;
+        dependency_obj.dep_stub_konva = stub;
+        dependency_obj.dep_symbol_konva = symbol;
         // add stub and symbol to group for transition
         dependency_group.add(stub);
         dependency_group.add(symbol);
@@ -415,6 +417,7 @@ function addNewDataDependency(component, source_element, source_obj, component_o
         // symbol is invisbile until connection has been established
         data_symbol_provide = getDataSymbolProvide();
         data_symbol_provide.opacity(0);
+        dependency_obj.dep_symbol_konva = data_symbol_provide;
         dependency_obj.dep_stub_konva = stub;
         // add all to dependency group
         dependency_group.add(stub);
@@ -428,7 +431,8 @@ function addNewDataDependency(component, source_element, source_obj, component_o
         data_stub_use = getDataStubUse();
         data_stub_use.opacity(0);
         data_symbol_use = getDataSymbolUse();
-        dependency_obj.dep_stub_konva = data_symbol_use;
+        dependency_obj.dep_symbol_konva = data_symbol_use;
+        dependency_obj.dep_stub_konva = stub;
         // add all to dependency group
         dependency_group.add(stub);
         dependency_group.add(data_stub_use);

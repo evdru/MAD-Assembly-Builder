@@ -209,8 +209,13 @@ function loadConnections(la_conn_list) {
             }
         }
 
+        provide_dependency.dep_stub_konva.opacity(100);
+        provide_dependency.dep_symbol_konva.opacity(100);
+        use_dependency.dep_stub_konva.opacity(100);
+        use_dependency.dep_symbol_konva.opacity(100);
+
         addNewConnection(provide_component, provide_obj, provide_dependency.dep_stub_konva, provide_component.component_group_konva,
-                         use_component, use_obj, use_dependency.dep_stub_konva, use_component.component_group_konva,
+                         use_component, use_obj, use_dependency.dep_symbol_konva, use_component.component_group_konva,
                          provide_dependency, use_dependency);
     }
 
