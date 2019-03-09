@@ -84,6 +84,34 @@ const mainMenuTemplate = [
 	}
 ];
 
+const simulatorMenuTemplate = [
+	{
+		label: 'File',
+		submenu:[
+			{
+				label: 'Quit',
+				// Keyboard shortcuts for quit
+				accelerator: process.platform == 'darwin' ? 'Command+Q' :
+				'Ctrl+Q',
+				click(){
+					app.quit();
+				}
+			}
+		]
+	},
+	{
+		label: 'Exit Simulator Mode',
+		click() {
+			// Send message to renderer to exit simulator mode
+			window.webContents.send('exit_simulator_mode');
+			// Rebuild menu from template
+			const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
+			// Insert menu
+			Menu.setApplicationMenu(mainMenu);
+		}
+	}
+];
+
 // if mac, add empty object to menu
 if(process.platform == 'darwin'){
 	mainMenuTemplate.unshift({});
@@ -109,6 +137,14 @@ if(process.env.NODE_ENV !== 'production'){
 		]
 	});
 }
+
+// Catch enter simulator mode click
+ipcMain.on('enter_simulator_mode', function(args) {
+	// Rebuild menu from template
+	const simulatorMenu = Menu.buildFromTemplate(simulatorMenuTemplate);
+	// Insert menu
+	Menu.setApplicationMenu(simulatorMenu);
+})
 
 // Catch dependency port right clk
 ipcMain.on("set_dependency_type", function(event, args) {
