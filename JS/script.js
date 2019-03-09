@@ -76,7 +76,11 @@ class Transition {
 =======
         this.duration_min = 1;
         this.duration_max = 2;
+<<<<<<< HEAD
 >>>>>>> Added comp animation when sim has reached its final place, created timer stubs per component, added tran min and max duration, defaults to 1 - 2 sec
+=======
+        this.offset;
+>>>>>>> Fixed transition duration func's, refactored simulation deployment
     };
 };
 
@@ -313,7 +317,7 @@ function changeTransitionFunc(component, old_func, new_func) {
 function changeTransitionDurationMin(component, transition_name, new_min_duration) {
     // find the component obj
     var found_component_obj = component_list.find(function(element) { return element.name == component; });
-    var found_transition_obj = found_component_obj.transition_list.find(function(element) { return element.transition_name == transition_name; });
+    var found_transition_obj = found_component_obj.transition_list.find(function(element) { return element.name == transition_name; });
     console.log(found_transition_obj.name + " old min duration is " + found_transition_obj.duration_min);
     if (found_transition_obj){ found_transition_obj.duration_min = new_min_duration; }
     console.log(found_transition_obj.name + " new min duration is " + found_transition_obj.duration_min);
@@ -322,7 +326,7 @@ function changeTransitionDurationMin(component, transition_name, new_min_duratio
 function changeTransitionDurationMax(component, transition_name, new_max_duration) {
     // find the component obj
     var found_component_obj = component_list.find(function(element) { return element.name == component; });
-    var found_transition_obj = found_component_obj.transition_list.find(function(element) { return element.transition_name == transition_name; });
+    var found_transition_obj = found_component_obj.transition_list.find(function(element) { return element.name == transition_name; });
     console.log(found_transition_obj.name + " old max duration is " + found_transition_obj.duration_max);
     if (found_transition_obj){ found_transition_obj.duration_max = new_max_duration; }
     console.log(found_transition_obj.name + " new max duration is " + found_transition_obj.duration_max);

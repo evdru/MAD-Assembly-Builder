@@ -29,7 +29,7 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
     // set index
     transition_obj.index = index;
 
-    // set offset ref for transition
+    // set offset
     transition_obj.offset = offset;
 
     var transition = new Konva.Line({
@@ -308,12 +308,12 @@ ipcRend.on("transition->renderer", function(event, args) {
     }
     // change duration min
     if (args.duration_min != '') {
-        changeTransitionDurationMin(args.component, args.old_name, args.new_duration_min);
+        changeTransitionDurationMin(args.component, args.transition, args.new_duration_min);
         //changeTransitionDurationMin(component, transition_name, new_min_duration)
     }
     // change duration max
     if (args.duration_max != '') {
-        changeTransitionDurationMax(args.component, args.old_name, args.new_duration_max);
+        changeTransitionDurationMax(args.component, args.transition, args.new_duration_max);
         //changeTransitionDurationMax(component, transition_name, new_max_duration)
     }
     // If the name is changed
