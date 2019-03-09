@@ -40,20 +40,20 @@ function bootstrap() {
         console.log("Assembly has no components... exiting.");
         return;
     }
+
+    // Send message to main thread to change to the simulator menu
+    sd_ipcRenderer.send('enter_simulator_mode');
+
     // create a konva group for tokens
     var simulationGroup = new Konva.Group();
 
     // create simulator button
     simulatorLabel = createSimulatorLabel();
     simulationGroup.add(simulatorLabel);
-    
-    // create edit mode button
-    editButton = createEditModeButton();
-    simulationGroup.add(editButton);
 
     animLayer.add(simulationGroup);
 
-    editButton.on('click', function(e){
+    sd_ipcRenderer.on('exit_simulator_mode', function(e){
         // for every component
         for (var i = 0; i < sd_comp_list.length; i++) {
             setListening(sd_comp_list[i]);
