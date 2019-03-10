@@ -2,7 +2,7 @@
 // or else the plugin will not work
 
 const sd_electron = require('electron');
-const Timer = require('tiny-timer');
+var Stopwatch = require('timer-stopwatch');
 const sd_ipcRenderer = sd_electron.ipcRenderer;
 
 var sd_app = electron.remote; 
@@ -11,6 +11,7 @@ var sd_comp_list = [];
 var sd_con_list = [];
 var token_list = [];
 var token_tweens = [];
+var timer_label_list = [];
 var simulator_mode = true;
 
 class Token{
@@ -19,6 +20,15 @@ class Token{
         this.start_position = start_position;
         this.konva_circle;
         this.tween_konva;
+    }
+}
+
+class TimerLabel{
+    constructor(name, label_konva){
+        this.name = name;
+        this.label_konva = label_konva;
+        this.isRunning = false;
+        this.parent_component;
     }
 }
 
@@ -57,7 +67,6 @@ function bootstrap() {
         // for every component
         for (var i = 0; i < sd_comp_list.length; i++) {
             setListening(sd_comp_list[i]);
-            simulator_mode = false;
         }
         resetHighlights();
         destroyTokens();
@@ -66,42 +75,50 @@ function bootstrap() {
         animLayer.destroy();
         sd_comp_list = [];
         sd_con_list = [];
+        stopwatch.reset();
+        simulator_mode = false;
         console.log("clicked on edit mode label");
     });
 
-    // create global timer
-    // let timer = new Timer({ interval: 500, stopwatch: true });
-
+    // start global timer
+    var stopwatch = new Stopwatch();
+    stopwatch.start();
     // for every component
     for (var i = 0; i < sd_comp_list.length; i++) {
         // check if component has places
         if (sd_comp_list[i].place_list.length > 0){
             // create timer label
-            timerLabel = createTimerLabel(sd_comp_list[i].component_group_konva, sd_comp_list[i].konva_component);
+            timerLabel = createTimerLabel(sd_comp_list[i].konva_component);
             simulationGroup.add(timerLabel);
+            // create unique name
+            var timer_label_name = sd_comp_list[i].name + " " + timer_label_list.length;
+            // create timer label obj
+            var TimerLabelObj = new TimerLabel(timer_label_name, timerLabel);
+            TimerLabelObj.isRunning = true;
+            TimerLabelObj.parent_component = sd_comp_list[i];
+            // push timer label obj to global list 
+            timer_label_list.push(TimerLabelObj);
             // set not listening 
             setNotListening(sd_comp_list[i]);
             // create a token for every component
             var place_num = 0;
             var tokenColor = getRandomColor();
-            tokenHandler(sd_comp_list[i], place_num, animLayer, tokenColor);
+            tokenHandler(sd_comp_list[i], place_num, animLayer, tokenColor, TimerLabelObj);
         } else {
             console.log(sd_comp_list[i].name + " did not have a place!");
         }
     };
 
-    // timer event listeners
-    // timer.on('tick', (ms) => console.log('tick', ms))
-    // timer.on('tick', (ms) =>  timerLabel.text(ms));
-    // timer.on('done', () => console.log('done!'))
-    // timer.on('statusChanged', (status) => console.log('status:', status))
-    // timer.start(5000) // run for 5 seconds
+    // Fires every 50ms by default. Change setting the 'refreshRateMS' options
+    stopwatch.onTime(function(time) {
+        updateTimerLabels(time);
+    });
 
     // animLayer.add(tokenGroup);
     animLayer.draw();
 }
 
-function tokenHandler(component, place_num, animLayer, tokenColor){
+function tokenHandler(component, place_num, animLayer, tokenColor, TimerLabelObj){
     // get position of current place
     var tokenPos = component.place_list[place_num].place_konva.getAbsolutePosition();
 
@@ -130,7 +147,7 @@ function tokenHandler(component, place_num, animLayer, tokenColor){
         var mid_pos_x = tran_pos.x + transition.points()[2];
         var mid_post_y = tran_pos.y + transition.points()[3];
         var offset = component.place_list[place_num].transition_outbound_list[tran_num].offset;
-        var current_tween = startTokenTransition(component, token, mid_pos_x, mid_post_y, offset, place_num, tran_num, tokenColor, animLayer, transition, tran_pos);
+        var current_tween = startTokenTransition(component, token, mid_pos_x, mid_post_y, offset, place_num, tran_num, tokenColor, animLayer, transition, tran_pos, TimerLabelObj);
         
         // finishTokenTransition(component, token, dest_pos_x, dest_post_y, offset, playLabel, pauseLabel, resetLabel, place_num, tran_num, tokenColor, animLayer);
     }
@@ -148,7 +165,7 @@ function createToken(tokenPos, tokenColor){
 }
 
 // func to move the current token first half of the transition
-function startTokenTransition(component, token, mid_pos_x, mid_post_y, offset, place_num, tran_num, tokenColor, animLayer, transition, tran_pos){
+function startTokenTransition(component, token, mid_pos_x, mid_post_y, offset, place_num, tran_num, tokenColor, animLayer, transition, tran_pos, TimerLabelObj){
     // get current tran obj
     var curr_tran_obj = component.place_list[place_num].transition_outbound_list[tran_num];
     // get new place for current transition
@@ -166,9 +183,6 @@ function startTokenTransition(component, token, mid_pos_x, mid_post_y, offset, p
     console.log("current transition duration MIN is " + curr_tran_obj.duration_min);
     console.log("current transition duration MAX is " + curr_tran_obj.duration_max);
 
-    // declare ref for tween
-    var current_tween;
-
     // the tween has to be created after the node has been added to the layer
     var start_tween = new Konva.Tween({
         node: token,
@@ -179,8 +193,8 @@ function startTokenTransition(component, token, mid_pos_x, mid_post_y, offset, p
         opacity: 1,
         onFinish: function() {
             // move token to final pos
-            current_tween = finishTokenTransition(component, token, dest_pos_x, dest_post_y, offset, place_num, tran_num, tokenColor, animLayer, tran_duration);
-            start_tween.destroy();
+            current_tween = finishTokenTransition(component, token, dest_pos_x, dest_post_y, offset, place_num, tran_num, tokenColor, animLayer, tran_duration, TimerLabelObj);
+            // start_tween.destroy();
         }
     });
     // add start_tween to tween list
@@ -194,7 +208,7 @@ function startTokenTransition(component, token, mid_pos_x, mid_post_y, offset, p
     return current_tween;
 }
 
-function finishTokenTransition(component, token, dest_pos_x, dest_post_y, offset, place_num, tran_num, tokenColor, animLayer, tran_duration){
+function finishTokenTransition(component, token, dest_pos_x, dest_post_y, offset, place_num, tran_num, tokenColor, animLayer, tran_duration, TimerLabelObj){
     
     // get current tran obj
     var curr_tran_obj = component.place_list[place_num].transition_outbound_list[tran_num];
@@ -217,6 +231,7 @@ function finishTokenTransition(component, token, dest_pos_x, dest_post_y, offset
         opacity: 1,
         onFinish: function() {
             token.destroy();
+            //readComponentTimer(timerLabel);
             animLayer.draw();
             if(new_pos.place_konva.stroke() == 'black'){
                 // show that the new place has been reached
@@ -226,9 +241,14 @@ function finishTokenTransition(component, token, dest_pos_x, dest_post_y, offset
             if (new_pos.transition_outbound_list.length > 0 && offset == 0){
                 tokenHandler(component, next_index, animLayer, tokenColor);
             }
+            // reached its final place
             if(new_pos == component.place_list[component.place_list.length - 1]){
                 componentFinishedAnim(component);
+                if(TimerLabelObj){
+                    TimerLabelObj.isRunning = false;
+                }
             }
+            
             // finish_tween.destroy();
         }
     });
@@ -239,6 +259,17 @@ function finishTokenTransition(component, token, dest_pos_x, dest_post_y, offset
     finish_tween.play();
 
     return finish_tween;
+}
+
+function updateTimerLabels(time){
+    var elapsedMilliseconds = time.ms;
+    var elapsedSeconds = time.ms / 1000;
+    var elapsedMinutes = elapsedSeconds / 60;
+    for (var i = 0; i < timer_label_list.length; i++){
+        if(timer_label_list[i].isRunning == true){
+            timer_label_list[i].label_konva.text(Math.trunc(elapsedMinutes) + ":" + Math.trunc(elapsedSeconds) + ":" + Math.trunc(elapsedMilliseconds));
+        }
+    }
 }
 
 function placeFinishedAnim(place){
@@ -307,22 +338,23 @@ function end(endTime) {
   console.log(seconds + " seconds");
 }
 
-function createTimerLabel(component_group, component_konva){
+function createTimerLabel(component_konva){
 
     var comp_absolute_pos = component_konva.getAbsolutePosition();
 
-    var timer = new Konva.Text({
+    var timerLabel = new Konva.Text({
         x: comp_absolute_pos.x + ((component_konva.getWidth() / 2) * component_konva.scaleX()) - 70,
         y: comp_absolute_pos.y + (component_konva.getHeight() * component_konva.scaleY()),
         opacity: 1,
-        text: '00:00:00',
+        text: '',
         fontFamily: 'Calibri',
         fontSize: 36,
         padding: 5,
+        align: 'center',
         fill: 'black'
     });
 
-    return timer;
+    return timerLabel;
 }
 
 function createPlayButton(){
