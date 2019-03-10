@@ -32,6 +32,7 @@ class Component {
         this.tooltipLayer;
         this.use_selection_area;
         this.provide_selection_area;
+        this.isRunning = false;
     };
 };
 
