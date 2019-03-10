@@ -90,20 +90,16 @@ function bootstrap() {
             // create timer label
             timerLabel = createTimerLabel(sd_comp_list[i].konva_component);
             simulationGroup.add(timerLabel);
-            // create unique name
-            var timer_label_name = sd_comp_list[i].name + " " + timer_label_list.length;
-            // create timer label obj
-            var TimerLabelObj = new TimerLabel(timer_label_name, timerLabel);
-            TimerLabelObj.isRunning = true;
-            TimerLabelObj.parent_component = sd_comp_list[i];
             // push timer label obj to global list 
-            timer_label_list.push(TimerLabelObj);
+            timer_label_list.push(timerLabel);
             // set not listening 
             setNotListening(sd_comp_list[i]);
             // create a token for every component
             var place_num = 0;
             var tokenColor = getRandomColor();
-            tokenHandler(sd_comp_list[i], place_num, animLayer, tokenColor, TimerLabelObj);
+            // set isRunning
+            sd_comp_list[i].isRunning = true;
+            tokenHandler(sd_comp_list[i], place_num, animLayer, tokenColor, timerLabel);
         } else {
             console.log(sd_comp_list[i].name + " did not have a place!");
         }
@@ -118,7 +114,7 @@ function bootstrap() {
     animLayer.draw();
 }
 
-function tokenHandler(component, place_num, animLayer, tokenColor, TimerLabelObj){
+function tokenHandler(component, place_num, animLayer, tokenColor, timerLabel){
     // get position of current place
     var tokenPos = component.place_list[place_num].place_konva.getAbsolutePosition();
 
@@ -147,7 +143,7 @@ function tokenHandler(component, place_num, animLayer, tokenColor, TimerLabelObj
         var mid_pos_x = tran_pos.x + transition.points()[2];
         var mid_post_y = tran_pos.y + transition.points()[3];
         var offset = component.place_list[place_num].transition_outbound_list[tran_num].offset;
-        var current_tween = startTokenTransition(component, token, mid_pos_x, mid_post_y, offset, place_num, tran_num, tokenColor, animLayer, transition, tran_pos, TimerLabelObj);
+        var current_tween = startTokenTransition(component, token, mid_pos_x, mid_post_y, offset, place_num, tran_num, tokenColor, animLayer, transition, tran_pos, timerLabel);
         
         // finishTokenTransition(component, token, dest_pos_x, dest_post_y, offset, playLabel, pauseLabel, resetLabel, place_num, tran_num, tokenColor, animLayer);
     }
@@ -165,7 +161,7 @@ function createToken(tokenPos, tokenColor){
 }
 
 // func to move the current token first half of the transition
-function startTokenTransition(component, token, mid_pos_x, mid_post_y, offset, place_num, tran_num, tokenColor, animLayer, transition, tran_pos, TimerLabelObj){
+function startTokenTransition(component, token, mid_pos_x, mid_post_y, offset, place_num, tran_num, tokenColor, animLayer, transition, tran_pos, timerLabel){
     // get current tran obj
     var curr_tran_obj = component.place_list[place_num].transition_outbound_list[tran_num];
     // get new place for current transition
@@ -193,7 +189,7 @@ function startTokenTransition(component, token, mid_pos_x, mid_post_y, offset, p
         opacity: 1,
         onFinish: function() {
             // move token to final pos
-            current_tween = finishTokenTransition(component, token, dest_pos_x, dest_post_y, offset, place_num, tran_num, tokenColor, animLayer, tran_duration, TimerLabelObj);
+            current_tween = finishTokenTransition(component, token, dest_pos_x, dest_post_y, offset, place_num, tran_num, tokenColor, animLayer, tran_duration, timerLabel);
             // start_tween.destroy();
         }
     });
@@ -208,7 +204,7 @@ function startTokenTransition(component, token, mid_pos_x, mid_post_y, offset, p
     return current_tween;
 }
 
-function finishTokenTransition(component, token, dest_pos_x, dest_post_y, offset, place_num, tran_num, tokenColor, animLayer, tran_duration, TimerLabelObj){
+function finishTokenTransition(component, token, dest_pos_x, dest_post_y, offset, place_num, tran_num, tokenColor, animLayer, tran_duration, timerLabel){
     
     // get current tran obj
     var curr_tran_obj = component.place_list[place_num].transition_outbound_list[tran_num];
@@ -244,9 +240,11 @@ function finishTokenTransition(component, token, dest_pos_x, dest_post_y, offset
             // reached its final place
             if(new_pos == component.place_list[component.place_list.length - 1]){
                 componentFinishedAnim(component);
-                if(TimerLabelObj){
-                    TimerLabelObj.isRunning = false;
+                if(component.isRunning == true){
+                    stopTimerLabel(timerLabel);
+                    component.isRunning = false;
                 }
+                
             }
             
             // finish_tween.destroy();
@@ -263,13 +261,17 @@ function finishTokenTransition(component, token, dest_pos_x, dest_post_y, offset
 
 function updateTimerLabels(time){
     var elapsedMilliseconds = time.ms;
-    var elapsedSeconds = time.ms / 1000;
+    var elapsedSeconds = elapsedMilliseconds / 1000;
     var elapsedMinutes = elapsedSeconds / 60;
+    if(elapsedSeconds > 60) {elapsedSeconds -= 60; }
     for (var i = 0; i < timer_label_list.length; i++){
-        if(timer_label_list[i].isRunning == true){
-            timer_label_list[i].label_konva.text(Math.trunc(elapsedMinutes) + ":" + Math.trunc(elapsedSeconds) + ":" + Math.trunc(elapsedMilliseconds));
-        }
+        timer_label_list[i].text(Math.trunc(elapsedMinutes) + ":" + Math.trunc(elapsedSeconds));
     }
+}
+
+// remove the timerLabel from the list
+function stopTimerLabel(timerLabel){
+    timer_label_list.splice( timer_label_list.indexOf(timerLabel), 1 );
 }
 
 function placeFinishedAnim(place){
@@ -343,7 +345,7 @@ function createTimerLabel(component_konva){
     var comp_absolute_pos = component_konva.getAbsolutePosition();
 
     var timerLabel = new Konva.Text({
-        x: comp_absolute_pos.x + ((component_konva.getWidth() / 2) * component_konva.scaleX()) - 70,
+        x: comp_absolute_pos.x + ((component_konva.getWidth() / 2) * component_konva.scaleX()) - 30,
         y: comp_absolute_pos.y + (component_konva.getHeight() * component_konva.scaleY()),
         opacity: 1,
         text: '',
@@ -432,7 +434,7 @@ function createResetButton(){
 function createSimulatorLabel(){
     // simulator label
     var simulatorLabel = new Konva.Label({
-        x: 520,
+        x: 150,
         y: 10,
         opacity: 1
     });
