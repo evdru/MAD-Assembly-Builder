@@ -433,6 +433,7 @@ function addNewDataDependency(component, source_element, source_obj, component_o
         data_symbol_use = getDataSymbolUse();
         dependency_obj.dep_symbol_konva = data_symbol_use;
         dependency_obj.dep_stub_konva = stub;
+        dependency_obj.dep_stub_use_konva = data_stub_use;
         // add all to dependency group
         dependency_group.add(stub);
         dependency_group.add(data_stub_use);
