@@ -39,6 +39,9 @@ function addNewServiceDependency(component, source_element, source_obj, componen
         stub_x = -15;
     };
 
+    // add dependency obj to source_obj dep list
+    source_obj.dependency_obj_list.push(dependency_obj);
+    
     // set index
     dependency_obj.index = index;
 
@@ -370,6 +373,9 @@ function addNewDataDependency(component, source_element, source_obj, component_o
     // set source obj of dependency stub
     dependency_obj.source_obj = source_obj;
     console.log("This dependencys source obj is " + dependency_obj.source_obj.name);
+
+    // add dependency obj to source_obj dep list
+    source_obj.dependency_obj_list.push(dependency_obj);
 
     // increment source obj dependency count
     source_obj.dependency_count++;

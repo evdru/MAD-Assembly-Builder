@@ -71,6 +71,7 @@ function bootstrap() {
         resetHighlights();
         destroyTokens();
         destroyTokenTweens();
+        resetConnections();
         simulationGroup.destroy();
         animLayer.destroy();
         sd_comp_list = [];
@@ -188,6 +189,15 @@ function startTokenTransition(component, token, mid_pos_x, mid_post_y, offset, p
         y: mid_post_y,
         opacity: 1,
         onFinish: function() {
+            // check if current tran has a use dependency
+            if(curr_tran_obj.dependency_obj_list.length > 0){
+                console.log(curr_tran_obj.name + " had a USE dependency! ");
+                for(var dep = 0; dep < curr_tran_obj.dependency_obj_list.length; dep++ ){
+                    curr_tran_obj.dependency_obj_list[dep].enabled = true;
+                }
+                // check if connection has been enabled
+                checkConnectionStatus();
+            }
             // move token to final pos
             current_tween = finishTokenTransition(component, token, dest_pos_x, dest_post_y, offset, place_num, tran_num, tokenColor, animLayer, tran_duration, timerLabel);
             // start_tween.destroy();
@@ -226,6 +236,15 @@ function finishTokenTransition(component, token, dest_pos_x, dest_post_y, offset
         easing: Konva.Easings.EaseOut,
         opacity: 1,
         onFinish: function() {
+            // check if current tran has a use dependency
+            if(new_pos.dependency_obj_list.length > 0){
+                console.log(new_pos.name + " had a PROVIDE dependency! ");
+                for(var dep = 0; dep < new_pos.dependency_obj_list.length; dep++ ){
+                    new_pos.dependency_obj_list[dep].enabled = true;
+                }
+                // check if connection has been enabled
+                checkConnectionStatus();
+            }
             token.destroy();
             //readComponentTimer(timerLabel);
             animLayer.draw();
@@ -241,8 +260,7 @@ function finishTokenTransition(component, token, dest_pos_x, dest_post_y, offset
             if(new_pos == component.place_list[component.place_list.length - 1]){
                 componentFinishedAnim(component);
                 if(component.isRunning == true){
-                    stopTimerLabel(timerLabel);
-                    component.isRunning = false;
+                    stopTimerLabel(timerLabel, component);
                 }
                 
             }
@@ -270,8 +288,34 @@ function updateTimerLabels(time){
 }
 
 // remove the timerLabel from the list
-function stopTimerLabel(timerLabel){
+function stopTimerLabel(timerLabel, component){
     timer_label_list.splice( timer_label_list.indexOf(timerLabel), 1 );
+    component.isRunning = false;
+}
+
+function checkConnectionStatus(){
+    for (var i = 0; i < sd_con_list.length; i++){
+        if(sd_con_list[i].provide_port_obj.enabled == true && sd_con_list[i].use_port_obj.enabled == true){
+            sd_con_list[i].enabled = true;
+            connectionEnabledAnim(sd_con_list[i]);
+        }
+    }
+}
+
+function connectionEnabledAnim(connection){
+    console.log("Connection enabled");
+    connection.gate1_konva.opacity(0);
+    connection.gate2_konva.opacity(0);
+    var connection_tween = new Konva.Tween({
+        node: connection.connection_line_konva,
+        duration: 2,
+        stroke: 'green',
+        easing: Konva.Easings.EaseInOut,
+        onFinish: function() {
+            setTimeout(function(){ connection_tween.reverse(); }, 2000);
+        }
+    });
+    connection_tween.play();
 }
 
 function placeFinishedAnim(place){
@@ -484,6 +528,23 @@ function resetHighlights(){
         }
     }
     layer.draw();
+}
+
+function resetConnections(){
+    for (var i = 0; i < sd_con_list.length; i++){
+        if(sd_con_list[i].enabled == true){
+            sd_con_list[i].gate1_konva.opacity(1);
+            sd_con_list[i].gate2_konva.opacity(1);
+            sd_con_list[i].enabled = false;
+            sd_con_list[i].connection_line_konva.stroke('black');
+            resetDependencyEnabled(sd_con_list[i].provide_port_obj, sd_con_list[i].use_port_obj);
+        }
+    }
+}
+
+function resetDependencyEnabled(provide_dep_obj, use_dep_obj){
+    provide_dep_obj.enabled = false;
+    use_dep_obj.enabled = false;
 }
 
 function playAllTokenTweens(){

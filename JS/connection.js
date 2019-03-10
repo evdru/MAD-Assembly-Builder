@@ -60,9 +60,12 @@ function addNewConnection(provide_component_obj, provide_source_obj, provide_stu
     // set pointers to provide and use dependency ports
     connection_obj.provide_port_obj = provide_dependency_obj;
     connection_obj.use_port_obj = use_dependency_obj;
+
     // point to both gates, useful later for enabling and disabling connection
     connection_obj.gate1_konva = gate1;
     connection_obj.gate2_konva = gate2;
+    // create pointer to connection line
+    connection_obj.connection_line_konva = connection;
     // create pointer to entire connection group
     connection_obj.connection_group_konva = connection_group;
     // // create pointer to connection_obj from provide_dependency_obj
