@@ -48,6 +48,7 @@ class Place {
         this.dependency = false;
         this.dependency_type = '';
         this.dependency_konva_list = [];
+        this.dependency_obj_list = [];
         this.transition_outbound_list = [];
         this.transition_inbound_list = [];
     };
@@ -73,8 +74,12 @@ class Transition {
         this.dependency_type = '';
         this.dependency_konva_list = [];
 <<<<<<< HEAD
+<<<<<<< HEAD
         this.offset;
 =======
+=======
+        this.dependency_obj_list = [];
+>>>>>>> Added connection animation when enabled
         this.duration_min = 1;
         this.duration_max = 2;
 <<<<<<< HEAD
@@ -95,12 +100,14 @@ class Dependency {
         this.source_obj;
         this.connection_obj;
         this.component_obj;
+        this.enabled = false;
     };
 };
 
 class Connection {
     constructor() {
         this.connection_group_konva;
+        this.connection_line_konva;
         this.gate1_konva;
         this.gate2_konva;
         this.enabled = false;
