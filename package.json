@@ -5,7 +5,11 @@
 	"main": "index.js",
 	"scripts": {
 		"start": "electron ."
-	},	
+	},
 	"author": "Team Amadeus",
-	"license": "ISC"
+	"license": "ISC",
+	"dependencies": {
+		"js-yaml": "^3.12.2",
+		"timer-stopwatch": "^0.2.0"
+	}
 }
