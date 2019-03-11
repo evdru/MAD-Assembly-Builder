@@ -171,7 +171,7 @@ function addNewServiceDependency(component, source_element, source_obj, componen
 
     function removeStub(ev){
         // keyCode Delete key = 46
-        if (ev.keyCode === 46) {
+        if (ev.keyCode === 46 || ev.keyCode == 8) {
             if (confirm('Are you sure you want to delete this dependency?')){
                 // Delete it!
                 // dependency.destroy();

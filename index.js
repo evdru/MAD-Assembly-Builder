@@ -86,8 +86,13 @@ const mainMenuTemplate = [
 
 // if mac, add empty object to menu
 if(process.platform == 'darwin'){
-	mainMenuTemplate.unshift({});
-}
+	mainMenuTemplate.unshift({
+	  label: app.getName(),
+	  submenu: [
+	  { role: 'quit' }
+	  ]
+	})
+ }
 
 // Add developer tools item if not in production
 if(process.env.NODE_ENV !== 'production'){

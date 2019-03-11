@@ -238,7 +238,7 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
 
     function removePlace(ev){
         // keyCode Delete key = 46
-        if (ev.keyCode === 46) {
+        if (ev.keyCode === 46 || ev.keyCode == 8) {
             if (confirm('Are you sure you want to delete this Place?')){
                 // Delete it!
                 place.destroy();

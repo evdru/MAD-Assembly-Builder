@@ -208,7 +208,7 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
 
     function removeTransition(ev){
         // keyCode Delete key
-        if (ev.keyCode === 46) {
+        if (ev.keyCode === 46 || ev.keyCode == 8) {
             if (confirm('Are you sure you want to delete this Transition?')){
                 // Delete it!
                 transition.destroy();
