@@ -3,6 +3,7 @@
 
 const sd_electron = require('electron');
 var Stopwatch = require('timer-stopwatch');
+const TimelineLite = require('gsap');
 const sd_ipcRenderer = sd_electron.ipcRenderer;
 
 var sd_app = electron.remote; 
@@ -23,12 +24,22 @@ class Token{
     }
 }
 
+class Tween{
+    constructor(name, tween_list, component, token, tokenColor){
+        this.name = name;
+        this.tween_list = tween_list;
+        this.component = component;
+        this.token = token;
+        this.tokenColor = tokenColor;
+    }
+}
+
 class TimerLabel{
-    constructor(name, label_konva){
+    constructor(name, label_konva, parent_component){
         this.name = name;
         this.label_konva = label_konva;
         this.isRunning = false;
-        this.parent_component;
+        this.parent_component = parent_component;
     }
 }
 
@@ -62,6 +73,7 @@ function bootstrap() {
     simulationGroup.add(simulatorLabel);
 
     animLayer.add(simulationGroup);
+    stage.add(animLayer);
 
     sd_ipcRenderer.on('exit_simulator_mode', function(e){
         // for every component
@@ -84,6 +96,8 @@ function bootstrap() {
     // start global timer
     var stopwatch = new Stopwatch();
     stopwatch.start();
+    // create tween list
+    var tween_list = [];
     // for every component
     for (var i = 0; i < sd_comp_list.length; i++) {
         // check if component has places
@@ -95,16 +109,27 @@ function bootstrap() {
             timer_label_list.push(timerLabel);
             // set not listening 
             setNotListening(sd_comp_list[i]);
-            // create a token for every component
-            var place_num = 0;
+            // set token color for this component
             var tokenColor = getRandomColor();
-            // set isRunning
-            sd_comp_list[i].isRunning = true;
-            tokenHandler(sd_comp_list[i], place_num, animLayer, tokenColor, timerLabel);
+            // get pos of first place
+            // get position of first place
+            var tokenPos = sd_comp_list[i].place_list[0].place_konva.getAbsolutePosition();
+            // create token at first place
+            var token = createToken(tokenPos, tokenColor);
+            // create tween obj name
+            var tween_name = "tween " + i;
+            // create tween obj
+            var tween_obj = new Tween(tween_name, tween_list, sd_comp_list[i], token, tokenColor);
+            // build the animation
+            buildTokenTween(tween_obj, animLayer);
+            // tokenHandler(sd_comp_list[i], place_num, animLayer, tokenColor, timerLabel);
         } else {
             console.log(sd_comp_list[i].name + " did not have a place!");
         }
     };
+
+    // playTokenTimeLine
+    playTokenTimeLine(tween_list);
 
     // Fires every 50ms by default. Change setting the 'refreshRateMS' options
     stopwatch.onTime(function(time) {
@@ -115,38 +140,50 @@ function bootstrap() {
     animLayer.draw();
 }
 
-function tokenHandler(component, place_num, animLayer, tokenColor, timerLabel){
-    // get position of current place
-    var tokenPos = component.place_list[place_num].place_konva.getAbsolutePosition();
-
-    // if first place
-    if(place_num == 0){
-        // show that the place has been reached
-        placeFinishedAnim(component.place_list[place_num].place_konva);
+function buildTokenTween(tween_obj, animLayer){
+    
+    // create tweenMax
+    var tweenline = new TimelineLite();
+    // add tweenMax to tweenlist
+    tween_obj.tween_list.push(tweenline);
+    // create reference to this tweens parent component
+    var component_obj = tween_obj.component;
+    console.log("Building token tween for " + component_obj.name);
+    // for every place in components place list
+    for (var place_num = 0; place_num < component_obj.place_list.length; place_num++){
+        // for every outbound transition out of the current place
+        for (var tran_num = 0; tran_num < component_obj.place_list[place_num].transition_outbound_list.length; tran_num++){
+            // set current tran obj reference
+            var curr_tran_obj = component_obj.place_list[place_num].transition_outbound_list[tran_num];
+            // set reference for duration min
+            var dur_min = curr_tran_obj.duration_min;
+            // set reference for duration max
+            var dur_max = curr_tran_obj.duration_max;
+            // get token starting position
+            var tokenStartPos = component_obj.place_list[place_num].place_konva.getAbsolutePosition();
+            // create token
+            var token = createToken(tokenStartPos, tween_obj.tokenColor);
+            animLayer.add(token);
+            // get reference to transtion konva line
+            var transition = component_obj.place_list[place_num].transition_outbound_list[tran_num].tran_konva;
+            // get transition konva line position
+            var tran_pos = transition.getAbsolutePosition();
+            var mid_pos_x = tran_pos.x + transition.points()[2];
+            var mid_post_y = tran_pos.y + transition.points()[3];
+            var dest_post_x = tran_pos.y + transition.points()[4];
+            var dest_post_y = tran_pos.y + transition.points()[5];
+            // tween to mid point
+            tweenline.to(token, getRandomDuration(dur_min, dur_max), { konva: { x: mid_pos_x, y: mid_post_y } });
+            // tween to dest point
+            tweenline.to(token, getRandomDuration(dur_min, dur_max), { konva: { x: dest_post_x, y: dest_post_y } });
+        }
     }
+}
 
-    console.log("Creating tokens for " + component.name + " at " + component.place_list[0].name);
-    console.log(component.place_list[place_num].name + " has " + component.place_list[place_num].transition_outbound_list.length + " outbound transitions")
-
-    // create token for every outbound transition
-    for (var tran_num = 0; tran_num < component.place_list[place_num].transition_outbound_list.length; tran_num++){
-
-        var token = createToken(tokenPos, tokenColor);
-        // create token obj
-        var token_obj = new Token(token_list.length + 1, tokenPos);
-        // add konva cricle ref to token obj
-        token_obj.konva_circle = token;
-        // add konva token to animLayer
-        animLayer.add(token);
-
-        var transition = component.place_list[place_num].transition_outbound_list[tran_num].tran_konva;
-        var tran_pos = transition.getAbsolutePosition();
-        var mid_pos_x = tran_pos.x + transition.points()[2];
-        var mid_post_y = tran_pos.y + transition.points()[3];
-        var offset = component.place_list[place_num].transition_outbound_list[tran_num].offset;
-        var current_tween = startTokenTransition(component, token, mid_pos_x, mid_post_y, offset, place_num, tran_num, tokenColor, animLayer, transition, tran_pos, timerLabel);
-        
-        // finishTokenTransition(component, token, dest_pos_x, dest_post_y, offset, playLabel, pauseLabel, resetLabel, place_num, tran_num, tokenColor, animLayer);
+function playTokenTimeLine(tween_list){
+    // for every tweenline in tween_list
+    for (var tween_line_num = 0; tween_line_num < tween_list.length; tween_line_num++){
+        tween_list[tween_line_num].play();
     }
 }
 
@@ -159,122 +196,6 @@ function createToken(tokenPos, tokenColor){
         opacity: 1
     });
     return token;
-}
-
-// func to move the current token first half of the transition
-function startTokenTransition(component, token, mid_pos_x, mid_post_y, offset, place_num, tran_num, tokenColor, animLayer, transition, tran_pos, timerLabel){
-    // get current tran obj
-    var curr_tran_obj = component.place_list[place_num].transition_outbound_list[tran_num];
-    // get new place for current transition
-    var new_pos = curr_tran_obj.dest;
-    // find index of dest place
-    var next_index = component.place_list.indexOf(component.place_list[place_num].transition_outbound_list[tran_num].dest);
-    console.log("next index is " + next_index);
-
-    // set dest pos
-    var dest_pos_x = tran_pos.x + transition.points()[4];
-    var dest_post_y = tran_pos.y + transition.points()[5];
-
-    // get this transitions duration
-    var tran_duration = getRandomDuration(curr_tran_obj.duration_min, curr_tran_obj.duration_max);
-    console.log("current transition duration MIN is " + curr_tran_obj.duration_min);
-    console.log("current transition duration MAX is " + curr_tran_obj.duration_max);
-
-    // the tween has to be created after the node has been added to the layer
-    var start_tween = new Konva.Tween({
-        node: token,
-        duration: tran_duration / 2,
-        // offsetX: offset,
-        x: mid_pos_x,
-        y: mid_post_y,
-        opacity: 1,
-        onFinish: function() {
-            // check if current tran has a use dependency
-            if(curr_tran_obj.dependency_obj_list.length > 0){
-                console.log(curr_tran_obj.name + " had a USE dependency! ");
-                for(var dep = 0; dep < curr_tran_obj.dependency_obj_list.length; dep++ ){
-                    curr_tran_obj.dependency_obj_list[dep].enabled = true;
-                }
-                // check if connection has been enabled
-                checkConnectionStatus();
-            }
-            // move token to final pos
-            current_tween = finishTokenTransition(component, token, dest_pos_x, dest_post_y, offset, place_num, tran_num, tokenColor, animLayer, tran_duration, timerLabel);
-            // start_tween.destroy();
-        }
-    });
-    // add start_tween to tween list
-    token_tweens.push(start_tween);
-
-    // set ref for curr tween
-    current_tween = start_tween;
-
-    start_tween.play();
-
-    return current_tween;
-}
-
-function finishTokenTransition(component, token, dest_pos_x, dest_post_y, offset, place_num, tran_num, tokenColor, animLayer, tran_duration, timerLabel){
-    
-    // get current tran obj
-    var curr_tran_obj = component.place_list[place_num].transition_outbound_list[tran_num];
-    // get new place for current transition
-    var new_pos = curr_tran_obj.dest;
-    // find index of dest place
-    var next_index = component.place_list.indexOf(component.place_list[place_num].transition_outbound_list[tran_num].dest);
-    console.log("next index is " + next_index);
-
-    console.log("new place name is " + new_pos.name + " and index is " + new_pos.index);
-
-    // the tween has to be created after the node has been added to the layer
-    var finish_tween = new Konva.Tween({
-        node: token,
-        duration: tran_duration / 2,
-        // offsetX: offset,
-        x: dest_pos_x,
-        y: dest_post_y,
-        easing: Konva.Easings.EaseOut,
-        opacity: 1,
-        onFinish: function() {
-            // check if current tran has a use dependency
-            if(new_pos.dependency_obj_list.length > 0){
-                console.log(new_pos.name + " had a PROVIDE dependency! ");
-                for(var dep = 0; dep < new_pos.dependency_obj_list.length; dep++ ){
-                    new_pos.dependency_obj_list[dep].enabled = true;
-                }
-                // check if connection has been enabled
-                checkConnectionStatus();
-            }
-            token.destroy();
-            //readComponentTimer(timerLabel);
-            animLayer.draw();
-            if(new_pos.place_konva.stroke() == 'black'){
-                // show that the new place has been reached
-                placeFinishedAnim(new_pos.place_konva);
-            }
-            // check if new pos has outbound transitions
-            if (new_pos.transition_outbound_list.length > 0 && offset == 0){
-                tokenHandler(component, next_index, animLayer, tokenColor);
-            }
-            // reached its final place
-            if(new_pos == component.place_list[component.place_list.length - 1]){
-                componentFinishedAnim(component);
-                if(component.isRunning == true){
-                    stopTimerLabel(timerLabel, component);
-                }
-                
-            }
-            
-            // finish_tween.destroy();
-        }
-    });
-    // add tween to tween list
-    token_tweens.push(finish_tween);
-    
-    // tween starts playing
-    finish_tween.play();
-
-    return finish_tween;
 }
 
 function updateTimerLabels(time){
