@@ -58,6 +58,7 @@ class Transition {
         this.index;
         this.src = src;
         this.tran_group_konva;
+        this.transition_selection_area;
         this.dest = dest;
         this.func = func;
         this.dependency_count = 0; // 3 max
@@ -88,6 +89,8 @@ class Connection {
         this.enabled = false;
         this.provide_port_obj;
         this.use_port_obj;
+        this.provide_component_name;
+        this.use_component_name;
     }
 };
 

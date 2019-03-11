@@ -8,12 +8,12 @@ function addNewConnection(provide_component_obj, provide_source_obj, provide_stu
 
     var connection = new Konva.Line({
         points: [provide_stub_konva.getAbsolutePosition().x + provide_offset,
-                 provide_stub_konva.getAbsolutePosition().y, 
+                 provide_stub_konva.getAbsolutePosition().y,
                  midpoint_x,
                  provide_stub_konva.getAbsolutePosition().y,
                  midpoint_x,
                  use_stub_konva.getAbsolutePosition().y,
-                 use_stub_konva.getAbsolutePosition().x + use_offset, 
+                 use_stub_konva.getAbsolutePosition().x + use_offset,
                  use_stub_konva.getAbsolutePosition().y],
         stroke: 'black',
         strokeWidth: 1,
@@ -63,6 +63,8 @@ function addNewConnection(provide_component_obj, provide_source_obj, provide_stu
     // point to both gates, useful later for enabling and disabling connection
     connection_obj.gate1_konva = gate1;
     connection_obj.gate2_konva = gate2;
+    connection_obj.use_component_name = use_component_obj.name;
+    connection_obj.provide_component_name = provide_component_obj.name;
     // create pointer to entire connection group
     connection_obj.connection_group_konva = connection_group;
     // // create pointer to connection_obj from provide_dependency_obj
@@ -80,12 +82,12 @@ function addNewConnection(provide_component_obj, provide_source_obj, provide_stu
         midpoint_x = getMidPointX();
         midpoint_y = getMidPointY();
         connection.setPoints([provide_stub_konva.getAbsolutePosition().x + provide_offset,
-                              provide_stub_konva.getAbsolutePosition().y, 
+                              provide_stub_konva.getAbsolutePosition().y,
                               midpoint_x,
                               provide_stub_konva.getAbsolutePosition().y,
                               midpoint_x,
                               use_stub_konva.getAbsolutePosition().y,
-                              use_stub_konva.getAbsolutePosition().x + use_offset, 
+                              use_stub_konva.getAbsolutePosition().x + use_offset,
                               use_stub_konva.getAbsolutePosition().y]);
         gate1.setPoints(getPointsGate1());
         gate2.setPoints(getPointsGate2());
@@ -96,8 +98,8 @@ function addNewConnection(provide_component_obj, provide_source_obj, provide_stu
         // recalculate the midpoint
         midpoint_x = getMidPointX();
         midpoint_y = getMidPointY();
-        connection.setPoints([provide_stub_konva.getAbsolutePosition().x + provide_offset, 
-                              provide_stub_konva.getAbsolutePosition().y, 
+        connection.setPoints([provide_stub_konva.getAbsolutePosition().x + provide_offset,
+                              provide_stub_konva.getAbsolutePosition().y,
                               midpoint_x,
                               provide_stub_konva.getAbsolutePosition().y,
                               midpoint_x,
@@ -113,13 +115,13 @@ function addNewConnection(provide_component_obj, provide_source_obj, provide_stu
         // recalculate the midpoint
         midpoint_x = getMidPointX();
         midpoint_y = getMidPointY();
-        connection.setPoints([provide_stub_konva.getAbsolutePosition().x + provide_offset, 
-                              provide_stub_konva.getAbsolutePosition().y, 
+        connection.setPoints([provide_stub_konva.getAbsolutePosition().x + provide_offset,
+                              provide_stub_konva.getAbsolutePosition().y,
                               midpoint_x,
                               provide_stub_konva.getAbsolutePosition().y,
                               midpoint_x,
                               use_stub_konva.getAbsolutePosition().y,
-                              use_stub_konva.getAbsolutePosition().x + use_offset, 
+                              use_stub_konva.getAbsolutePosition().x + use_offset,
                               use_stub_konva.getAbsolutePosition().y]);
         gate1.setPoints(getPointsGate1());
         gate2.setPoints(getPointsGate2());
@@ -130,13 +132,13 @@ function addNewConnection(provide_component_obj, provide_source_obj, provide_stu
         // recalculate the midpoint
         midpoint_x = getMidPointX();
         midpoint_y = getMidPointY();
-        connection.setPoints([provide_stub_konva.getAbsolutePosition().x + provide_offset, 
-                              provide_stub_konva.getAbsolutePosition().y, 
+        connection.setPoints([provide_stub_konva.getAbsolutePosition().x + provide_offset,
+                              provide_stub_konva.getAbsolutePosition().y,
                               midpoint_x,
                               provide_stub_konva.getAbsolutePosition().y,
                               midpoint_x,
                               use_stub_konva.getAbsolutePosition().y,
-                              use_stub_konva.getAbsolutePosition().x + use_offset, 
+                              use_stub_konva.getAbsolutePosition().x + use_offset,
                               use_stub_konva.getAbsolutePosition().y]);
         gate1.setPoints(getPointsGate1());
         gate2.setPoints(getPointsGate2());

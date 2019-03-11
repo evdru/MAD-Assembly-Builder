@@ -19,8 +19,8 @@ function addNewServiceDependency(component, source_element, source_obj, componen
         var dependency_obj = new Dependency('PROVIDE', "Dependency_" + index);
         // add dep obj to comp_obj.dep_list
         component_obj.dependency_list.push(dependency_obj);
-        console.log('Created new PROVIDE dependency dock'); 
-        
+        console.log('Created new PROVIDE dependency dock');
+
         offset = component.getWidth();
         add = 20;
         stub_x = 0;
@@ -32,7 +32,7 @@ function addNewServiceDependency(component, source_element, source_obj, componen
         // add dep obj to comp_obj.dep_list
         component_obj.dependency_list.push(dependency_obj);
         console.log('Created new USE dependency dock');
-        
+
         // use connection going left of a transition
         offset = 0;
         add = -20;
@@ -85,6 +85,8 @@ function addNewServiceDependency(component, source_element, source_obj, componen
         var stub = getServiceStub();
         var symbol = getServiceSymbol();
         symbol.opacity(0);
+        dependency_obj.dep_stub_konva = stub;
+        dependency_obj.dep_symbol_konva = symbol;
         // add stub and symbol to group for place
         dependency_group.add(stub);
         dependency_group.add(symbol);
@@ -94,6 +96,8 @@ function addNewServiceDependency(component, source_element, source_obj, componen
         var stub = getServiceStub();
         stub.opacity(0);
         var symbol = getServiceSymbol();
+        dependency_obj.dep_stub_konva = stub;
+        dependency_obj.dep_symbol_konva = symbol;
         // add stub and symbol to group for transition
         dependency_group.add(stub);
         dependency_group.add(symbol);
@@ -138,7 +142,7 @@ function addNewServiceDependency(component, source_element, source_obj, componen
         alpha: 0.75,
         visible: false
     });
-    
+
     tooltipLayer.add(tooltip);
     stage.add(tooltipLayer);
 
@@ -157,7 +161,7 @@ function addNewServiceDependency(component, source_element, source_obj, componen
     stub.on('mouseenter', function () {
         window.addEventListener('keydown', removeStub);
     });
-    
+
     // hide the tooltip on mouse out
     stub.on('mouseout', function(){
         tooltip.hide();
@@ -189,7 +193,7 @@ function addNewServiceDependency(component, source_element, source_obj, componen
             } else {
                 // Do nothing!
                 return;
-            }   
+            }
         }
     };
 
@@ -211,7 +215,7 @@ function addNewServiceDependency(component, source_element, source_obj, componen
             x: stub.getX(),
             y: stub.getY()
         });
-        
+
         //layer.draw();
     });
 
@@ -293,7 +297,7 @@ function addNewServiceDependency(component, source_element, source_obj, componen
                         }
                     } else {
                         alert("Incompatible dependency types");
-                    }   
+                    }
                 } else {
                     alert("Left click Provide dependency stub and Right click Use dependency stub to connect them");
                 }
@@ -413,6 +417,8 @@ function addNewDataDependency(component, source_element, source_obj, component_o
         // symbol is invisbile until connection has been established
         data_symbol_provide = getDataSymbolProvide();
         data_symbol_provide.opacity(0);
+        dependency_obj.dep_symbol_konva = data_symbol_provide;
+        dependency_obj.dep_stub_konva = stub;
         // add all to dependency group
         dependency_group.add(stub);
         dependency_group.add(data_stub_provide);
@@ -425,6 +431,9 @@ function addNewDataDependency(component, source_element, source_obj, component_o
         data_stub_use = getDataStubUse();
         data_stub_use.opacity(0);
         data_symbol_use = getDataSymbolUse();
+        dependency_obj.dep_symbol_konva = data_symbol_use;
+        dependency_obj.dep_stub_konva = stub;
+        dependency_obj.dep_stub_use_konva = data_stub_use;
         // add all to dependency group
         dependency_group.add(stub);
         dependency_group.add(data_stub_use);
@@ -447,7 +456,7 @@ function addNewDataDependency(component, source_element, source_obj, component_o
 
     function getDataStubProvide(){
         var stub = new Konva.Line({
-            points: [(dependency.points()[2] + add) - 5, dependency.points()[3] + 5, 
+            points: [(dependency.points()[2] + add) - 5, dependency.points()[3] + 5,
                      (dependency.points()[2] + add), dependency.points()[3],
                      (dependency.points()[2] + add) - 5, dependency.points()[3] - 5],
             stroke: 'black',
@@ -463,7 +472,7 @@ function addNewDataDependency(component, source_element, source_obj, component_o
 
     function getDataStubUse(){
         var DataStubUse = new Konva.Line({
-            points: [(dependency.points()[2] + add) - 15, dependency.points()[3] + 5, 
+            points: [(dependency.points()[2] + add) - 15, dependency.points()[3] + 5,
                      (dependency.points()[2] + add) - 10, dependency.points()[3],
                      (dependency.points()[2] + add) - 15, dependency.points()[3] - 5],
             stroke: 'black',
@@ -479,7 +488,7 @@ function addNewDataDependency(component, source_element, source_obj, component_o
 
     function getDataSymbolProvide(){
         var DataSymbolProvide = new Konva.Line({
-            points: [(dependency.points()[2] + add), dependency.points()[3] + 10, 
+            points: [(dependency.points()[2] + add), dependency.points()[3] + 10,
                      (dependency.points()[2] + add) + 10, dependency.points()[3],
                      (dependency.points()[2] + add), dependency.points()[3] - 10],
             stroke: 'black',
@@ -494,7 +503,7 @@ function addNewDataDependency(component, source_element, source_obj, component_o
 
     function getDataSymbolUse(){
         var DataSymbolUse = new Konva.Line({
-            points: [(dependency.points()[2] + add) - 10, dependency.points()[3] + 10, 
+            points: [(dependency.points()[2] + add) - 10, dependency.points()[3] + 10,
                      (dependency.points()[2] + add), dependency.points()[3],
                      (dependency.points()[2] + add) - 10, dependency.points()[3] - 10],
             stroke: 'black',
@@ -518,7 +527,7 @@ function addNewDataDependency(component, source_element, source_obj, component_o
         alpha: 0.75,
         visible: false
     });
-    
+
     tooltipLayer.add(tooltip);
     stage.add(tooltipLayer);
 
@@ -537,7 +546,7 @@ function addNewDataDependency(component, source_element, source_obj, component_o
     stub.on('mouseenter', function () {
         window.addEventListener('keydown', removeStub);
     });
-    
+
     // hide the tooltip on mouse out
     stub.on('mouseout', function(){
         tooltip.hide();
@@ -564,7 +573,7 @@ function addNewDataDependency(component, source_element, source_obj, component_o
             } else {
                 // Do nothing!
                 return;
-            }   
+            }
         }
     };
 
@@ -586,19 +595,19 @@ function addNewDataDependency(component, source_element, source_obj, component_o
         });
         if(data_stub_provide != null){
             // update the provide points
-            data_stub_provide.setPoints([(dependency.points()[2] + add) - 5, dependency.points()[3] + 5, 
+            data_stub_provide.setPoints([(dependency.points()[2] + add) - 5, dependency.points()[3] + 5,
                                          (dependency.points()[2] + add), dependency.points()[3],
                                          (dependency.points()[2] + add) - 5, dependency.points()[3] - 5]);
-            data_symbol_provide.setPoints([(dependency.points()[2] + add), dependency.points()[3] + 10, 
+            data_symbol_provide.setPoints([(dependency.points()[2] + add), dependency.points()[3] + 10,
                                           (dependency.points()[2] + add) + 10, dependency.points()[3],
                                           (dependency.points()[2] + add), dependency.points()[3] - 10]);
         }
         if(data_stub_use != null){
             // update the use points
-            data_stub_use.setPoints([(dependency.points()[2] + add) - 15, dependency.points()[3] + 5, 
+            data_stub_use.setPoints([(dependency.points()[2] + add) - 15, dependency.points()[3] + 5,
                                      (dependency.points()[2] + add) - 10, dependency.points()[3],
                                      (dependency.points()[2] + add) - 15, dependency.points()[3] - 5]);
-            data_symbol_use.setPoints([(dependency.points()[2] + add) - 10, dependency.points()[3] + 10, 
+            data_symbol_use.setPoints([(dependency.points()[2] + add) - 10, dependency.points()[3] + 10,
                                        (dependency.points()[2] + add), dependency.points()[3],
                                        (dependency.points()[2] + add) - 10, dependency.points()[3] - 10]);
         }
@@ -622,19 +631,19 @@ function addNewDataDependency(component, source_element, source_obj, component_o
         });
         if(data_stub_provide != null){
             // update the provide points
-            data_stub_provide.setPoints([(dependency.points()[2] + add) - 5, dependency.points()[3] + 5, 
+            data_stub_provide.setPoints([(dependency.points()[2] + add) - 5, dependency.points()[3] + 5,
                                          (dependency.points()[2] + add), dependency.points()[3],
                                          (dependency.points()[2] + add) - 5, dependency.points()[3] - 5]);
-            data_symbol_provide.setPoints([(dependency.points()[2] + add), dependency.points()[3] + 10, 
+            data_symbol_provide.setPoints([(dependency.points()[2] + add), dependency.points()[3] + 10,
                                            (dependency.points()[2] + add) + 10, dependency.points()[3],
                                            (dependency.points()[2] + add), dependency.points()[3] - 10]);
         }
         if(data_stub_use != null){
             // update the use points
-            data_stub_use.setPoints([(dependency.points()[2] + add) - 15, dependency.points()[3] + 5, 
+            data_stub_use.setPoints([(dependency.points()[2] + add) - 15, dependency.points()[3] + 5,
                                      (dependency.points()[2] + add) - 10, dependency.points()[3],
                                      (dependency.points()[2] + add) - 15, dependency.points()[3] - 5]);
-            data_symbol_use.setPoints([(dependency.points()[2] + add) - 10, dependency.points()[3] + 10, 
+            data_symbol_use.setPoints([(dependency.points()[2] + add) - 10, dependency.points()[3] + 10,
                                        (dependency.points()[2] + add), dependency.points()[3],
                                        (dependency.points()[2] + add) - 10, dependency.points()[3] - 10]);
         }
@@ -660,7 +669,7 @@ function addNewDataDependency(component, source_element, source_obj, component_o
                 // set source selected true
                 source_selected = true;
             }
-        } 
+        }
         else if (e.evt.button === 2){
             console.log("Right clicked stub: ", source_obj.name);
             // check if provide stub was selected prior to create connection
@@ -699,7 +708,7 @@ function addNewDataDependency(component, source_element, source_obj, component_o
                         }
                     } else {
                         alert("Incompatible dependency types");
-                    }        
+                    }
                 } else {
                     alert("Left click Provide dependency stub and Right click Use dependency stub to connect them");
                 }

@@ -16,7 +16,7 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
     }
 
     // Transition Creation arguments: type, name, src, src_konva, dest, dest_konva, func
-    var transition_obj = new Transition('Transition', "Transition_" + index, 
+    var transition_obj = new Transition('Transition', "Transition_" + index,
                                         source_obj, dest_obj, "defaultFunction_" + index);
     component_obj.transition_list.push(transition_obj);
 
@@ -53,6 +53,7 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
 
     // add the konva group to transition obj attribute
     transition_obj.tran_group_konva = transition_group;
+    transition_obj.transition_selection_area = transition_selection_area;
 
     // intilize selection variables to null
     source_transition_konva = null;
@@ -75,11 +76,11 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
 
     // source place is moved update the transitions that are connected to it
     source_konva.on('dragmove', (e) => {
-        transition.setPoints([snapToGrid(source_konva.getX()), 
+        transition.setPoints([snapToGrid(source_konva.getX()),
                               snapToGrid(source_konva.getY()),
                               snapToGrid(((source_konva.getX() + dest_konva.getX()) / 2) + offset),
                               snapToGrid(source_konva.getY() + dest_konva.getY()) / 2,
-                              snapToGrid(dest_konva.getX()), 
+                              snapToGrid(dest_konva.getX()),
                               snapToGrid(dest_konva.getY())]);
         transition_selection_area.position({
             x: snapToGrid(((source_konva.getX() + dest_konva.getX()) / 2) + offset),
@@ -90,7 +91,7 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
 
     // destination place is moved update the transitions that are connected to it
     dest_konva.on('dragmove', (e) => {
-        transition.setPoints([snapToGrid(source_konva.getX()), 
+        transition.setPoints([snapToGrid(source_konva.getX()),
                               snapToGrid(source_konva.getY()),
                               snapToGrid(((source_konva.getX() + dest_konva.getX()) / 2) + offset),
                               snapToGrid(source_konva.getY() + dest_konva.getY()) / 2,
@@ -179,7 +180,7 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
             // if source obj has been assigned with a left click prior
             if(source_transition_konva != null){
                 source_transition_obj.dependency = true;
-                
+
                 // prompt for dependency type
                 console.log("Open window for setting port type (sync)");
                 var type = ipcRend.sendSync("set_dependency_type");
@@ -197,7 +198,7 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
                     source_transition_obj.dependency_type = type
                     createDependencyUsePort(component, component_obj, component_group, source_transition_obj, source_transition_konva, tooltipLayer);
                 }
-                
+
                 // reset the source obj and konva pointers to null
                 source_transition_konva = null;
                 source_transition_obj = null;
@@ -219,7 +220,7 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
             } else {
                 // Do nothing!
                 return;
-            }   
+            }
         }
     }
 
@@ -234,6 +235,14 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
 
 // function to create a use port out of a transition
 function createDependencyUsePort(component, component_obj, component_group, transition_obj, transition_selection_area, tooltipLayer){
+
+    console.log(component);
+    console.log(component_obj);
+    console.log(component_group);
+    console.log(transition_obj);
+    console.log(transition_selection_area);
+    console.log(tooltipLayer);
+
     // create dependency here if set true
     if(transition_obj.dependency){
         // determine which type of dependency
@@ -242,14 +251,14 @@ function createDependencyUsePort(component, component_obj, component_group, tran
                 // Creating service use dependency
                 console.log("Creating service use dependency");
                 dependency_group = addNewServiceDependency(component, transition_selection_area, transition_obj, component_obj, component_group, tooltipLayer);
-                // add the return dependency konva elements 
+                // add the return dependency konva elements
                 transition_obj.dependency_konva_list.push(dependency_group);
                 break;
             case 'DATA_USE':
                 // Creating data use dependency
                 console.log("Creating service use dependency");
                 dependency_group = addNewDataDependency(component, transition_selection_area, transition_obj, component_obj, component_group, tooltipLayer);
-                // add the return dependency konva elements 
+                // add the return dependency konva elements
                 transition_obj.dependency_konva_list.push(dependency_group);
                 break;
             default:
