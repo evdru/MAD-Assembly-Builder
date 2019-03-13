@@ -162,7 +162,7 @@ function buildTokenTween(tween_obj, animLayer){
             // get current duration
             var getDuration = getRandomDuration(curr_tran_obj.duration_min, curr_tran_obj.duration_max);
             // increment curr delay
-            tween_delay += getDuration;
+            if (tran_num == 0) { tween_delay += getDuration; }
             // get token starting position
             var tokenStartPos = component_obj.place_list[place_num].place_konva.getAbsolutePosition();
             // create token
@@ -177,8 +177,8 @@ function buildTokenTween(tween_obj, animLayer){
             var dest_post_x = tran_pos.x + transition.points()[4];
             var dest_post_y = tran_pos.y + transition.points()[5];
             
-            // tween to mid point
-            tweenline.to(token, getDuration, { konva: { x: dest_post_x, y: dest_post_y }, onStartParams:[token] ,onStart: showToken, onCompleteParams:[token], onComplete: hideToken }, 'index_delay');
+            // tween to mid point           {curviness:1.25, values:[{x:100, y:250}, {x:300, y:0}, {x:500, y:400}], autoRotate:true}
+            tweenline.to(token, getDuration, { konva: { bezier: {curviness:3, values:[{x:mid_pos_x, y:mid_post_y}, {x:dest_post_x, y:dest_post_y}] }}, onStartParams:[token], onStart: showToken, onCompleteParams:[token], onComplete: hideToken }, 'index_delay');
             // tween to dest point
              // tweenline.add(TweenLite.to(token, getRandomDuration(dur_min, dur_max), { konva: { x: dest_post_x, y: dest_post_y } }));
         }
