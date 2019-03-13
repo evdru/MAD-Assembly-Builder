@@ -3,7 +3,7 @@
 
 const sd_electron = require('electron');
 var Stopwatch = require('timer-stopwatch');
-const TimelineLite = require('gsap');
+var TweenMax = require("gsap");
 const sd_ipcRenderer = sd_electron.ipcRenderer;
 
 var sd_app = electron.remote; 
@@ -46,6 +46,21 @@ class TimerLabel{
 sd_ipcRenderer.on('simulate_deployment', function() {
     bootstrap();
 });
+
+
+// example
+function testTimeLineLite(){
+    var animLayer = new Konva.Layer();
+    
+    animLayer.add(star);
+    stage.add(animLayer);
+
+    var tl = new TimelineLite();
+    console.log(tl);
+    // plugin example
+    tl.to(star, 3, { konva: { x: 500, y: 250 } });
+    tl.play();
+}
 
 function bootstrap() {
     // set references to global lists
@@ -170,12 +185,12 @@ function buildTokenTween(tween_obj, animLayer){
             var tran_pos = transition.getAbsolutePosition();
             var mid_pos_x = tran_pos.x + transition.points()[2];
             var mid_post_y = tran_pos.y + transition.points()[3];
-            var dest_post_x = tran_pos.y + transition.points()[4];
+            var dest_post_x = tran_pos.x + transition.points()[4];
             var dest_post_y = tran_pos.y + transition.points()[5];
             // tween to mid point
-            tweenline.to(token, getRandomDuration(dur_min, dur_max), { konva: { x: mid_pos_x, y: mid_post_y } });
+            tweenline.add(TweenLite.to(token, getRandomDuration(dur_min, dur_max), { konva: { x: dest_post_x, y: dest_post_y } }));
             // tween to dest point
-            tweenline.to(token, getRandomDuration(dur_min, dur_max), { konva: { x: dest_post_x, y: dest_post_y } });
+             // tweenline.add(TweenLite.to(token, getRandomDuration(dur_min, dur_max), { konva: { x: dest_post_x, y: dest_post_y } }));
         }
     }
 }
