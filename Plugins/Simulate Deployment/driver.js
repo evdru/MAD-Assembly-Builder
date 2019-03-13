@@ -47,21 +47,6 @@ sd_ipcRenderer.on('simulate_deployment', function() {
     bootstrap();
 });
 
-
-// example
-function testTimeLineLite(){
-    var animLayer = new Konva.Layer();
-    
-    animLayer.add(star);
-    stage.add(animLayer);
-
-    var tl = new TimelineLite();
-    console.log(tl);
-    // plugin example
-    tl.to(star, 3, { konva: { x: 500, y: 250 } });
-    tl.play();
-}
-
 function bootstrap() {
     // set references to global lists
     sd_comp_list = component_list;
@@ -144,7 +129,7 @@ function bootstrap() {
     };
 
     // playTokenTimeLine
-    playTokenTimeLine(tween_list);
+    // playTokenTimeLine(tween_list);
 
     // Fires every 50ms by default. Change setting the 'refreshRateMS' options
     stopwatch.onTime(function(time) {
@@ -158,22 +143,26 @@ function bootstrap() {
 function buildTokenTween(tween_obj, animLayer){
     
     // create tweenMax
-    var tweenline = new TimelineLite();
+    var tweenline = new TimelineMax();
     // add tweenMax to tweenlist
     tween_obj.tween_list.push(tweenline);
     // create reference to this tweens parent component
     var component_obj = tween_obj.component;
     console.log("Building token tween for " + component_obj.name);
+    // set delay
+    var tween_delay = 0;
     // for every place in components place list
     for (var place_num = 0; place_num < component_obj.place_list.length; place_num++){
+        // add label 1 sec into time line
+        tweenline.add('index_delay', tween_delay);
         // for every outbound transition out of the current place
         for (var tran_num = 0; tran_num < component_obj.place_list[place_num].transition_outbound_list.length; tran_num++){
             // set current tran obj reference
             var curr_tran_obj = component_obj.place_list[place_num].transition_outbound_list[tran_num];
-            // set reference for duration min
-            var dur_min = curr_tran_obj.duration_min;
-            // set reference for duration max
-            var dur_max = curr_tran_obj.duration_max;
+            // get current duration
+            var getDuration = getRandomDuration(curr_tran_obj.duration_min, curr_tran_obj.duration_max);
+            // increment curr delay
+            tween_delay += getDuration;
             // get token starting position
             var tokenStartPos = component_obj.place_list[place_num].place_konva.getAbsolutePosition();
             // create token
@@ -187,14 +176,22 @@ function buildTokenTween(tween_obj, animLayer){
             var mid_post_y = tran_pos.y + transition.points()[3];
             var dest_post_x = tran_pos.x + transition.points()[4];
             var dest_post_y = tran_pos.y + transition.points()[5];
+            
             // tween to mid point
-            tweenline.add(TweenLite.to(token, getRandomDuration(dur_min, dur_max), { konva: { x: dest_post_x, y: dest_post_y } }));
+            tweenline.to(token, getDuration, { konva: { x: dest_post_x, y: dest_post_y }, onStartParams:[token] ,onStart: showToken, onCompleteParams:[token], onComplete: hideToken }, 'index_delay');
             // tween to dest point
              // tweenline.add(TweenLite.to(token, getRandomDuration(dur_min, dur_max), { konva: { x: dest_post_x, y: dest_post_y } }));
         }
     }
 }
 
+function showToken(token){
+    token.show();
+}
+
+function hideToken(token){
+    token.hide();
+}
 function playTokenTimeLine(tween_list){
     // for every tweenline in tween_list
     for (var tween_line_num = 0; tween_line_num < tween_list.length; tween_line_num++){
@@ -210,6 +207,7 @@ function createToken(tokenPos, tokenColor){
         fill: tokenColor,
         opacity: 1
     });
+    token.hide();
     return token;
 }
 
