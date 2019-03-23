@@ -45,8 +45,9 @@ function addNewServiceDependency(component, source_element, source_obj, componen
         offset = 0;
         add = -20;
         stub_x = -15;
-
-        verticalOffset = 0;
+        // set vertical offset for dependency port
+        verticalOffset = getVerticalOffset(source_obj);
+        console.log("Vertical Offset is " + verticalOffset);
     };
 
     // set index

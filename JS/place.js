@@ -114,8 +114,6 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
                     src.dependency_type = type
                     createDependencyPort(component, source_component, component_group, src, source_konva, tooltipLayer);
                 }
-                // increment dependency_count for place obj
-                place_obj.dependency_count++;
                 
                 // reset the source obj to null
                 source_konva = null;
