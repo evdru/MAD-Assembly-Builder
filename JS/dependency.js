@@ -1,8 +1,13 @@
 // Add new Service dependency function, should only be called by place and transition
 function addNewServiceDependency(component, source_element, source_obj, component_obj, component_group, tooltipLayer) {
+
+    // check if source obj dependency count is less than allowed
+    // if(isDependencyAllowed(source_obj)){ return false; }
+
     var offset;
     var add;
     var stub_x;
+    var verticalOffset;
     source_selected = null;
 
     // get index
@@ -24,6 +29,9 @@ function addNewServiceDependency(component, source_element, source_obj, componen
         offset = component.getWidth();
         add = 20;
         stub_x = 0;
+        // set vertical offset for dependency port
+        verticalOffset = getVerticalOffset(source_obj);
+        console.log("Vertical Offset is " + verticalOffset);
     } else if (source_obj.type == 'Transition') {
         // create the dependency object
         var dependency_obj = new Dependency('USE', "Dependency_" + index);
@@ -37,6 +45,8 @@ function addNewServiceDependency(component, source_element, source_obj, componen
         offset = 0;
         add = -20;
         stub_x = -15;
+
+        verticalOffset = 0;
     };
 
     // set index
@@ -51,10 +61,9 @@ function addNewServiceDependency(component, source_element, source_obj, componen
 
     // increment source obj dependency count
     source_obj.dependency_count++;
-    console.log(source_obj.name + " dependency count is now " + source_obj.dependency_count);
 
     var dependency = new Konva.Line({
-        points: [source_element.getX(), source_element.getY(), (component.getX() + offset * component.scaleX()), source_element.getY()],
+        points: [source_element.getX(), source_element.getY(), (component.getX() + offset * component.scaleX()), source_element.getY() + verticalOffset],
         stroke: 'black',
         strokeWidth: 1,
         name: 'dependency',
@@ -64,7 +73,8 @@ function addNewServiceDependency(component, source_element, source_obj, componen
     });
 
     var stem = new Konva.Line({
-        points: [component.getX() + offset * component.scaleX(), source_element.getY(), (component.getX() + offset * component.scaleX()) + add, source_element.getY()],
+        points: [component.getX() + offset * component.scaleX(), source_element.getY() + verticalOffset, 
+                (component.getX() + offset * component.scaleX()) + add, source_element.getY() + verticalOffset],
         stroke: 'black',
         strokeWidth: 1,
         name: 'stem',
@@ -186,6 +196,8 @@ function addNewServiceDependency(component, source_element, source_obj, componen
 
                 // set source_obj dependency boolean to false
                 source_obj.dependency = false;
+                // decrement dependency count
+                source_obj.dependency_count--;
 
                 // remove the depedency obj from its components dependency list
                 removeDependencyObj(component_obj, dependency_obj);
@@ -202,11 +214,11 @@ function addNewServiceDependency(component, source_element, source_obj, componen
         dependency.setPoints([source_element.getX(),
                               source_element.getY(),
                               component.getX() + offset * component.scaleX(),
-                              source_element.getY()]);
+                              source_element.getY() + verticalOffset]);
         stem.setPoints([component.getX() + offset * component.scaleX(),
-                        source_element.getY(),
+                        source_element.getY() + verticalOffset,
                         (component.getX() + offset * component.scaleX()) + add,
-                        source_element.getY()]);
+                        source_element.getY() + verticalOffset]);
         stub.position({
             x: dependency.points()[2] + add + stub_x,
             y: dependency.points()[3]
@@ -224,11 +236,11 @@ function addNewServiceDependency(component, source_element, source_obj, componen
         dependency.setPoints([source_element.getX(),
                               source_element.getY(),
                               component.getX() + offset * component.scaleX(),
-                              source_element.getY()]);
+                              source_element.getY() + verticalOffset]);
         stem.setPoints([component.getX() + offset * component.scaleX(),
-                        source_element.getY(),
+                        source_element.getY() + verticalOffset,
                         (component.getX() + offset * component.scaleX()) + add,
-                        source_element.getY()]);
+                        source_element.getY() + verticalOffset]);
 
         stub.position({
             x: dependency.points()[2] + add + stub_x,
@@ -323,6 +335,31 @@ function addNewServiceDependency(component, source_element, source_obj, componen
     layer.draw();
 
     return dependency_group;
+}
+
+function isDependencyAllowed(source_obj){
+    if(source_obj.dependency_count >= MAX_DEPENDENCY_COUNT){
+        return false;
+    } else {
+        return true;
+    }
+}
+
+// assigns verticalOffset to value based on source obj dependency count
+function getVerticalOffset(source_obj){
+    var verticalOffset;
+    switch(source_obj.dependency_count){
+        case 0:
+            verticalOffset = 0;
+            break;
+        case 1:
+            verticalOffset = 50;
+            break;
+        case 2:
+            verticalOffset = -50;
+            break;
+    }
+    return verticalOffset;
 }
 
 // Add new Service dependency function, should only be called by place and transition

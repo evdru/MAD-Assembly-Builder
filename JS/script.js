@@ -15,6 +15,7 @@ var dest_transition = null;
 var source_obj = null;
 var dest_obj = null;
 var highlighted = false;
+const MAX_DEPENDENCY_COUNT = 3;
 const max_transition_count = 3; // const global max transition count coming out of any one place
 
 class Component {
@@ -65,6 +66,7 @@ class Transition {
         this.dependency = false;
         this.dependency_type = '';
         this.dependency_konva_list = [];
+        this.offset;
     };
 };
 
