@@ -222,7 +222,6 @@ function removeDependencyObj(component_obj, dependency_obj){
     if(dependency_obj.connection_obj){
         console.log("its removing connection")
         removeConnectionObj(dependency_obj.connection_obj);
-        removeConnectionKonva(dependency_obj.connection_obj);
     }
     console.log("Before " + component_obj.dependency_list);
     // find index of dependency_obj in component_list.dependency_list and remove
@@ -231,11 +230,14 @@ function removeDependencyObj(component_obj, dependency_obj){
 };
 
 function removeConnectionObj(connection_obj){
+    connection_obj.use_port_obj.connection_obj = undefined
+    connection_obj.provide_port_obj.connection_obj = undefined
     // set opacity to 0 for dependencies
     connection_obj.provide_port_obj.dep_stub_konva.opacity(0);
     connection_obj.use_port_obj.dep_stub_konva.opacity(0);
     // remove connection from connection list
     connection_list.splice( connection_list.indexOf(connection_obj), 1 );
+    removeConnectionKonva(connection_obj);
 }
 
 // function to remove connection konva group
