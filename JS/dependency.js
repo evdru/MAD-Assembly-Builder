@@ -376,6 +376,8 @@ function addNewDataDependency(component, source_element, source_obj, component_o
     var data_stub_use;
     var data_symbol_use;
 
+    var verticalOffset;
+
     // get index
     var index;
     if (component_obj.dependency_list.length == 0){
@@ -394,6 +396,8 @@ function addNewDataDependency(component, source_element, source_obj, component_o
         add = 20;
         stub_x = -5;
         dependency_name = dependency_obj.type + " Provide Dependency from " + source_obj.name;
+        // set vertical offset for dependency port
+        verticalOffset = getVerticalOffset(source_obj);
     } else if (source_obj.type == 'Transition') {
         // create the dependency object
         var dependency_obj = new Dependency('DATA_USE', "Dependency_" + index);
@@ -404,6 +408,8 @@ function addNewDataDependency(component, source_element, source_obj, component_o
         add = -20;
         stub_x = 0;
         dependency_name = dependency_obj.type + " Use Dependency from " + source_obj.name;
+        // set vertical offset for dependency port
+        verticalOffset = getVerticalOffset(source_obj);
     };
 
     // set index
@@ -420,7 +426,7 @@ function addNewDataDependency(component, source_element, source_obj, component_o
     dependency_obj.component_obj = component_obj;
 
     var dependency = new Konva.Line({
-        points: [source_element.getX(), source_element.getY(), (component.getX() + offset * component.scaleX()), source_element.getY()],
+        points: [source_element.getX(), source_element.getY(), (component.getX() + offset * component.scaleX()), source_element.getY() + verticalOffset],
         stroke: 'black',
         strokeWidth: 1,
         name: 'dependency',
@@ -430,7 +436,7 @@ function addNewDataDependency(component, source_element, source_obj, component_o
     });
 
     var stem = new Konva.Line({
-        points: [component.getX() + offset * component.scaleX(), source_element.getY(), (component.getX() + offset * component.scaleX()) + add, source_element.getY()],
+        points: [component.getX() + offset * component.scaleX(), source_element.getY() + verticalOffset, (component.getX() + offset * component.scaleX()) + add, source_element.getY() + verticalOffset],
         stroke: 'black',
         strokeWidth: 1,
         name: 'stem',
@@ -620,11 +626,11 @@ function addNewDataDependency(component, source_element, source_obj, component_o
         dependency.setPoints([source_element.getX(),
                               source_element.getY(),
                               component.getX() + offset * component.scaleX(),
-                              source_element.getY()]);
+                              source_element.getY() + verticalOffset]);
         stem.setPoints([component.getX() + offset * component.scaleX(),
-                        source_element.getY(),
+                        source_element.getY() + verticalOffset,
                         (component.getX() + offset * component.scaleX()) + add,
-                        source_element.getY()]);
+                        source_element.getY() + verticalOffset]);
 
         // invisible stub for selection
         stub.position({
@@ -657,11 +663,11 @@ function addNewDataDependency(component, source_element, source_obj, component_o
         dependency.setPoints([source_element.getX(),
                               source_element.getY(),
                               component.getX() + offset * component.scaleX(),
-                              source_element.getY()]);
+                              source_element.getY() + verticalOffset]);
         stem.setPoints([component.getX() + offset * component.scaleX(),
-                        source_element.getY(),
+                        source_element.getY() + verticalOffset,
                         (component.getX() + offset * component.scaleX()) + add,
-                        source_element.getY()]);
+                        source_element.getY() + verticalOffset]);
 
         stub.position({
             x: dependency.points()[2] + add + stub_x,
