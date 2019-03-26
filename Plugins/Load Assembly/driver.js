@@ -82,24 +82,17 @@ function loadPlaces(la_comp_list) {
 function loadTransitions(la_comp_list) {
 
     // load transitions
-    for(var i = 0; i < la_comp_list.length; i++) {
+    for(var comp_ctr = 0; comp_ctr < la_comp_list.length; comp_ctr++) {
 
-        loaded_component = la_comp_list[i]; // components parsed from .yaml file, which has info about transitions
-        component = component_list[i]; // global components in which we will add transitions
+        loaded_component = la_comp_list[comp_ctr]; // components parsed from .yaml file, which has info about transitions
+        component = component_list[comp_ctr]; // global components in which we will add transitions
 
-        for(var j = 0; j < loaded_component.transition_list.length; j++) {
+        for(var trans_ctr = 0; trans_ctr < loaded_component.transition_list.length; trans_ctr++) {
 
-            loaded_transition = loaded_component.transition_list[j];
+            loaded_transition = loaded_component.transition_list[trans_ctr];
 
-            // @todo: is there a way to make this more robust?
-            for(var k = 0; k < loaded_component.place_list.length; k++) {
-                if(loaded_transition.src.name == component.place_list[k].name) {
-                    var src = component.place_list[k];
-                }
-                if(loaded_transition.dest.name == component.place_list[k].name) {
-                    var dest = component.place_list[k];
-                }
-            }
+            var src = matchObject(component.place_list, loaded_transition.src.name);
+            var dest = matchObject(component.place_list, loaded_transition.dest.name);
 
             addNewTransition(src.place_konva, dest.place_konva, src, dest, component, component.component_group_konva, component.konva_component, component.tooltipLayer, component.use_selection_area, component.provide_selection_area);
         }
@@ -119,11 +112,12 @@ function loadDependencies(la_comp_list) {
             loaded_dependency = loaded_component.dependency_list[j];
 
             if(loaded_dependency.source_obj.type == "Transition") {
-                source_obj = matchTransition(component.transition_list, loaded_dependency.source_obj);
+                source_list = component.transition_list;
             } else if(loaded_dependency.source_obj.type == "Place") {
-                source_obj = matchPlace(component.place_list, loaded_dependency.source_obj);
+                source_list = component.place_list
             }
 
+            source_obj = matchObject(source_list, loaded_dependency.source_obj.name);
             source_obj.dependency = true;
             source_obj.dependency_type = loaded_dependency.type;
 
@@ -140,68 +134,23 @@ function loadDependencies(la_comp_list) {
 
 };
 
-function matchTransition(transition_list, loaded_transition) {
-
-    for(var trans_ctr = 0; trans_ctr < transition_list.length; trans_ctr++) {
-        transition = transition_list[trans_ctr];
-        if(transition.name == loaded_transition.name) {
-            return transition;
-        }
-    }
-
-};
-
-function matchPlace(place_list, loaded_place) {
-
-    for(var place_ctr = 0; place_ctr < place_list.length; place_ctr++) {
-        place = place_list[place_ctr];
-        if(place.name == loaded_place.name) {
-            return place;
-        }
-    }
-};
-
 function loadConnections(la_conn_list) {
 
     for(var conn_ctr = 0; conn_ctr < la_conn_list.length; conn_ctr++) {
-        var provide_component;
-        var provide_obj;
-        var provide_dependency;
-
-        var use_component;
-        var use_obj;
-        var use_dependency;
 
         var loaded_connection = la_conn_list[conn_ctr];
 
         // get components
-        for(var comp_ctr = 0; comp_ctr < component_list.length; comp_ctr++) {
-            component = component_list[comp_ctr];
-            if(loaded_connection.provide_component_name == component.name) {
-                provide_component = component;
-            }
-            if(loaded_connection.use_component_name == component.name) {
-                use_component = component;
-            }
-        }
+        var provide_component = matchObject(component_list, loaded_connection.provide_component_name);
+        var use_component = matchObject(component_list, loaded_connection.use_component_name);
 
         // get provide stuff
-        for(var dep_ctr = 0; dep_ctr < provide_component.dependency_list.length; dep_ctr++) {
-            dependency = provide_component.dependency_list[dep_ctr];
-            if(dependency.name == loaded_connection.provide_port_obj.name) {
-                provide_dependency = dependency;
-                provide_obj = provide_dependency.source_obj;
-            }
-        }
+        var provide_dependency = matchObject(provide_component.dependency_list, loaded_connection.provide_port_obj.name);
+        var provide_obj = provide_dependency.source_obj;
 
         // get use stuff
-        for(var dep_ctr = 0; dep_ctr < use_component.dependency_list.length; dep_ctr++) {
-            dependency = use_component.dependency_list[dep_ctr];
-            if(dependency.name == loaded_connection.use_port_obj.name) {
-                use_dependency = dependency;
-                use_obj = use_dependency.source_obj;
-            }
-        }
+        var use_dependency = matchObject(use_component.dependency_list, loaded_connection.use_port_obj.name);
+        var use_obj = use_dependency.source_obj;
 
         if(provide_dependency.type == "DATA_PROVIDE") {
             provide_dependency.dep_symbol_konva.opacity(100);
@@ -219,4 +168,18 @@ function loadConnections(la_conn_list) {
                          provide_dependency, use_dependency);
     }
 
+};
+
+// takes a list of objects (e.g. component list, place list, etc) and returns the object with 'name'
+function matchObject(list, name) {
+
+    for(var list_ctr = 0; list_ctr < list.length; list_ctr++) {
+
+        obj = list[list_ctr];
+
+        if(obj.name == name) {
+            return obj;
+        }
+
+    }
 };
