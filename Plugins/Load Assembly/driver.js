@@ -84,7 +84,6 @@ function loadTransitions(la_comp_list) {
     // load transitions
     for(var i = 0; i < la_comp_list.length; i++) {
 
-        offsetCtr = 0;
         loaded_component = la_comp_list[i]; // components parsed from .yaml file, which has info about transitions
         component = component_list[i]; // global components in which we will add transitions
 
@@ -101,10 +100,8 @@ function loadTransitions(la_comp_list) {
                     var dest = component.place_list[k];
                 }
             }
-            if(offsetCtr == 0) { var offset = 0; offsetCtr++;}
-            else if(offsetCtr == 1) { var offset = 30; offsetCtr++;}
-            else if(offsetCtr == 2) { var offset = -30; offsetCtr = 0;}
-            addNewTransition(offset, src.place_konva, dest.place_konva, src, dest, component, component.component_group_konva, component.konva_component, component.tooltipLayer, component.use_selection_area, component.provide_selection_area);
+
+            addNewTransition(src.place_konva, dest.place_konva, src, dest, component, component.component_group_konva, component.konva_component, component.tooltipLayer, component.use_selection_area, component.provide_selection_area);
         }
     }
 };
