@@ -36,7 +36,9 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
         y: (source_konva.getY() + dest_konva.getY()) / 2,
         radius: 10,
         opacity: 0,
-        stroke: 1,
+        stroke: 'black',
+        strokeWidth: 1,
+        fill: 'white',
         text: transition.name,
         name: 'Transition'
     });
@@ -48,7 +50,7 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
 
     // add transition konva obj to component group
     transition_group.add(transition);
-    transition_group.add(transition_selection_area)
+    transition_group.add(transition_selection_area);
     component_group.add(transition_group);
 
     // add the konva group to transition obj attribute

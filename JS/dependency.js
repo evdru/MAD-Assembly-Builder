@@ -48,6 +48,8 @@ function addNewServiceDependency(component, source_element, source_obj, componen
         // set vertical offset for dependency port
         verticalOffset = getVerticalOffset(source_obj);
         console.log("Vertical Offset is " + verticalOffset);
+        // toggle transition selection area opacity
+        toggleTransitionAreaOpacity(source_obj);
     };
 
     // set index
@@ -338,6 +340,18 @@ function addNewServiceDependency(component, source_element, source_obj, componen
     return dependency_group;
 }
 
+function toggleTransitionAreaOpacity(source_obj){
+    if(source_obj.type != "Transition"){
+        return;
+    } else {
+        if(source_obj.transition_selection_area.opacity() == 1){
+            source_obj.transition_selection_area.opacity(0);
+        } else {
+            source_obj.transition_selection_area.opacity(1);
+        }
+    }
+}
+
 function isDependencyAllowed(source_obj){
     if(source_obj.dependency_count >= MAX_DEPENDENCY_COUNT){
         return false;
@@ -410,6 +424,8 @@ function addNewDataDependency(component, source_element, source_obj, component_o
         dependency_name = dependency_obj.type + " Use Dependency from " + source_obj.name;
         // set vertical offset for dependency port
         verticalOffset = getVerticalOffset(source_obj);
+        // toggle transition selection area opacity
+        toggleTransitionAreaOpacity(source_obj);
     };
 
     // set index
