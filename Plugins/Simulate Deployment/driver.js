@@ -6,7 +6,7 @@ var Stopwatch = require('timer-stopwatch');
 var TweenMax = require("gsap");
 const sd_ipcRenderer = sd_electron.ipcRenderer;
 
-var sd_app = electron.remote; 
+var sd_app = electron.remote;
 var sd_dialog = app.dialog;
 var sd_comp_list = [];
 var sd_con_list = [];
@@ -149,20 +149,26 @@ function buildTokenTween(tween_obj, animLayer){
     // create reference to this tweens parent component
     var component_obj = tween_obj.component;
     console.log("Building token tween for " + component_obj.name);
-    // set delay
+    // set tween delay, tween delay will the sum of all of the previous delays
     var tween_delay = 0;
     // for every place in components place list
     for (var place_num = 0; place_num < component_obj.place_list.length; place_num++){
         // add label 1 sec into time line
-        tweenline.add('index_delay', tween_delay);
+        tweenline.add('index_delay', 0);
+        // reset current max tran delay
+        var current_max_delay = 0;
+        // create sub timeline
+        var subTweenLine = new TimelineMax();
         // for every outbound transition out of the current place
         for (var tran_num = 0; tran_num < component_obj.place_list[place_num].transition_outbound_list.length; tran_num++){
             // set current tran obj reference
             var curr_tran_obj = component_obj.place_list[place_num].transition_outbound_list[tran_num];
             // get current duration
             var getDuration = getRandomDuration(curr_tran_obj.duration_min, curr_tran_obj.duration_max);
-            // increment curr delay
-            if (tran_num == 0) { tween_delay += getDuration; }
+            // find max transition delay
+            if(current_max_delay < getDuration){
+                current_max_delay = getDuration;
+            }
             // get token starting position
             var tokenStartPos = component_obj.place_list[place_num].place_konva.getAbsolutePosition();
             // create token
@@ -177,11 +183,13 @@ function buildTokenTween(tween_obj, animLayer){
             var dest_post_x = tran_pos.x + transition.points()[4];
             var dest_post_y = tran_pos.y + transition.points()[5];
             
-            // tween to mid point           {curviness:1.25, values:[{x:100, y:250}, {x:300, y:0}, {x:500, y:400}], autoRotate:true}
-            tweenline.to(token, getDuration, { konva: { bezier: {curviness:3, values:[{x:mid_pos_x, y:mid_post_y}, {x:dest_post_x, y:dest_post_y}] }}, onStartParams:[token], onStart: showToken, onCompleteParams:[token], onComplete: hideToken }, 'index_delay');
-            // tween to dest point
-             // tweenline.add(TweenLite.to(token, getRandomDuration(dur_min, dur_max), { konva: { x: dest_post_x, y: dest_post_y } }));
+            // tween to next place // , 'index_delay'
+            var tween = TweenMax.to(token, getDuration, { konva: { bezier: {curviness:3, values:[{x:mid_pos_x, y:mid_post_y}, {x:dest_post_x, y:dest_post_y}] }}, onStartParams:[token], onStart: showToken, onCompleteParams:[token], onComplete: hideToken });
+            subTweenLine.add(tween, 0);
         }
+        tweenline.add(subTweenLine, align = "normal");
+        // increment curr delay
+        tween_delay += current_max_delay;
     }
 }
 
