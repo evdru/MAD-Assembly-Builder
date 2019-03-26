@@ -36,7 +36,6 @@ function loadAssembly() {
     loadTransitions(la_comp_list);
     loadDependencies(la_comp_list);
     loadConnections(la_conn_list);
-
 };
 
 function loadComponents(la_comp_list) {
@@ -102,12 +101,10 @@ function loadTransitions(la_comp_list) {
                     var dest = component.place_list[k];
                 }
             }
-
-            if(offsetCtr == 0) { var offset = 0; }
-            if(offsetCtr == 1) { var offset = 30; }
-            if(offsetCtr == 2) { var offset = -30; }
+            if(offsetCtr == 0) { var offset = 0; offsetCtr++;}
+            else if(offsetCtr == 1) { var offset = 30; offsetCtr++;}
+            else if(offsetCtr == 2) { var offset = -30; offsetCtr = 0;}
             addNewTransition(offset, src.place_konva, dest.place_konva, src, dest, component, component.component_group_konva, component.konva_component, component.tooltipLayer, component.use_selection_area, component.provide_selection_area);
-            offsetCtr++;
         }
     }
 };
