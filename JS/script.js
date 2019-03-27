@@ -228,7 +228,7 @@ function removeDependencyObj(component_obj, dependency_obj){
     }
     if(dependency_obj.source_obj.type == "Transition"){
         // toggle transition selection area opacity
-        toggleTransitionAreaOpacity(dependency_obj.source_obj);
+        hideTransitionSelectionArea(dependency_obj.source_obj);
     }
     console.log("Before " + component_obj.dependency_list);
     // find index of dependency_obj in component_list.dependency_list and remove

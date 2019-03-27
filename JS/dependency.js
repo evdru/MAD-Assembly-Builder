@@ -49,7 +49,7 @@ function addNewServiceDependency(component, source_element, source_obj, componen
         verticalOffset = getVerticalOffset(source_obj);
         console.log("Vertical Offset is " + verticalOffset);
         // toggle transition selection area opacity
-        toggleTransitionAreaOpacity(source_obj);
+        showTransitionSelectionArea(source_obj);
     };
 
     // set index
@@ -340,14 +340,22 @@ function addNewServiceDependency(component, source_element, source_obj, componen
     return dependency_group;
 }
 
-function toggleTransitionAreaOpacity(source_obj){
+function showTransitionSelectionArea(source_obj){
+    if(source_obj.type != "Transition"){
+        return;
+    } else {
+        if(source_obj.transition_selection_area.opacity() == 0){
+            source_obj.transition_selection_area.opacity(1);
+        }
+    }
+}
+
+function hideTransitionSelectionArea(source_obj){
     if(source_obj.type != "Transition"){
         return;
     } else {
         if(source_obj.transition_selection_area.opacity() == 1){
             source_obj.transition_selection_area.opacity(0);
-        } else {
-            source_obj.transition_selection_area.opacity(1);
         }
     }
 }
@@ -363,6 +371,8 @@ function isDependencyAllowed(source_obj){
 // assigns verticalOffset to value based on source obj dependency count
 function getVerticalOffset(source_obj){
     var verticalOffset;
+    console.log(source_obj.offset * 5);
+    var parallelOffset = source_obj.offset * 5;
     switch(source_obj.dependency_count){
         case 0:
             verticalOffset = 0;
@@ -374,7 +384,7 @@ function getVerticalOffset(source_obj){
             verticalOffset = -50;
             break;
     }
-    return verticalOffset;
+    return verticalOffset += parallelOffset;
 }
 
 // Add new Service dependency function, should only be called by place and transition
@@ -425,7 +435,7 @@ function addNewDataDependency(component, source_element, source_obj, component_o
         // set vertical offset for dependency port
         verticalOffset = getVerticalOffset(source_obj);
         // toggle transition selection area opacity
-        toggleTransitionAreaOpacity(source_obj);
+        showTransitionSelectionArea(source_obj);
     };
 
     // set index

@@ -23,6 +23,9 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
     // set index
     transition_obj.index = index;
 
+    // set offset ref for transition
+    transition_obj.offset = offset;
+
     var transition = new Konva.Line({
         points: [source_konva.getX(), source_konva.getY(), ((source_konva.getX() + dest_konva.getX()) / 2) + offset, (source_konva.getY() + dest_konva.getY()) / 2, dest_konva.getX(), dest_konva.getY()],
         stroke: 'black',
