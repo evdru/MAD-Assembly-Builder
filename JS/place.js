@@ -234,6 +234,8 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
                 place.destroy();
                 tooltip.destroy();
                 layer.draw();
+                source_konva = null;
+                dest_transition = null;
 
                 // remove all transitions that are connected to this place
                 removeOutboundAndInboundTransitions(component_obj, place_obj);
