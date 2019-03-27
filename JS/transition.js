@@ -221,6 +221,8 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
                 transition_selection_area.destroy();
                 tooltip.destroy();
                 layer.draw();
+                source_transition_konva = null;
+                source_transition_obj = null;
                 // remove the transition obj from its components transition list
                 removeTransitionObj(component_obj, transition_obj);
             } else {
