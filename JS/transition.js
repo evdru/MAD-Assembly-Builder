@@ -260,21 +260,22 @@ function createDependencyUsePort(component, component_obj, component_group, tran
             case 'USE':
                 // Creating service use dependency
                 console.log("Creating service use dependency");
-                dependency_group = addNewServiceDependency(component, transition_selection_area, transition_obj, component_obj, component_group, tooltipLayer);
+                dependency_obj = addNewServiceDependency(component, transition_selection_area, transition_obj, component_obj, component_group, tooltipLayer);
                 // add the return dependency konva elements
-                transition_obj.dependency_konva_list.push(dependency_group);
+                transition_obj.dependency_konva_list.push(dependency_obj.dep_group_konva);
                 break;
             case 'DATA_USE':
                 // Creating data use dependency
                 console.log("Creating service use dependency");
-                dependency_group = addNewDataDependency(component, transition_selection_area, transition_obj, component_obj, component_group, tooltipLayer);
+                dependency_obj = addNewDataDependency(component, transition_selection_area, transition_obj, component_obj, component_group, tooltipLayer);
                 // add the return dependency konva elements
-                transition_obj.dependency_konva_list.push(dependency_group);
+                transition_obj.dependency_konva_list.push(dependency_obj.dep_group_konva);
                 break;
             default:
                 // invalid dependency type
                 alert("Invalid dependency type: " + transition_obj.dependency_type);
         }
+        return dependency_obj;
     }
 };
 

@@ -51,10 +51,11 @@ function loadComponents(la_comp_list) {
         var scaleY = loaded_component.scaleY;
 
         // create component in GUI, modify scale and position correctly
-        addNewComponent(posX, posY);
-        component_list[i].konva_component.scaleX(scaleX);
-        component_list[i].konva_component.scaleY(scaleY);
-        component_list[i].component_group_konva.position({x:posX,y:posY});
+        var component_obj = addNewComponent(posX, posY);
+        component_obj.konva_component.scaleX(scaleX);
+        component_obj.konva_component.scaleY(scaleY);
+        component_obj.component_group_konva.position({x:posX,y:posY});
+        component_obj.name = loaded_component.name;
 
         layer.batchDraw();
 
@@ -70,8 +71,12 @@ function loadPlaces(la_comp_list) {
         component = component_list[i]; // global components in which we will add places
 
         for(var j = 0; j < loaded_component.place_list.length; j++ ) {
+
             loaded_place = loaded_component.place_list[j];
-            addNewPlace(component.component_group_konva, component.konva_component, {x: loaded_place.posX, y: loaded_place.posY}, component, component.tooltipLayer, component.use_selection_area, component.provide_selection_area);
+
+            var place_obj = addNewPlace(component.component_group_konva, component.konva_component, {x: loaded_place.posX, y: loaded_place.posY}, component, component.tooltipLayer, component.use_selection_area, component.provide_selection_area);
+            place_obj.name = loaded_place.name;
+
             layer.batchDraw();
         }
 
@@ -94,7 +99,8 @@ function loadTransitions(la_comp_list) {
             var src = matchObject(component.place_list, loaded_transition.src.name);
             var dest = matchObject(component.place_list, loaded_transition.dest.name);
 
-            addNewTransition(src.place_konva, dest.place_konva, src, dest, component, component.component_group_konva, component.konva_component, component.tooltipLayer, component.use_selection_area, component.provide_selection_area);
+            var transition_obj = addNewTransition(src.place_konva, dest.place_konva, src, dest, component, component.component_group_konva, component.konva_component, component.tooltipLayer, component.use_selection_area, component.provide_selection_area);
+            transition_obj.name = loaded_transition.name;
         }
     }
 };
@@ -120,13 +126,18 @@ function loadDependencies(la_comp_list) {
             source_obj = matchObject(source_list, loaded_dependency.source_obj.name);
             source_obj.dependency = true;
             source_obj.dependency_type = loaded_dependency.type;
+            var dependency_obj;
 
             if(loaded_dependency.type == "USE" || loaded_dependency.type == "DATA_USE") {
-                createDependencyUsePort(component.konva_component, component, component.component_group_konva, source_obj, source_obj.transition_selection_area, component.tooltipLayer);
+                dependency_obj = createDependencyUsePort(component.konva_component, component, component.component_group_konva, source_obj, source_obj.transition_selection_area, component.tooltipLayer);
             }
             else if(loaded_dependency.type == "PROVIDE" || loaded_dependency.type == "DATA_PROVIDE") {
-                createDependencyPort(component.konva_component, component, component.component_group_konva, source_obj, source_obj.place_konva, component.tooltipLayer);
+                dependency_obj = createDependencyPort(component.konva_component, component, component.component_group_konva, source_obj, source_obj.place_konva, component.tooltipLayer);
             }
+
+            console.log(dependency_obj);
+            console.log(loaded_dependency);
+            dependency_obj.name = loaded_dependency.name;
 
         }
 
@@ -162,9 +173,12 @@ function loadConnections(la_conn_list) {
         provide_dependency.dep_symbol_konva.opacity(100);
         use_dependency.dep_symbol_konva.opacity(100);
 
-        addNewConnection(provide_component, provide_obj, provide_dependency.dep_stub_konva, provide_component.component_group_konva,
-                         use_component, use_obj, use_dependency.dep_stub_konva, use_component.component_group_konva,
-                         provide_dependency, use_dependency);
+        var connection_obj = addNewConnection(provide_component, provide_obj, provide_dependency.dep_stub_konva, provide_component.component_group_konva,
+                                              use_component, use_obj, use_dependency.dep_stub_konva, use_component.component_group_konva,
+                                              provide_dependency, use_dependency);
+
+        connection_obj.name = loaded_connection.name;
+
     }
 
 };

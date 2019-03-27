@@ -197,7 +197,7 @@ function addNewComponent(posX, posY) {
             var pos = stage.getPointerPosition();
             var placePos = transform.point(pos);
             // grow component here
-            var place = addNewPlace(component_group, component, placePos, component_obj, tooltipLayer, use_selection_area, provide_selection_area);
+            var place_obj = addNewPlace(component_group, component, placePos, component_obj, tooltipLayer, use_selection_area, provide_selection_area);
             //layer.add(component_group);
             layer.draw();
         }
@@ -214,6 +214,8 @@ function addNewComponent(posX, posY) {
             ipcRend.send("change_component_details", {component_name: component_obj.name});
         };
     });
+
+    return component_obj;
 
 };
 

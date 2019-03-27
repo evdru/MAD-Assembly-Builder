@@ -255,9 +255,9 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
             }   
         }
     };
-    
-    // return konva object back to its parent component
-    return place;
+
+    return place_obj;
+
 };
 
 function createDependencyPort(component, component_obj, component_group, place_obj, place, tooltipLayer){
@@ -269,15 +269,15 @@ function createDependencyPort(component, component_obj, component_group, place_o
             case 'PROVIDE':
                 // Creating service provide dependency
                 console.log("Creating service provide dependency");
-                dependency_group = addNewServiceDependency(component, place, place_obj, component_obj, component_group, tooltipLayer);
+                dependency_obj = addNewServiceDependency(component, place, place_obj, component_obj, component_group, tooltipLayer);
                 // add the return dependency konva elements 
-                place_obj.dependency_konva_list.push(dependency_group);
+                place_obj.dependency_konva_list.push(dependency_obj.dep_group_konva);
                 break;
             case 'DATA_PROVIDE':
                 // Creating service provide dependency
                 console.log("Creating data provide dependency");
-                dependency_group = addNewDataDependency(component, place, place_obj, component_obj, component_group, tooltipLayer);
-                place_obj.dependency_konva_list.push(dependency_group);
+                dependency_obj = addNewDataDependency(component, place, place_obj, component_obj, component_group, tooltipLayer);
+                place_obj.dependency_konva_list.push(dependency_obj.dep_group_konva);
                 break;
             case '':
                 alert("Dependency type has not been specified");
@@ -286,6 +286,7 @@ function createDependencyPort(component, component_obj, component_group, place_o
                 // invalid dependency type
                 alert("Invalid dependency type: " + place_obj.dependency_type);
         }
+        return dependency_obj;
     }
 };
 
