@@ -41,19 +41,17 @@ function addNewComponent(posX, posY) {
         opacity: 0,
         name: 'provide_selection_area'
     });
+
     // get index
-    var index;
-    if (component_list.length == 0){
-        index = 1;
-    } else {
-        index = component_list[component_list.length - 1].index + 1;
-    }
+    var index = component_list.length + 1;
 
     // create a component object and add it to the global list
     var component_obj = new Component('Component', "Component_" + index);
     component_list.push(component_obj);
+
     // set index
     component_obj.index = index;
+
     // add konva component element to component_obj
     component_obj.component_group_konva = component_group;
     component_obj.konva_component = component;
