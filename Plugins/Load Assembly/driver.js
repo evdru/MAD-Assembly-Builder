@@ -74,7 +74,7 @@ function loadPlaces(la_comp_list) {
 
             loaded_place = loaded_component.place_list[j];
 
-            var place_obj = addNewPlace(component.component_group_konva, component.konva_component, {x: loaded_place.posX, y: loaded_place.posY}, component, component.tooltipLayer, component.use_selection_area, component.provide_selection_area);
+            var place_obj = addNewPlace({x: loaded_place.posX, y: loaded_place.posY}, component);
             place_obj.name = loaded_place.name;
 
             layer.batchDraw();

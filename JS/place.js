@@ -1,6 +1,12 @@
 // Add new place function, should only be called by component
-function addNewPlace(component_group, component, placePos, component_obj, tooltipLayer, use_selection_area, provide_selection_area) {
-    
+function addNewPlace(placePos, component_obj) {
+
+    var component_group = component_obj.component_group_konva;
+    var component = component_obj.konva_component;
+    var tooltipLayer = component_obj.tooltipLayer;
+    var use_selection_area = component_obj.use_selection_area;
+    var provide_selection_area = component_obj.provide_selection_area;
+
     var index;
     if (component_obj.place_list.length == 0){
         index = 1;
