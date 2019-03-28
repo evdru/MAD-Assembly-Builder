@@ -29,6 +29,9 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
     // set index
     transition_obj.index = index;
 
+    // set offset ref for transition
+    transition_obj.offset = offset;
+
     var transition = new Konva.Line({
         points: [source_konva.getX(), source_konva.getY(), ((source_konva.getX() + dest_konva.getX()) / 2) + offset, (source_konva.getY() + dest_konva.getY()) / 2, dest_konva.getX(), dest_konva.getY()],
         stroke: 'black',
@@ -42,7 +45,9 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
         y: (source_konva.getY() + dest_konva.getY()) / 2,
         radius: 10,
         opacity: 0,
-        stroke: 1,
+        stroke: 'black',
+        strokeWidth: 1,
+        fill: 'white',
         text: transition.name,
         name: 'Transition'
     });
@@ -54,7 +59,7 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
 
     // add transition konva obj to component group
     transition_group.add(transition);
-    transition_group.add(transition_selection_area)
+    transition_group.add(transition_selection_area);
     component_group.add(transition_group);
 
     // add the konva group to transition obj attribute

@@ -1,8 +1,13 @@
 // Add new Service dependency function, should only be called by place and transition
 function addNewServiceDependency(component, source_element, source_obj, component_obj, component_group, tooltipLayer) {
+
+    // check if source obj dependency count is less than allowed
+    // if(isDependencyAllowed(source_obj)){ return false; }
+
     var offset;
     var add;
     var stub_x;
+    var verticalOffset;
     source_selected = null;
 
     // get index
@@ -24,6 +29,9 @@ function addNewServiceDependency(component, source_element, source_obj, componen
         offset = component.getWidth();
         add = 20;
         stub_x = 0;
+        // set vertical offset for dependency port
+        verticalOffset = getVerticalOffset(source_obj);
+        console.log("Vertical Offset is " + verticalOffset);
     } else if (source_obj.type == 'Transition') {
         // create the dependency object
         var dependency_obj = new Dependency('USE', "Dependency_" + index);
@@ -37,6 +45,11 @@ function addNewServiceDependency(component, source_element, source_obj, componen
         offset = 0;
         add = -20;
         stub_x = -15;
+        // set vertical offset for dependency port
+        verticalOffset = getVerticalOffset(source_obj);
+        console.log("Vertical Offset is " + verticalOffset);
+        // toggle transition selection area opacity
+        showTransitionSelectionArea(source_obj);
     };
 
     // set index
@@ -51,10 +64,9 @@ function addNewServiceDependency(component, source_element, source_obj, componen
 
     // increment source obj dependency count
     source_obj.dependency_count++;
-    console.log(source_obj.name + " dependency count is now " + source_obj.dependency_count);
 
     var dependency = new Konva.Line({
-        points: [source_element.getX(), source_element.getY(), (component.getX() + offset * component.scaleX()), source_element.getY()],
+        points: [source_element.getX(), source_element.getY(), (component.getX() + offset * component.scaleX()), source_element.getY() + verticalOffset],
         stroke: 'black',
         strokeWidth: 1,
         name: 'dependency',
@@ -64,7 +76,8 @@ function addNewServiceDependency(component, source_element, source_obj, componen
     });
 
     var stem = new Konva.Line({
-        points: [component.getX() + offset * component.scaleX(), source_element.getY(), (component.getX() + offset * component.scaleX()) + add, source_element.getY()],
+        points: [component.getX() + offset * component.scaleX(), source_element.getY() + verticalOffset, 
+                (component.getX() + offset * component.scaleX()) + add, source_element.getY() + verticalOffset],
         stroke: 'black',
         strokeWidth: 1,
         name: 'stem',
@@ -186,6 +199,8 @@ function addNewServiceDependency(component, source_element, source_obj, componen
 
                 // set source_obj dependency boolean to false
                 source_obj.dependency = false;
+                // decrement dependency count
+                source_obj.dependency_count--;
 
                 // remove the depedency obj from its components dependency list
                 removeDependencyObj(component_obj, dependency_obj);
@@ -202,11 +217,11 @@ function addNewServiceDependency(component, source_element, source_obj, componen
         dependency.setPoints([source_element.getX(),
                               source_element.getY(),
                               component.getX() + offset * component.scaleX(),
-                              source_element.getY()]);
+                              source_element.getY() + verticalOffset]);
         stem.setPoints([component.getX() + offset * component.scaleX(),
-                        source_element.getY(),
+                        source_element.getY() + verticalOffset,
                         (component.getX() + offset * component.scaleX()) + add,
-                        source_element.getY()]);
+                        source_element.getY() + verticalOffset]);
         stub.position({
             x: dependency.points()[2] + add + stub_x,
             y: dependency.points()[3]
@@ -224,11 +239,11 @@ function addNewServiceDependency(component, source_element, source_obj, componen
         dependency.setPoints([source_element.getX(),
                               source_element.getY(),
                               component.getX() + offset * component.scaleX(),
-                              source_element.getY()]);
+                              source_element.getY() + verticalOffset]);
         stem.setPoints([component.getX() + offset * component.scaleX(),
-                        source_element.getY(),
+                        source_element.getY() + verticalOffset,
                         (component.getX() + offset * component.scaleX()) + add,
-                        source_element.getY()]);
+                        source_element.getY() + verticalOffset]);
 
         stub.position({
             x: dependency.points()[2] + add + stub_x,
@@ -325,6 +340,53 @@ function addNewServiceDependency(component, source_element, source_obj, componen
     return dependency_obj;
 }
 
+function showTransitionSelectionArea(source_obj){
+    if(source_obj.type != "Transition"){
+        return;
+    } else {
+        if(source_obj.transition_selection_area.opacity() == 0){
+            source_obj.transition_selection_area.opacity(1);
+        }
+    }
+}
+
+function hideTransitionSelectionArea(source_obj){
+    if(source_obj.type != "Transition"){
+        return;
+    } else {
+        if(source_obj.transition_selection_area.opacity() == 1){
+            source_obj.transition_selection_area.opacity(0);
+        }
+    }
+}
+
+function isDependencyAllowed(source_obj){
+    if(source_obj.dependency_count >= MAX_DEPENDENCY_COUNT){
+        return false;
+    } else {
+        return true;
+    }
+}
+
+// assigns verticalOffset to value based on source obj dependency count
+function getVerticalOffset(source_obj){
+    var verticalOffset;
+    console.log(source_obj.offset * 5);
+    var parallelOffset = source_obj.offset * 5;
+    switch(source_obj.dependency_count){
+        case 0:
+            verticalOffset = 0;
+            break;
+        case 1:
+            verticalOffset = 50;
+            break;
+        case 2:
+            verticalOffset = -50;
+            break;
+    }
+    return verticalOffset += parallelOffset;
+}
+
 // Add new Service dependency function, should only be called by place and transition
 function addNewDataDependency(component, source_element, source_obj, component_obj, component_group, tooltipLayer) {
     var offset;
@@ -337,6 +399,8 @@ function addNewDataDependency(component, source_element, source_obj, component_o
     var data_symbol_provide;
     var data_stub_use;
     var data_symbol_use;
+
+    var verticalOffset;
 
     // get index
     var index;
@@ -356,6 +420,8 @@ function addNewDataDependency(component, source_element, source_obj, component_o
         add = 20;
         stub_x = -5;
         dependency_name = dependency_obj.type + " Provide Dependency from " + source_obj.name;
+        // set vertical offset for dependency port
+        verticalOffset = getVerticalOffset(source_obj);
     } else if (source_obj.type == 'Transition') {
         // create the dependency object
         var dependency_obj = new Dependency('DATA_USE', "Dependency_" + index);
@@ -366,6 +432,10 @@ function addNewDataDependency(component, source_element, source_obj, component_o
         add = -20;
         stub_x = 0;
         dependency_name = dependency_obj.type + " Use Dependency from " + source_obj.name;
+        // set vertical offset for dependency port
+        verticalOffset = getVerticalOffset(source_obj);
+        // toggle transition selection area opacity
+        showTransitionSelectionArea(source_obj);
     };
 
     // set index
@@ -382,7 +452,7 @@ function addNewDataDependency(component, source_element, source_obj, component_o
     dependency_obj.component_obj = component_obj;
 
     var dependency = new Konva.Line({
-        points: [source_element.getX(), source_element.getY(), (component.getX() + offset * component.scaleX()), source_element.getY()],
+        points: [source_element.getX(), source_element.getY(), (component.getX() + offset * component.scaleX()), source_element.getY() + verticalOffset],
         stroke: 'black',
         strokeWidth: 1,
         name: 'dependency',
@@ -392,7 +462,7 @@ function addNewDataDependency(component, source_element, source_obj, component_o
     });
 
     var stem = new Konva.Line({
-        points: [component.getX() + offset * component.scaleX(), source_element.getY(), (component.getX() + offset * component.scaleX()) + add, source_element.getY()],
+        points: [component.getX() + offset * component.scaleX(), source_element.getY() + verticalOffset, (component.getX() + offset * component.scaleX()) + add, source_element.getY() + verticalOffset],
         stroke: 'black',
         strokeWidth: 1,
         name: 'stem',
@@ -582,11 +652,11 @@ function addNewDataDependency(component, source_element, source_obj, component_o
         dependency.setPoints([source_element.getX(),
                               source_element.getY(),
                               component.getX() + offset * component.scaleX(),
-                              source_element.getY()]);
+                              source_element.getY() + verticalOffset]);
         stem.setPoints([component.getX() + offset * component.scaleX(),
-                        source_element.getY(),
+                        source_element.getY() + verticalOffset,
                         (component.getX() + offset * component.scaleX()) + add,
-                        source_element.getY()]);
+                        source_element.getY() + verticalOffset]);
 
         // invisible stub for selection
         stub.position({
@@ -619,11 +689,11 @@ function addNewDataDependency(component, source_element, source_obj, component_o
         dependency.setPoints([source_element.getX(),
                               source_element.getY(),
                               component.getX() + offset * component.scaleX(),
-                              source_element.getY()]);
+                              source_element.getY() + verticalOffset]);
         stem.setPoints([component.getX() + offset * component.scaleX(),
-                        source_element.getY(),
+                        source_element.getY() + verticalOffset,
                         (component.getX() + offset * component.scaleX()) + add,
-                        source_element.getY()]);
+                        source_element.getY() + verticalOffset]);
 
         stub.position({
             x: dependency.points()[2] + add + stub_x,
