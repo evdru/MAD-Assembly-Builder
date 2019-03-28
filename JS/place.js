@@ -1,10 +1,9 @@
 // Add new place function, should only be called by component
-function addNewPlace(placePos, component_obj) {
+function addNewPlace(component_obj, placePos) {
 
     var component_group = component_obj.component_group_konva;
     var component = component_obj.konva_component;
     var tooltipLayer = component_obj.tooltipLayer;
-    var use_selection_area = component_obj.use_selection_area;
     var provide_selection_area = component_obj.provide_selection_area;
 
     var index;
@@ -170,7 +169,7 @@ function addNewPlace(placePos, component_obj) {
             if(source_konva != null){
                 // check the index and both places are in same component
                 if(src.index < dest_obj.index && source_component == dest_component){
-                    returned_transition_obj = addNewTransition(src, dest_obj, component_obj);
+                    returned_transition_obj = addNewTransition(component_obj, src, dest_obj);
                 } 
             } else {
                 // highlight the place

@@ -74,7 +74,7 @@ function loadPlaces(la_comp_list) {
 
             loaded_place = loaded_component.place_list[j];
 
-            var place_obj = addNewPlace({x: loaded_place.posX, y: loaded_place.posY}, component);
+            var place_obj = addNewPlace(component, {x: loaded_place.posX, y: loaded_place.posY});
             place_obj.name = loaded_place.name;
 
             layer.batchDraw();
@@ -99,7 +99,7 @@ function loadTransitions(la_comp_list) {
             var src = matchObject(component.place_list, loaded_transition.src.name);
             var dest = matchObject(component.place_list, loaded_transition.dest.name);
 
-            var transition_obj = addNewTransition(src, dest, component);
+            var transition_obj = addNewTransition(component, src, dest);
             transition_obj.name = loaded_transition.name;
         }
     }
