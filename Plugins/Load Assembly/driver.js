@@ -99,7 +99,7 @@ function loadTransitions(la_comp_list) {
             var src = matchObject(component.place_list, loaded_transition.src.name);
             var dest = matchObject(component.place_list, loaded_transition.dest.name);
 
-            var transition_obj = addNewTransition(src.place_konva, dest.place_konva, src, dest, component, component.component_group_konva, component.konva_component, component.tooltipLayer, component.use_selection_area, component.provide_selection_area);
+            var transition_obj = addNewTransition(src, dest, component);
             transition_obj.name = loaded_transition.name;
         }
     }

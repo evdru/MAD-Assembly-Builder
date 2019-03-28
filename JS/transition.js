@@ -1,5 +1,13 @@
 // function that adds new transition obj and konva arrow
-function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, component_obj, component_group, component, tooltipLayer, use_selection_area, provide_selection_area) {
+function addNewTransition(source_obj, dest_obj, component_obj) {
+
+    var source_konva = source_obj.place_konva;
+    var dest_konva = dest_obj.place_konva;
+    var component_group = component_obj.component_group_konva;
+    var component = component_obj.konva_component;
+    var tooltipLayer = component_obj.tooltipLayer;
+    var use_selection_area = component_obj.use_selection_area;
+    var provide_selection_area = component_obj.provide_selection_area;
 
     // set transition offset
     let num_occurences = pushTransitionDictionary(component_obj, source_obj, dest_obj);

@@ -170,7 +170,7 @@ function addNewPlace(placePos, component_obj) {
             if(source_konva != null){
                 // check the index and both places are in same component
                 if(src.index < dest_obj.index && source_component == dest_component){
-                    returned_transition_obj = addNewTransition(source_konva, dest_transition, src, dest_obj, component_obj, component_group, component, tooltipLayer, use_selection_area, provide_selection_area);
+                    returned_transition_obj = addNewTransition(src, dest_obj, component_obj);
                 } 
             } else {
                 // highlight the place
