@@ -153,8 +153,9 @@ function buildTokenTween(tween_obj, animLayer){
     var tween_delay = 0;
     // for every place in components place list
     for (var place_num = 0; place_num < component_obj.place_list.length; place_num++){
-        // add label 1 sec into time line
-        tweenline.add('index_delay', 0);
+        // add label to timeline for when this place's outbound transitions should start
+        tweenline.add('place_' + place_num + '_delay', getStartTweenDelay(component_obj.place_list[place_num], 0));
+        console.log(getStartTweenDelay(component_obj.place_list[place_num]));
         // reset current max tran delay
         var current_max_delay = 0;
         // create sub timeline
@@ -165,6 +166,7 @@ function buildTokenTween(tween_obj, animLayer){
             var curr_tran_obj = component_obj.place_list[place_num].transition_outbound_list[tran_num];
             // get current duration
             var getDuration = getRandomDuration(curr_tran_obj.duration_min, curr_tran_obj.duration_max);
+            curr_tran_obj.current_duration = getDuration;
             // find max transition delay
             if(current_max_delay < getDuration){
                 current_max_delay = getDuration;
@@ -186,11 +188,33 @@ function buildTokenTween(tween_obj, animLayer){
             // tween to next place // , 'index_delay'
             var tween = TweenMax.to(token, getDuration, { konva: { bezier: {curviness:3, values:[{x:mid_pos_x, y:mid_post_y}, {x:dest_post_x, y:dest_post_y}] }}, onStartParams:[token], onStart: showToken, onCompleteParams:[token], onComplete: hideToken });
             subTweenLine.add(tween, 0);
-        }
-        tweenline.add(subTweenLine, align = "normal");
+        } // 
+        tweenline.add(subTweenLine, 'place_' + place_num + '_delay');
         // increment curr delay
-        tween_delay += current_max_delay;
+        //tween_delay += current_max_delay;
     }
+}
+
+// GREEDY
+function getStartTweenDelay(curr_place){
+
+    var tween_delay = 0;
+
+    while(curr_place.transition_inbound_list.length != 0){
+        var max_tran_duration = 0;
+        // get the max duration of all inbound transitions
+        for(var tran_num = 0; tran_num < curr_place.transition_inbound_list.length; tran_num++){
+            if(curr_place.transition_inbound_list[tran_num].current_duration > max_tran_duration){
+                max_tran_duration = curr_place.transition_inbound_list[tran_num].current_duration;
+                curr_place = curr_place.transition_inbound_list[tran_num].src;
+            }
+        }
+        tween_delay += max_tran_duration;
+        console.log("max_tran_duration is " + max_tran_duration);
+        // decrement the current place
+    }
+
+    return tween_delay;
 }
 
 function showToken(token){
