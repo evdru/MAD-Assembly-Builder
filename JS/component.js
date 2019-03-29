@@ -122,82 +122,7 @@ function addNewComponent(posX, posY) {
 
     });
 
-    // event3: on component position changed
-    component.on('xChange yChange', function () {
-
-        // set use selection area position on component move or scale
-        use_selection_area.position({
-            x: component.getX(),
-            y: component.getY()
-        });
-
-        use_selection_area.height(component.getHeight() * component.scaleY());
-
-        // set provide selection area position on component move or scale
-        provide_selection_area.position({
-            x: component.getX() + (component.getWidth() * component.scaleX()) - 15,
-            y: component.getY()
-        })
-
-        provide_selection_area.height(component.getHeight() * component.scaleY());
-
-    });
-
-    // event4: on component being moved
-    component_group.on('dragmove', (e) => {
-
-        tooltip.hide();
-        tooltipLayer.draw();
-
-    });
-
-    // event5: on drag end
-    component_group.on('dragend', (e) => {
-
-        component_group.position({
-          x: snapToGrid(component_group.x()),
-          y: snapToGrid(component_group.y())
-        });
-
-        layer.batchDraw();
-
-    });
-
-    // event6: on mouse move within component
-    component.on('mousemove', function () {
-
-        var mousePos = stage.getPointerPosition();
-
-        tooltip.position({
-            x : mousePos.x + 10,
-            y : mousePos.y + 10
-        });
-
-        tooltip.text(component_obj.name);
-        tooltip.show();
-        tooltipLayer.batchDraw();
-
-    });
-
-    // event7: on mouse over component
-    component.on("mouseover", function(e){
-
-        window.addEventListener('keydown', removeComponent);
-
-    });
-
-    // event8: on mouse out
-    component.on("mouseout", function(){
-
-        component.stroke('black');
-        component.strokeWidth(1);
-        tooltip.hide();
-        tooltipLayer.draw();
-        window.removeEventListener('keydown', removeComponent);
-
-    });
-
-    // event9: on double left-click
+    // event3: on double left-click
     component.on('dblclick', function (e){
 
         if (e.evt.button === 0){
@@ -218,6 +143,81 @@ function addNewComponent(posX, posY) {
             layer.draw();
 
         }
+
+    });
+
+    // event4: on component position changed
+    component.on('xChange yChange', function () {
+
+        // set use selection area position on component move or scale
+        use_selection_area.position({
+            x: component.getX(),
+            y: component.getY()
+        });
+
+        use_selection_area.height(component.getHeight() * component.scaleY());
+
+        // set provide selection area position on component move or scale
+        provide_selection_area.position({
+            x: component.getX() + (component.getWidth() * component.scaleX()) - 15,
+            y: component.getY()
+        })
+
+        provide_selection_area.height(component.getHeight() * component.scaleY());
+
+    });
+
+    // event5: on component being moved
+    component_group.on('dragmove', (e) => {
+
+        tooltip.hide();
+        tooltipLayer.draw();
+
+    });
+
+    // event6: on drag end
+    component_group.on('dragend', (e) => {
+
+        component_group.position({
+          x: snapToGrid(component_group.x()),
+          y: snapToGrid(component_group.y())
+        });
+
+        layer.batchDraw();
+
+    });
+
+    // event7: on mouse move within component
+    component.on('mousemove', function () {
+
+        var mousePos = stage.getPointerPosition();
+
+        tooltip.position({
+            x : mousePos.x + 10,
+            y : mousePos.y + 10
+        });
+
+        tooltip.text(component_obj.name);
+        tooltip.show();
+        tooltipLayer.batchDraw();
+
+    });
+
+    // event8: on mouse over component
+    component.on("mouseover", function(e){
+
+        window.addEventListener('keydown', removeComponent);
+
+    });
+
+    // event9: on mouse out
+    component.on("mouseout", function(){
+
+        component.stroke('black');
+        component.strokeWidth(1);
+        tooltip.hide();
+        tooltipLayer.draw();
+        window.removeEventListener('keydown', removeComponent);
 
     });
 
