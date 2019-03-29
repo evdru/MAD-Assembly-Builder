@@ -32,7 +32,6 @@ function saveAssembly() {
     }
 
     sa_fs.writeFileSync(fileName, saveContent);
-
 };
 
 function saveComponents(component_list) {

@@ -164,17 +164,7 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
             if(source_konva != null){
                 // check the index and both places are in same component
                 if(src.index < dest_obj.index && source_component == dest_component){
-                    // set transition offset
-                    let num_occurences = pushTransitionDictionary(component_obj, src, dest_obj);
-                    var offset = setTransitionOffset(num_occurences);
-                    console.log("Offset is " + offset);
-                    src.offset = offset;
-                    returned_transition_obj = addNewTransition(offset, source_konva, dest_transition, src, dest_obj, component_obj, component_group, component, tooltipLayer, use_selection_area, provide_selection_area);
-                    // add the transition obj to both souce place and dest place transition_connected list
-                    if (returned_transition_obj != false){
-                        src.transition_outbound_list.push(returned_transition_obj);
-                        dest_obj.transition_inbound_list.push(returned_transition_obj);
-                    }
+                    returned_transition_obj = addNewTransition(source_konva, dest_transition, src, dest_obj, component_obj, component_group, component, tooltipLayer, use_selection_area, provide_selection_area);
                 } 
             } else {
                 // highlight the place
@@ -244,6 +234,8 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
                 place.destroy();
                 tooltip.destroy();
                 layer.draw();
+                source_konva = null;
+                dest_transition = null;
 
                 // remove all transitions that are connected to this place
                 removeOutboundAndInboundTransitions(component_obj, place_obj);
@@ -263,9 +255,9 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
             }   
         }
     };
-    
-    // return konva object back to its parent component
-    return place;
+
+    return place_obj;
+
 };
 
 function createDependencyPort(component, component_obj, component_group, place_obj, place, tooltipLayer){
@@ -277,15 +269,15 @@ function createDependencyPort(component, component_obj, component_group, place_o
             case 'PROVIDE':
                 // Creating service provide dependency
                 console.log("Creating service provide dependency");
-                dependency_group = addNewServiceDependency(component, place, place_obj, component_obj, component_group, tooltipLayer);
+                dependency_obj = addNewServiceDependency(component, place, place_obj, component_obj, component_group, tooltipLayer);
                 // add the return dependency konva elements 
-                place_obj.dependency_konva_list.push(dependency_group);
+                place_obj.dependency_konva_list.push(dependency_obj.dep_group_konva);
                 break;
             case 'DATA_PROVIDE':
                 // Creating service provide dependency
                 console.log("Creating data provide dependency");
-                dependency_group = addNewDataDependency(component, place, place_obj, component_obj, component_group, tooltipLayer);
-                place_obj.dependency_konva_list.push(dependency_group);
+                dependency_obj = addNewDataDependency(component, place, place_obj, component_obj, component_group, tooltipLayer);
+                place_obj.dependency_konva_list.push(dependency_obj.dep_group_konva);
                 break;
             case '':
                 alert("Dependency type has not been specified");
@@ -294,6 +286,7 @@ function createDependencyPort(component, component_obj, component_group, place_o
                 // invalid dependency type
                 alert("Invalid dependency type: " + place_obj.dependency_type);
         }
+        return dependency_obj;
     }
 };
 

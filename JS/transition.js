@@ -1,5 +1,11 @@
 // function that adds new transition obj and konva arrow
-function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj, component_obj, component_group, component, tooltipLayer, use_selection_area, provide_selection_area) {
+function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, component_obj, component_group, component, tooltipLayer, use_selection_area, provide_selection_area) {
+
+    // set transition offset
+    let num_occurences = pushTransitionDictionary(component_obj, source_obj, dest_obj);
+    var offset = setTransitionOffset(num_occurences);
+    console.log("Offset is " + offset);
+    source_obj.offset = offset;
 
     // max number of transitions out of the same source = 3
     if(source_obj.transition_count >= max_transition_count){
@@ -220,6 +226,8 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
                 transition_selection_area.destroy();
                 tooltip.destroy();
                 layer.draw();
+                source_transition_konva = null;
+                source_transition_obj = null;
                 // remove the transition obj from its components transition list
                 removeTransitionObj(component_obj, transition_obj);
             } else {
@@ -235,6 +243,8 @@ function addNewTransition(offset, source_konva, dest_konva, source_obj, dest_obj
     source_obj.transition_count++;
     layer.batchDraw();
     //layer.draw();
+    source_obj.transition_outbound_list.push(transition_obj)
+    dest_obj.transition_inbound_list.push(transition_obj)
     return transition_obj;
 }
 
@@ -255,21 +265,22 @@ function createDependencyUsePort(component, component_obj, component_group, tran
             case 'USE':
                 // Creating service use dependency
                 console.log("Creating service use dependency");
-                dependency_group = addNewServiceDependency(component, transition_selection_area, transition_obj, component_obj, component_group, tooltipLayer);
+                dependency_obj = addNewServiceDependency(component, transition_selection_area, transition_obj, component_obj, component_group, tooltipLayer);
                 // add the return dependency konva elements
-                transition_obj.dependency_konva_list.push(dependency_group);
+                transition_obj.dependency_konva_list.push(dependency_obj.dep_group_konva);
                 break;
             case 'DATA_USE':
                 // Creating data use dependency
                 console.log("Creating service use dependency");
-                dependency_group = addNewDataDependency(component, transition_selection_area, transition_obj, component_obj, component_group, tooltipLayer);
+                dependency_obj = addNewDataDependency(component, transition_selection_area, transition_obj, component_obj, component_group, tooltipLayer);
                 // add the return dependency konva elements
-                transition_obj.dependency_konva_list.push(dependency_group);
+                transition_obj.dependency_konva_list.push(dependency_obj.dep_group_konva);
                 break;
             default:
                 // invalid dependency type
                 alert("Invalid dependency type: " + transition_obj.dependency_type);
         }
+        return dependency_obj;
     }
 };
 

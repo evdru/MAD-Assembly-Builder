@@ -337,7 +337,7 @@ function addNewServiceDependency(component, source_element, source_obj, componen
     // draw the layer with added dependency elements
     layer.draw();
 
-    return dependency_group;
+    return dependency_obj;
 }
 
 function showTransitionSelectionArea(source_obj){
@@ -802,7 +802,7 @@ function addNewDataDependency(component, source_element, source_obj, component_o
     dependency_group.moveToBottom();
     layer.draw();
 
-    return dependency_group;
+    return dependency_obj;
 }
 
 // func to check if connection already exists in connection list
