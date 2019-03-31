@@ -25,12 +25,13 @@ class Token{
 }
 
 class Tween{
-    constructor(name, tween_list, component, token, tokenColor){
+    constructor(name, tween_list, component, token, tokenColor, timerLabel){
         this.name = name;
         this.tween_list = tween_list;
         this.component = component;
         this.token = token;
         this.tokenColor = tokenColor;
+        this.timerLabel = timerLabel;
     }
 }
 
@@ -119,7 +120,7 @@ function bootstrap() {
             // create tween obj name
             var tween_name = "tween " + i;
             // create tween obj
-            var tween_obj = new Tween(tween_name, tween_list, sd_comp_list[i], token, tokenColor);
+            var tween_obj = new Tween(tween_name, tween_list, sd_comp_list[i], token, tokenColor, timerLabel);
             // build the animation
             buildTokenTween(tween_obj, animLayer);
             // tokenHandler(sd_comp_list[i], place_num, animLayer, tokenColor, timerLabel);
@@ -143,7 +144,7 @@ function bootstrap() {
 function buildTokenTween(tween_obj, animLayer){
     
     // create tweenMax
-    var tweenline = new TimelineMax();
+    var tweenline = new TimelineMax({onCompleteParams:[tween_obj.timerLabel], onComplete: stopTimerLabel} );
     // add tweenMax to tweenlist
     tween_obj.tween_list.push(tweenline);
     // create reference to this tweens parent component
@@ -154,7 +155,7 @@ function buildTokenTween(tween_obj, animLayer){
     // for every place in components place list
     for (var place_num = 0; place_num < component_obj.place_list.length; place_num++){
         // add label to timeline for when this place's outbound transitions should start
-        tweenline.add('place_' + place_num + '_delay', getStartTweenDelay(component_obj.place_list[place_num], 0));
+        tweenline.add('place_' + place_num + '_delay', getStartTweenDelay(component_obj.place_list[place_num]));
         console.log(getStartTweenDelay(component_obj.place_list[place_num]));
         // reset current max tran delay
         var current_max_delay = 0;
@@ -224,6 +225,7 @@ function showToken(token){
 function hideToken(token){
     token.hide();
 }
+
 function playTokenTimeLine(tween_list){
     // for every tweenline in tween_list
     for (var tween_line_num = 0; tween_line_num < tween_list.length; tween_line_num++){
@@ -254,9 +256,8 @@ function updateTimerLabels(time){
 }
 
 // remove the timerLabel from the list
-function stopTimerLabel(timerLabel, component){
+function stopTimerLabel(timerLabel){
     timer_label_list.splice( timer_label_list.indexOf(timerLabel), 1 );
-    component.isRunning = false;
 }
 
 function checkConnectionStatus(){
