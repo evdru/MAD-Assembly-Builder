@@ -59,8 +59,8 @@ function addNewComponent(posX, posY) {
     stage.add(tooltipLayer);
 
     // create a component object and add it to the global list
-    var component_obj = new Component('Component', "Component_" + (component_list.length + 1));
-    component_obj.index = component_list.length + 1;
+    var component_obj = new Component('Component', "Component_" + generateNextIndex(component_list));
+    component_obj.index = generateNextIndex(component_list);
     component_obj.component_group_konva = component_group;
     component_obj.konva_component = component;
     component_obj.use_selection_area = use_selection_area;
@@ -220,6 +220,16 @@ function addNewComponent(posX, posY) {
         window.removeEventListener('keydown', removeComponent);
 
     });
+
+    function generateNextIndex(component_list) {
+
+        if(component_list.length == 0) {
+            return 1;
+        } else {
+            return component_list[component_list.length-1].index+1;
+        }
+
+    }
 
     function removeComponent(ev){
 
