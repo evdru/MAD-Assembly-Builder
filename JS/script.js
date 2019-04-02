@@ -36,10 +36,10 @@ class Component {
 };
 
 class Place {
-    constructor(type, name, index) {
+    constructor(type, name) {
         this.type = type;
         this.name = name;
-        this.index = index;
+        this.index;
         this.place_konva;
         this.transition_count = 0; // 3 max
         this.dependency_count = 0; // 3 max
