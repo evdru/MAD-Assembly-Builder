@@ -218,7 +218,7 @@ function addNewPlace(component_obj, placePos) {
                 selected_source.dependency_type = 'DATA_PROVIDE'
             }
 
-            createDependencyPort(component_obj.konva_component, selected_source_comp, component_obj.component_group_konva, selected_source, selected_source.place_konva, component_obj.tooltipLayer);
+            createDependencyPort(selected_source_comp, selected_source);
 
             selected_source = null;
             selected_source_comp = null;
@@ -302,7 +302,12 @@ function addNewPlace(component_obj, placePos) {
 
 };
 
-function createDependencyPort(component, component_obj, component_group, place_obj, place, tooltipLayer) {
+function createDependencyPort(component_obj, place_obj) {
+
+    var component = component_obj.konva_component;
+    var component_group = component_obj.component_group_konva;
+    var place = place_obj.place_konva;
+    var tooltipLayer = component_obj.tooltipLayer;
 
     // create dependency here if set true
     if(place_obj.dependency) {
@@ -363,27 +368,6 @@ function setTransitionOffset(num_occurences) {
         }
 
     return offset;
-
-}
-
-// set Transition dictionary value
-function pushTransitionDictionary(source_component, source_obj, dest_obj) {
-
-    let src = source_obj.name;
-    let dest = dest_obj.name;
-
-    // check if this source -> dest combo has been added prior
-    if(source_component.transition_dictionary[src] && source_component.transition_dictionary[src][dest]) {
-        source_component.transition_dictionary[src][dest]++;
-    } else {
-        source_component.transition_dictionary[src] = {};
-        source_component.transition_dictionary[src][dest] = 1;
-    }
-
-    source_obj.offset = source_component.transition_dictionary[src][dest];
-
-    let count = source_component.transition_dictionary[src][dest]
-    return count;
 
 }
 

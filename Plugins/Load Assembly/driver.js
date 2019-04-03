@@ -129,10 +129,10 @@ function loadDependencies(la_comp_list) {
             var dependency_obj;
 
             if(loaded_dependency.type == "USE" || loaded_dependency.type == "DATA_USE") {
-                dependency_obj = createDependencyUsePort(component.konva_component, component, component.component_group_konva, source_obj, source_obj.transition_selection_area, component.tooltipLayer);
+                dependency_obj = createDependencyUsePort(component, source_obj);
             }
             else if(loaded_dependency.type == "PROVIDE" || loaded_dependency.type == "DATA_PROVIDE") {
-                dependency_obj = createDependencyPort(component.konva_component, component, component.component_group_konva, source_obj, source_obj.place_konva, component.tooltipLayer);
+                dependency_obj = createDependencyPort(component, source_obj);
             }
 
             console.log(dependency_obj);
