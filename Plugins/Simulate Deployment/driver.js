@@ -26,13 +26,12 @@ class Token{
 }
 
 class Tween{
-    constructor(name, tween_list, component, tokenColor, timerLabel, tween_duration_dict){
+    constructor(name, tween_list, component, tokenColor, timerLabel){
         this.name = name;
         this.tween_list = tween_list;
         this.component = component;
         this.tokenColor = tokenColor;
         this.timerLabel = timerLabel;
-        this.tween_duration_dict = tween_duration_dict;
     }
 }
 
@@ -116,7 +115,7 @@ function bootstrap() {
             // create tween list
             var tween_list = [];
             // create tween obj
-            var tween_obj = new Tween(tween_name, tween_list, sd_comp_list[i], tokenColor, timerLabel, tween_duration_dict = {});
+            var tween_obj = new Tween(tween_name, tween_list, sd_comp_list[i], tokenColor, timerLabel);
             // build the animation
             buildTokenTween(tween_obj, animLayer);
             // tokenHandler(sd_comp_list[i], place_num, animLayer, tokenColor, timerLabel);
@@ -125,9 +124,6 @@ function bootstrap() {
             console.log(sd_comp_list[i].name + " did not have a place!");
         }
     };
-
-    // playTokenTimeLine
-    // playTokenTimeLine(tween_list);
 
     // Fires every 50ms by default. Change setting the 'refreshRateMS' options
     stopwatch.onTime(function(time) {
@@ -140,23 +136,18 @@ function bootstrap() {
 
 function buildTokenTween(tween_obj, animLayer){
     // create tweenMax
-    var tweenline = new TimelineMax({onCompleteParams:[tween_obj.timerLabel], onComplete: stopTimerLabel} );
+    var tweenline = new TimelineMax({onCompleteParams:[tween_obj], onComplete: finishTween} );
     // add tweenMax to tweenlist
     tween_obj.tween_list.push(tweenline);
     // create reference to this tweens parent component
     var component_obj = tween_obj.component;
-    console.log("Building token tween for " + component_obj.name);
-    // set tween delay, tween delay will the sum of all of the previous delays
-    var tween_delay = 0;
+
     // for every place in components place list
     for (var place_num = 0; place_num < component_obj.place_list.length; place_num++){
         // set max delay for current place
         setTransitionMaxDelay(component_obj.place_list[place_num]);
         // add label to timeline for when this place's outbound transitions should start
         tweenline.add('place_' + place_num + '_delay', getPlaceDelay(component_obj.place_list[place_num]));
-        // create sub timeline
-        // var subTweenLine = new TimelineMax();
-        console.log("Place " + place_num + " has " + component_obj.place_list[place_num].transition_outbound_list.length + " outbound transitions");
         // for every outbound transition out of the current place
         for (var tran_num = 0; tran_num < component_obj.place_list[place_num].transition_outbound_list.length; tran_num++){
             // set current tran obj reference
@@ -178,7 +169,7 @@ function buildTokenTween(tween_obj, animLayer){
             var dest_post_x = tran_pos.x + transition.points()[4];
             var dest_post_y = tran_pos.y + transition.points()[5];
             
-            // tween to next place // , 'index_delay'
+            // tween to next place
             var tween = TweenMax.to(token, getDuration, { konva: { bezier: {curviness:3, values:[{x:mid_pos_x, y:mid_post_y}, {x:dest_post_x, y:dest_post_y}] }}, onStartParams:[token], onStart: showToken, onCompleteParams:[token], onComplete: hideToken });
             // subTweenLine.add(tween, 0);
             tweenline.add(tween, 'place_' + place_num + '_delay');
@@ -191,7 +182,7 @@ function buildTokenTween(tween_obj, animLayer){
 function setTransitionMaxDelay(curr_place){
 
     // first place in graph
-    if(curr_place.transition_inbound_list.length <= 0) {
+    if(curr_place.transition_inbound_list.length == 0) {
         tween_duration_dict[curr_place.name] = 0;
     }
     
@@ -243,6 +234,11 @@ function updateTimerLabels(time){
     for (var i = 0; i < timer_label_list.length; i++){
         timer_label_list[i].text(Math.trunc(elapsedMinutes) + ":" + Math.trunc(elapsedSeconds));
     }
+}
+
+function finishTween(tween_obj){
+    stopTimerLabel(tween_obj.timerLabel);
+    componentFinishedAnim(tween_obj.component)
 }
 
 // remove the timerLabel from the list
@@ -298,10 +294,7 @@ function componentFinishedAnim(component){
     var component_tween = new Konva.Tween({
         node: component.konva_component,
         duration: 4,
-        stroke: 'blue',
-        shadowColor: 'black',
-        shadowBlur: 5,
-        shadowOpacity: 1,
+        stroke: 'green',
         easing: Konva.Easings.EaseInOut,
         onFinish: function() {
             setTimeout(function(){ component_tween.reverse(); }, 4000);
