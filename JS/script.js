@@ -60,11 +60,7 @@ class Transition {
         this.index;
         this.src = src;
         this.tran_group_konva;
-<<<<<<< HEAD
-        this.transition_selection_area;
-=======
         this.tran_select_konva;
->>>>>>> Made transition_selection_area visible when dependency is created out of it, (hides when dependency is destroyed) as requested by Frederic
         this.tran_konva;
         this.dest = dest;
         this.func = func;
@@ -72,24 +68,12 @@ class Transition {
         this.dependency = false;
         this.dependency_type = '';
         this.dependency_konva_list = [];
-<<<<<<< HEAD
-<<<<<<< HEAD
         this.offset;
-=======
-=======
         this.dependency_obj_list = [];
->>>>>>> Added connection animation when enabled
         this.duration_min = 1;
         this.duration_max = 2;
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> Added comp animation when sim has reached its final place, created timer stubs per component, added tran min and max duration, defaults to 1 - 2 sec
-=======
-=======
         this.current_duration = 0;
->>>>>>> Computing Delay for tween based on greedy algorithm of inbound transitions
         this.offset;
->>>>>>> Fixed transition duration func's, refactored simulation deployment
     };
 };
 

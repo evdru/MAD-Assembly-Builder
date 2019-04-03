@@ -256,8 +256,6 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
     source_obj.transition_count++;
     layer.batchDraw();
     //layer.draw();
-    source_obj.transition_outbound_list.push(transition_obj)
-    dest_obj.transition_inbound_list.push(transition_obj)
     return transition_obj;
 }
 

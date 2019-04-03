@@ -11,8 +11,9 @@ var sd_dialog = app.dialog;
 var sd_comp_list = [];
 var sd_con_list = [];
 var token_list = [];
-var token_tweens = [];
+var tween_obj_list = [];
 var timer_label_list = [];
+var tween_duration_dict = {};
 var simulator_mode = true;
 
 class Token{
@@ -25,11 +26,10 @@ class Token{
 }
 
 class Tween{
-    constructor(name, tween_list, component, token, tokenColor, timerLabel){
+    constructor(name, tween_list, component, tokenColor, timerLabel){
         this.name = name;
         this.tween_list = tween_list;
         this.component = component;
-        this.token = token;
         this.tokenColor = tokenColor;
         this.timerLabel = timerLabel;
     }
@@ -83,7 +83,7 @@ function bootstrap() {
         }
         resetHighlights();
         destroyTokens();
-        destroyTokenTweens();
+        destroyTweenObjList();
         resetConnections();
         simulationGroup.destroy();
         animLayer.destroy();
@@ -112,18 +112,14 @@ function bootstrap() {
             setNotListening(sd_comp_list[i]);
             // set token color for this component
             var tokenColor = getRandomColor();
-            // get pos of first place
-            // get position of first place
-            var tokenPos = sd_comp_list[i].place_list[0].place_konva.getAbsolutePosition();
-            // create token at first place
-            var token = createToken(tokenPos, tokenColor);
             // create tween obj name
             var tween_name = "tween " + i;
             // create tween obj
-            var tween_obj = new Tween(tween_name, tween_list, sd_comp_list[i], token, tokenColor, timerLabel);
+            var tween_obj = new Tween(tween_name, tween_list, sd_comp_list[i], tokenColor, timerLabel);
             // build the animation
             buildTokenTween(tween_obj, animLayer);
             // tokenHandler(sd_comp_list[i], place_num, animLayer, tokenColor, timerLabel);
+            tween_obj_list.push(tween_obj);
         } else {
             console.log(sd_comp_list[i].name + " did not have a place!");
         }
@@ -142,7 +138,6 @@ function bootstrap() {
 }
 
 function buildTokenTween(tween_obj, animLayer){
-    
     // create tweenMax
     var tweenline = new TimelineMax({onCompleteParams:[tween_obj.timerLabel], onComplete: stopTimerLabel} );
     // add tweenMax to tweenlist
@@ -154,13 +149,13 @@ function buildTokenTween(tween_obj, animLayer){
     var tween_delay = 0;
     // for every place in components place list
     for (var place_num = 0; place_num < component_obj.place_list.length; place_num++){
+        // set max delay for current place
+        setTransitionMaxDelay(component_obj.place_list[place_num]);
         // add label to timeline for when this place's outbound transitions should start
-        tweenline.add('place_' + place_num + '_delay', getStartTweenDelay(component_obj.place_list[place_num]));
-        console.log(getStartTweenDelay(component_obj.place_list[place_num]));
-        // reset current max tran delay
-        var current_max_delay = 0;
+        tweenline.add('place_' + place_num + '_delay', getPlaceDelay(component_obj.place_list[place_num]));
         // create sub timeline
-        var subTweenLine = new TimelineMax();
+        // var subTweenLine = new TimelineMax();
+        console.log("Place " + place_num + " has " + component_obj.place_list[place_num].transition_outbound_list.length + " outbound transitions");
         // for every outbound transition out of the current place
         for (var tran_num = 0; tran_num < component_obj.place_list[place_num].transition_outbound_list.length; tran_num++){
             // set current tran obj reference
@@ -168,10 +163,6 @@ function buildTokenTween(tween_obj, animLayer){
             // get current duration
             var getDuration = getRandomDuration(curr_tran_obj.duration_min, curr_tran_obj.duration_max);
             curr_tran_obj.current_duration = getDuration;
-            // find max transition delay
-            if(current_max_delay < getDuration){
-                current_max_delay = getDuration;
-            }
             // get token starting position
             var tokenStartPos = component_obj.place_list[place_num].place_konva.getAbsolutePosition();
             // create token
@@ -188,16 +179,43 @@ function buildTokenTween(tween_obj, animLayer){
             
             // tween to next place // , 'index_delay'
             var tween = TweenMax.to(token, getDuration, { konva: { bezier: {curviness:3, values:[{x:mid_pos_x, y:mid_post_y}, {x:dest_post_x, y:dest_post_y}] }}, onStartParams:[token], onStart: showToken, onCompleteParams:[token], onComplete: hideToken });
-            subTweenLine.add(tween, 0);
-        } // 
-        tweenline.add(subTweenLine, 'place_' + place_num + '_delay');
-        // increment curr delay
-        //tween_delay += current_max_delay;
+            // subTweenLine.add(tween, 0);
+            tweenline.add(tween, 'place_' + place_num + '_delay');
+        }
+        // tweenline.add(subTweenLine, 'place_' + place_num + '_delay');
     }
+}
+
+// sets the max delay from one place to another place in tween_duration_dict
+function setTransitionMaxDelay(curr_place){
+
+    // first place in graph
+    if(curr_place.transition_inbound_list.length == 0) {
+        tween_duration_dict[curr_place.name] = 0;
+    }
+    
+    var max_place_delay = 0;
+    // for every inbound transition into place
+    for (var tran_num = 0; tran_num < curr_place.transition_inbound_list.length; tran_num++){
+        var src_place_delay = getPlaceDelay(curr_place.transition_inbound_list[tran_num].src);
+        var current_place_delay = src_place_delay + curr_place.transition_inbound_list[tran_num].current_duration;
+        // find the previous place with highest duration
+        if(current_place_delay > max_place_delay){
+            max_place_delay = current_place_delay;
+        }
+    }
+
+    // add the place name to delay dict with max delay to it
+    tween_duration_dict[curr_place.name] = max_place_delay;
+
+    console.log(Object.entries(tween_duration_dict));
 }
 
 // GREEDY
 function getStartTweenDelay(curr_place){
+
+    // no tween delay if no inbound transition (first place)
+    if(curr_place.transition_inbound_list.length == 0){ return 0; }
 
     var tween_delay = 0;
 
@@ -216,6 +234,12 @@ function getStartTweenDelay(curr_place){
     }
 
     return tween_delay;
+}
+
+// return the delay from one place to another place from tween duration dict
+function getPlaceDelay(place_obj){
+    var src_place = place_obj.name;
+    return tween_duration_dict[src_place];
 }
 
 function showToken(token){
@@ -533,19 +557,9 @@ function destroyTokens(){
     }
 }
 
-function destroyTokenTweens(){
+function destroyTweenObjList(){
     // destory every tween
-    for (var i = 0; i < token_tweens.length; i++) {
-        token_tweens[i].destroy();
-    }
-    token_tweens = [];
-}
-
-function destroyTokenTweensExceptFirst(){
-    // destory every tween but the first one
-    for (var i = 1; i < token_tweens.length; i++) {
-        token_tweens[i].destroy();
-    }
+    tween_obj_list = [];
 }
 
 function setNotListening(component){

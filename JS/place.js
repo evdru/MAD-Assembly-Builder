@@ -164,12 +164,7 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
             if(source_konva != null){
                 // check the index and both places are in same component
                 if(src.index < dest_obj.index && source_component == dest_component){
-                    // set transition offset
-                    let num_occurences = pushTransitionDictionary(component_obj, src, dest_obj);
-                    var offset = setTransitionOffset(num_occurences);
-                    console.log("Offset is " + offset);
-                    src.offset = offset;
-                    returned_transition_obj = addNewTransition(offset, source_konva, dest_transition, src, dest_obj, component_obj, component_group, component, tooltipLayer, use_selection_area, provide_selection_area);
+                    returned_transition_obj = addNewTransition(source_konva, dest_transition, src, dest_obj, component_obj, component_group, component, tooltipLayer, use_selection_area, provide_selection_area);
                 } 
             } else {
                 // highlight the place
