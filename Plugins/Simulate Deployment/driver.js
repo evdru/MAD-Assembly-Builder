@@ -26,12 +26,13 @@ class Token{
 }
 
 class Tween{
-    constructor(name, tween_list, component, tokenColor, timerLabel){
+    constructor(name, tween_list, component, tokenColor, timerLabel, tween_duration_dict){
         this.name = name;
         this.tween_list = tween_list;
         this.component = component;
         this.tokenColor = tokenColor;
         this.timerLabel = timerLabel;
+        this.tween_duration_dict = tween_duration_dict;
     }
 }
 
@@ -97,8 +98,6 @@ function bootstrap() {
     // start global timer
     var stopwatch = new Stopwatch();
     stopwatch.start();
-    // create tween list
-    var tween_list = [];
     // for every component
     for (var i = 0; i < sd_comp_list.length; i++) {
         // check if component has places
@@ -114,8 +113,10 @@ function bootstrap() {
             var tokenColor = getRandomColor();
             // create tween obj name
             var tween_name = "tween " + i;
+            // create tween list
+            var tween_list = [];
             // create tween obj
-            var tween_obj = new Tween(tween_name, tween_list, sd_comp_list[i], tokenColor, timerLabel);
+            var tween_obj = new Tween(tween_name, tween_list, sd_comp_list[i], tokenColor, timerLabel, tween_duration_dict = {});
             // build the animation
             buildTokenTween(tween_obj, animLayer);
             // tokenHandler(sd_comp_list[i], place_num, animLayer, tokenColor, timerLabel);
@@ -190,7 +191,7 @@ function buildTokenTween(tween_obj, animLayer){
 function setTransitionMaxDelay(curr_place){
 
     // first place in graph
-    if(curr_place.transition_inbound_list.length == 0) {
+    if(curr_place.transition_inbound_list.length <= 0) {
         tween_duration_dict[curr_place.name] = 0;
     }
     
@@ -207,39 +208,11 @@ function setTransitionMaxDelay(curr_place){
 
     // add the place name to delay dict with max delay to it
     tween_duration_dict[curr_place.name] = max_place_delay;
-
-    console.log(Object.entries(tween_duration_dict));
-}
-
-// GREEDY
-function getStartTweenDelay(curr_place){
-
-    // no tween delay if no inbound transition (first place)
-    if(curr_place.transition_inbound_list.length == 0){ return 0; }
-
-    var tween_delay = 0;
-
-    while(curr_place.transition_inbound_list.length != 0){
-        var max_tran_duration = 0;
-        // get the max duration of all inbound transitions
-        for(var tran_num = 0; tran_num < curr_place.transition_inbound_list.length; tran_num++){
-            if(curr_place.transition_inbound_list[tran_num].current_duration > max_tran_duration){
-                max_tran_duration = curr_place.transition_inbound_list[tran_num].current_duration;
-                curr_place = curr_place.transition_inbound_list[tran_num].src;
-            }
-        }
-        tween_delay += max_tran_duration;
-        console.log("max_tran_duration is " + max_tran_duration);
-        // decrement the current place
-    }
-
-    return tween_delay;
 }
 
 // return the delay from one place to another place from tween duration dict
 function getPlaceDelay(place_obj){
-    var src_place = place_obj.name;
-    return tween_duration_dict[src_place];
+    return tween_duration_dict[place_obj.name];
 }
 
 function showToken(token){
@@ -248,13 +221,6 @@ function showToken(token){
 
 function hideToken(token){
     token.hide();
-}
-
-function playTokenTimeLine(tween_list){
-    // for every tweenline in tween_list
-    for (var tween_line_num = 0; tween_line_num < tween_list.length; tween_line_num++){
-        tween_list[tween_line_num].play();
-    }
 }
 
 function createToken(tokenPos, tokenColor){
@@ -348,7 +314,7 @@ function componentFinishedAnim(component){
 function getRandomDuration(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+    return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive 
 }
 
 function getRandomColor() {
