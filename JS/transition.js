@@ -29,7 +29,7 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
     // set index
     transition_obj.index = index;
 
-    // set offset ref for transition
+    // set offset
     transition_obj.offset = offset;
 
     var transition = new Konva.Line({
@@ -46,8 +46,8 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
         radius: 10,
         opacity: 0,
         stroke: 'black',
-        strokeWidth: 1,
         fill: 'white',
+        strokeWidth: 0.5,
         text: transition.name,
         name: 'Transition'
     });
@@ -65,6 +65,17 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
     // add the konva group to transition obj attribute
     transition_obj.tran_group_konva = transition_group;
     transition_obj.transition_selection_area = transition_selection_area;
+
+    // set reference to transition selection area
+    transition_obj.tran_select_konva = transition_selection_area;
+
+    // set reference to transition
+    transition_obj.tran_konva = transition;
+
+    // add the transition obj to both souce place and dest place transition_connected list
+    source_obj.transition_outbound_list.push(transition_obj);
+    dest_obj.transition_inbound_list.push(transition_obj);
+    
 
     // intilize selection variables to null
     source_transition_konva = null;
@@ -201,12 +212,14 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
                     type = 'USE';
                     // set the type
                     source_transition_obj.dependency_type = type
+                    source_transition_konva.opacity(1);
                     // args: component, component_obj, component_group, transition_obj, transition_selection_area, tooltipLayer
                     createDependencyUsePort(component, component_obj, component_group, source_transition_obj, source_transition_konva, tooltipLayer);
                 } else if (type == 'data'){
                     type = 'DATA_USE';
                     // set the type
                     source_transition_obj.dependency_type = type
+                    source_transition_konva.opacity(1);
                     createDependencyUsePort(component, component_obj, component_group, source_transition_obj, source_transition_konva, tooltipLayer);
                 }
 
@@ -243,8 +256,6 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
     source_obj.transition_count++;
     layer.batchDraw();
     //layer.draw();
-    source_obj.transition_outbound_list.push(transition_obj)
-    dest_obj.transition_inbound_list.push(transition_obj)
     return transition_obj;
 }
 
@@ -288,20 +299,25 @@ function createDependencyUsePort(component, component_obj, component_group, tran
 ipcRend.on("transition->renderer", function(event, args) {
     console.log("Made it to transition->renderer.");
     console.log(args.name);
-    //If the name is changed
+    // change tran func
+    if (args.new_func != '') {
+        console.log("Changing the transition function name.");
+        changeTransitionFunc(args.component, args.old_func, args.new_func);
+    }
+    // change duration min
+    if (args.duration_min != '') {
+        changeTransitionDurationMin(args.component, args.transition, args.new_duration_min);
+        //changeTransitionDurationMin(component, transition_name, new_min_duration)
+    }
+    // change duration max
+    if (args.duration_max != '') {
+        changeTransitionDurationMax(args.component, args.transition, args.new_duration_max);
+        //changeTransitionDurationMax(component, transition_name, new_max_duration)
+    }
+    // If the name is changed
     if (args.name != '') {
         //Time to change transition name
         console.log("Change transition name");
-        changeTransitionName(args.component, args.transition, args.name, args.old_func, args.new_func);
-        // If the name is changed and the func/dependency status/dependency type is changed (use new transition name)
-        if (args.new_func != '') {
-            console.log("Time to change the transition function after changing the name.")
-            changeTransitionFunc(args.component, args.old_func, args.new_func);
-        };
+        changeTransitionName(args.component, args.transition, args.name);
     }
-    // If the name is not changed and the func/dep status/dep type are, then use the old transition name
-    else if (args.new_func != '') {
-        console.log("Time to change the transition function name.");
-        changeTransitionFunc(args.component, args.old_func, args.new_func);
-    };
 });

@@ -84,6 +84,34 @@ const mainMenuTemplate = [
 	}
 ];
 
+const simulatorMenuTemplate = [
+	{
+		label: 'File',
+		submenu:[
+			{
+				label: 'Quit',
+				// Keyboard shortcuts for quit
+				accelerator: process.platform == 'darwin' ? 'Command+Q' :
+				'Ctrl+Q',
+				click(){
+					app.quit();
+				}
+			}
+		]
+	},
+	{
+		label: 'Exit Simulator Mode',
+		click() {
+			// Send message to renderer to exit simulator mode
+			window.webContents.send('exit_simulator_mode');
+			// Rebuild menu from template
+			const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
+			// Insert menu
+			Menu.setApplicationMenu(mainMenu);
+		}
+	}
+];
+
 // if mac, add empty object to menu
 if(process.platform == 'darwin'){
 	mainMenuTemplate.unshift({
@@ -114,6 +142,14 @@ if(process.env.NODE_ENV !== 'production'){
 		]
 	});
 }
+
+// Catch enter simulator mode click
+ipcMain.on('enter_simulator_mode', function(args) {
+	// Rebuild menu from template
+	const simulatorMenu = Menu.buildFromTemplate(simulatorMenuTemplate);
+	// Insert menu
+	Menu.setApplicationMenu(simulatorMenu);
+})
 
 // Catch dependency port right clk
 ipcMain.on("set_dependency_type", function(event, args) {
@@ -194,8 +230,8 @@ ipcMain.on("change_transition_details", function(event, args) {
 	transition_args = args;
 	// Create new window
 	var transition_window = new BrowserWindow({
-		width: 400,
-		height: 225
+		width: 470,
+		height: 275
 	})
 	transition_window.loadURL(url.format({
 		pathname: path.join(__dirname, './HTML/change_transition_details.html'),
@@ -205,7 +241,9 @@ ipcMain.on("change_transition_details", function(event, args) {
 });
 
 ipcMain.on("transition->main", function(event, args) {
-	window.webContents.send("transition->renderer", {component: transition_args.component, transition: transition_args.transition, name: args.name, old_func: transition_args.function,  new_func: args.function, dependency_status: args.dependency_status, dependency_type: args.dependency_type});
+	window.webContents.send("transition->renderer", {component: transition_args.component, transition: transition_args.transition, old_name: transition_args.name,
+													 name: args.name, old_func: transition_args.function,  new_func: args.function, 
+													 new_duration_min: args.duration_min, new_duration_max: args.duration_max});
 });
 
 // Catch stub right click
