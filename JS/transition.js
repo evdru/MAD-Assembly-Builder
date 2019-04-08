@@ -32,8 +32,8 @@ function addNewTransition(component_obj, source_obj, dest_obj) {
         radius: 10,
         opacity: 0,
         stroke: 'black',
-        strokeWidth: 1,
         fill: 'white',
+        strokeWidth: 0.5,
         text: transition.name,
         name: 'Transition'
     });
@@ -58,7 +58,9 @@ function addNewTransition(component_obj, source_obj, dest_obj) {
     transition_obj.index = generateNextIndex(component_obj.transition_list);
     transition_obj.offset = offset;
     transition_obj.tran_group_konva = transition_group;
+    transition_obj.tran_select_konva = transition_selection_area;
     transition_obj.transition_selection_area = transition_selection_area;
+    transition_obj.tran_konva = transition;
     component_obj.transition_list.push(transition_obj);
 
     // add transition konva obj to component group
@@ -302,21 +304,20 @@ function pushTransitionDictionary(source_component, source_obj, dest_obj) {
 // Catch new transition details from ipcMain
 ipcRend.on("transition->renderer", function(event, args) {
 
-    //If the name is changed
-    if (args.name != '') {
-
-        changeTransitionName(args.component, args.transition, args.name, args.old_func, args.new_func);
-
-        // If the name is changed and the func/dependency status/dependency type is changed (use new transition name)
-        if (args.new_func != '') {
-            changeTransitionFunc(args.component, args.old_func, args.new_func);
-        };
-
+    if (args.new_func != '') {
+        changeTransitionFunc(args.component, args.old_func, args.new_func);
     }
 
-    // If the name is not changed and the func/dep status/dep type are, then use the old transition name
-    else if (args.new_func != '') {
-        changeTransitionFunc(args.component, args.old_func, args.new_func);
-    };
+    if (args.duration_min != '') {
+        changeTransitionDurationMin(args.component, args.transition, args.new_duration_min);
+    }
+
+    if (args.duration_max != '') {
+        changeTransitionDurationMax(args.component, args.transition, args.new_duration_max);
+    }
+
+    if (args.name != '') {
+        changeTransitionName(args.component, args.transition, args.name);
+    }
 
 });

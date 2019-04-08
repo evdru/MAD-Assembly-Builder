@@ -47,6 +47,7 @@ class Place {
         this.dependency = false;
         this.dependency_type = '';
         this.dependency_konva_list = [];
+        this.dependency_obj_list = [];
         this.transition_outbound_list = [];
         this.transition_inbound_list = [];
     };
@@ -59,13 +60,19 @@ class Transition {
         this.index;
         this.src = src;
         this.tran_group_konva;
-        this.transition_selection_area;
+        this.tran_select_konva;
+        this.tran_konva;
         this.dest = dest;
         this.func = func;
         this.dependency_count = 0; // 3 max
         this.dependency = false;
         this.dependency_type = '';
         this.dependency_konva_list = [];
+        this.offset;
+        this.dependency_obj_list = [];
+        this.duration_min = 1;
+        this.duration_max = 2;
+        this.current_duration = 0;
         this.offset;
     };
 };
@@ -80,12 +87,14 @@ class Dependency {
         this.source_obj;
         this.connection_obj;
         this.component_obj;
+        this.enabled = false;
     };
 };
 
 class Connection {
     constructor() {
         this.connection_group_konva;
+        this.connection_line_konva;
         this.gate1_konva;
         this.gate2_konva;
         this.enabled = false;
@@ -172,11 +181,11 @@ function removeOutboundAndInboundTransitions(component_obj, place_obj){
     }
     if(place_obj.transition_outbound_list.length > 0){
         // remove all outbound transitions from this place_obj
-        for (var i = 0; i < place_obj.transition_outbound_list.length; i++){
+        for (var j = 0; j < place_obj.transition_outbound_list.length; j++){
             // destroy the konva transition group
-            place_obj.transition_outbound_list[i].tran_group_konva.destroy();
+            place_obj.transition_outbound_list[j].tran_group_konva.destroy();
             // remove the transition obj
-            removeTransitionObj(component_obj, place_obj.transition_outbound_list[i]);
+            removeTransitionObj(component_obj, place_obj.transition_outbound_list[j]);
         }
     }
 };
@@ -229,6 +238,9 @@ function removeDependencyObj(component_obj, dependency_obj){
         // toggle transition selection area opacity
         hideTransitionSelectionArea(dependency_obj.source_obj);
     }
+    // hide the circle on transition
+    if(dependency_obj.source_obj.type == 'Transition'){ dependency_obj.source_obj.tran_select_konva.opacity(0); }
+
     console.log("Before " + component_obj.dependency_list);
     // find index of dependency_obj in component_list.dependency_list and remove
     component_obj.dependency_list.splice( component_obj.dependency_list.indexOf(dependency_obj), 1 );
@@ -297,6 +309,24 @@ function changeTransitionFunc(component, old_func, new_func) {
     if (found_transition_obj){ found_transition_obj.func = new_func; }
 };
 
+function changeTransitionDurationMin(component, transition_name, new_min_duration) {
+    // find the component obj
+    var found_component_obj = component_list.find(function(element) { return element.name == component; });
+    var found_transition_obj = found_component_obj.transition_list.find(function(element) { return element.name == transition_name; });
+    console.log(found_transition_obj.name + " old min duration is " + found_transition_obj.duration_min);
+    if (found_transition_obj){ found_transition_obj.duration_min = new_min_duration; }
+    console.log(found_transition_obj.name + " new min duration is " + found_transition_obj.duration_min);
+}
+
+function changeTransitionDurationMax(component, transition_name, new_max_duration) {
+    // find the component obj
+    var found_component_obj = component_list.find(function(element) { return element.name == component; });
+    var found_transition_obj = found_component_obj.transition_list.find(function(element) { return element.name == transition_name; });
+    console.log(found_transition_obj.name + " old max duration is " + found_transition_obj.duration_max);
+    if (found_transition_obj){ found_transition_obj.duration_max = new_max_duration; }
+    console.log(found_transition_obj.name + " new max duration is " + found_transition_obj.duration_max);
+}
+
 function removeTransitionObj(component_obj, transition_obj) {
     // remove all dependencies belonging to this transition_obj
     for(var i = 0; i < component_obj.dependency_list.length; i++){
@@ -309,8 +339,31 @@ function removeTransitionObj(component_obj, transition_obj) {
             layer.batchDraw();
         }
     }
-    var source_obj_name = transition_obj.src.name;
-    var dest_obj_name = transition_obj.dest.name;
+
+    removeOutboundTransitionObj(transition_obj);
+
+    removeInboundTransitionObj(transition_obj);
+
+    decrementPlaceTransitionDict(component_obj, transition_obj.src, transition_obj.dest);
+    // decrement the transition count of source place
+    transition_obj.src.transition_count--;
+    // find index of transition in component_list and remove
+    component_obj.transition_list.splice( component_obj.transition_list.indexOf(transition_obj), 1 );
+};
+
+function removeOutboundTransitionObj(transition_obj){
+    // remove itself from its src outbound list
+    transition_obj.src.transition_outbound_list.splice( transition_obj.src.transition_outbound_list.indexOf(transition_obj), 1 );
+}
+
+function removeInboundTransitionObj(transition_obj){
+    // remove itself from its dest inbound list
+    transition_obj.dest.transition_inbound_list.splice( transition_obj.dest.transition_inbound_list.indexOf(transition_obj), 1 );
+}
+
+function decrementPlaceTransitionDict(component_obj, source_place, dest_place){
+    var source_obj_name = source_place.name;
+    var dest_obj_name = dest_place.name;
     // check the transition dictionary for parallel transitions
     if(component_obj.transition_dictionary[source_obj_name] && component_obj.transition_dictionary[source_obj_name][dest_obj_name]){
         console.log("Decrementing dictionary keys");
@@ -320,11 +373,7 @@ function removeTransitionObj(component_obj, transition_obj) {
         // decrement the trans dict
         component_obj.transition_dictionary[source_obj_name][dest_obj_name]--;
     }
-    // decrement the transition count of source place
-    transition_obj.src.transition_count--;
-    // find index of component in component_list and remove
-    component_obj.transition_list.splice( component_obj.transition_list.indexOf(transition_obj), 1 );
-};
+}
 
 // Function to change transitions's dependency status
 function changeTransitionDependencyStatus(component, transition, dependency_status) {

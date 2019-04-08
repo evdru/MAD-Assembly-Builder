@@ -56,29 +56,23 @@ function createComponentString(component) {
     console.log(con_list);
     console.log(component.name);
 
-    //First check for provide depencencies
+    //First: check for provide depencencies
     for (var k = 0; k < con_list.length; k++) {
         if (con_list[k].provide_port_obj.component_obj.name === component.name) {
-            if (k == con_list.length - 1) {
-                content += "\t\t\t'" + con_list[k].provide_port_obj.name + "': (DepType." + con_list[k].provide_port_obj.type + ", ['" + con_list[k].provide_port_obj.source_obj.name + "'])\n"
-            } else {
-                content += "\t\t\t'" + con_list[k].provide_port_obj.name + "': (DepType." + con_list[k].provide_port_obj.type + ", ['" + con_list[k].provide_port_obj.source_obj.name + "']),\n"
-            }
+            content += "\t\t\t'" + con_list[k].provide_port_obj.name + "': (DepType." + con_list[k].provide_port_obj.type + ", ['" + con_list[k].provide_port_obj.source_obj.name + "']),\n";
         };
     };
 
-    //Second check for use dependencies
+    //Second: check for use dependencies
     for (var l = 0; l < con_list.length; l++) {
         if (con_list[l].use_port_obj.component_obj.name === component.name) {
-            if (k == con_list.length - 1) {
-                content += "\t\t\t'" + con_list[l].use_port_obj.name + "': (DepType." + con_list[l].use_port_obj.type + ", ['" + con_list[l].use_port_obj.source_obj.name + "'])\n"
-            } else {
-                content += "\t\t\t'" + con_list[l].use_port_obj.name + "': (DepType." + con_list[l].use_port_obj.type + ", ['" + con_list[l].use_port_obj.source_obj.name + "']),\n"
-            }
+            content += "\t\t\t'" + con_list[l].use_port_obj.name + "': (DepType." + con_list[l].use_port_obj.type + ", ['" + con_list[l].use_port_obj.source_obj.name + "']),\n";
         };
     };
 
-    content += "\t\t}\n\n"
+    //Delete the last comma from the dependency dictionary and then append the closing bracket and new tabs/lines.
+    content = content.slice(0, -2);
+    content += "\n\t\t}\n\n";
 
     //Create functions
     for (var m = 0; m < component.transition_list.length; m++) {
