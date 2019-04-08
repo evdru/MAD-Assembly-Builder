@@ -49,8 +49,15 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
         fill: 'white',
         strokeWidth: 0.5,
         text: transition.name,
-        name: 'Transition'
+        name: 'Transition',
+        hitFunc: function(context) {
+            context.beginPath();
+            context.arc(0, 0, this.radius() + 10, 0, Math.PI * 2, true);
+            context.closePath();
+            context.fillStrokeShape(this);
+        }
     });
+
 
     // create a new transition group
     var transition_group = new Konva.Group({
@@ -257,6 +264,45 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
     layer.batchDraw();
     //layer.draw();
     return transition_obj;
+}
+
+// set the offset of the transition
+function setTransitionOffset(num_occurences){
+
+    let offset;
+
+    switch (num_occurences){
+        case 1:
+            offset = 0
+            break;
+        case 2:
+            offset = 30;
+            break;
+        case 3:
+            offset = -30;
+            break;
+        default:
+            // what are you doing here!?
+            offset = 0;
+    }
+    return offset;
+}
+
+// set Transition dictionary value
+function pushTransitionDictionary(source_component, source_obj, dest_obj){
+    let src = source_obj.name;
+    let dest = dest_obj.name;
+    // check if this source -> dest combo has been added prior
+    if(source_component.transition_dictionary[src] && source_component.transition_dictionary[src][dest]){
+        source_component.transition_dictionary[src][dest]++;
+    } else {
+        source_component.transition_dictionary[src] = {};
+        source_component.transition_dictionary[src][dest] = 1;
+    }
+    source_obj.offset = source_component.transition_dictionary[src][dest];
+    console.log(Object.entries(source_component.transition_dictionary));
+    let count = source_component.transition_dictionary[src][dest]
+    return count;
 }
 
 // function to create a use port out of a transition

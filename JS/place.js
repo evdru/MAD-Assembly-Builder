@@ -290,47 +290,6 @@ function createDependencyPort(component, component_obj, component_group, place_o
     }
 };
 
-// set the offset of the transition
-function setTransitionOffset(num_occurences){
-
-    let offset;
-
-    switch (num_occurences){
-        case 1:
-            offset = 0
-            break;
-        case 2:
-            offset = 30;
-            break;
-        case 3:
-            offset = -30;
-            break;
-        default:
-            // what are you doing here!?
-            offset = 0;
-    }
-    return offset;
-}
-
-// set Transition dictionary value
-function pushTransitionDictionary(source_component, source_obj, dest_obj){
-    console.log("Key is " + source_obj.name);
-    let src = source_obj.name;
-    console.log("value is " + dest_obj.name)
-    let dest = dest_obj.name;
-    // check if this source -> dest combo has been added prior
-    if(source_component.transition_dictionary[src] && source_component.transition_dictionary[src][dest]){
-        source_component.transition_dictionary[src][dest]++;
-    } else {
-        source_component.transition_dictionary[src] = {};
-        source_component.transition_dictionary[src][dest] = 1;
-    }
-    source_obj.offset = source_component.transition_dictionary[src][dest];
-    console.log(Object.entries(source_component.transition_dictionary));
-    let count = source_component.transition_dictionary[src][dest]
-    return count;
-}
-
 // Catch new place name from ipcMain
 ipcRend.on("place->renderer", function(event, args) {
     if (args.name != '') {
