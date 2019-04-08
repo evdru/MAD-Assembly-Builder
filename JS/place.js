@@ -60,7 +60,19 @@ function addNewPlace(component_obj, placePos) {
     place.on("click", function(e) {
 
         if(e.evt.button === 0) {
-            
+
+            // if we've already selected a source, unselect it first
+            if(selected_source != null) {
+                selected_source.place_konva.stroke('black');
+                selected_source.place_konva.strokeWidth(1);
+                layer.batchDraw();
+                // if we're clicking the selected place, deselect it
+                if(selected_source == place_obj) {
+                    selected_source = null;
+                    return;
+                }
+            }
+
             selected_source_comp = component_obj;
 
             selected_source = place_obj;
@@ -102,6 +114,13 @@ function addNewPlace(component_obj, placePos) {
             if(validTransition(selected_source, selected_source_comp, selected_dest, selected_dest_comp)) {
                 returned_transition_obj = addNewTransition(component_obj, selected_source, selected_dest);
             }
+
+            stage.container().style.cursor = 'default';
+
+            // changes the source back to black
+            selected_source.place_konva.stroke('black');
+            selected_source.place_konva.strokeWidth(1);
+            layer.batchDraw();
 
             selected_source = null;
             selected_source_comp = null;
@@ -178,16 +197,25 @@ function addNewPlace(component_obj, placePos) {
     // event: mouse leaves place
     place.on('mouseleave', function () {
 
-        stage.container().style.cursor = 'default';
+        // if the mouse leaves a place that *isn't* the place selected, turn it black.
+        if(selected_source != place_obj) {
 
-        // changes the stroke and stroke width back to default if highlighted
-        if(highlighted == true) {
+            stage.container().style.cursor = 'default';
 
-            place.stroke('black');
-            place.strokeWidth(1);
-            layer.batchDraw();
-            highlighted = false;
+            // changes the stroke and stroke width back to default if highlighted
+            //if(highlighted == true) {
+                place.stroke('black');
+                place.strokeWidth(1);
+                layer.batchDraw();
+                highlighted = false;
+            //}
 
+        // if the mouse leaves a place that *is* the place selected, turn it blue.
+        } else {
+            highlighted = true;
+            selected_source.place_konva.stroke('blue');
+            selected_source.place_konva.strokeWidth(5);
+            selected_source.place_konva.draw();
         }
 
     });
