@@ -374,8 +374,11 @@ function isDependencyAllowed(source_obj){
 // assigns verticalOffset to value based on source obj dependency count
 function getVerticalOffset(source_obj){
     var verticalOffset;
+    var parallelOffset = 0;
     console.log(source_obj.offset * 5);
-    var parallelOffset = source_obj.offset * 5;
+    if(source_obj.type == 'Transition'){
+        parallelOffset = source_obj.offset * 5;
+    }
     switch(source_obj.dependency_count){
         case 0:
             verticalOffset = 0;
