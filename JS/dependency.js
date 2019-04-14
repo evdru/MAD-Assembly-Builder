@@ -190,24 +190,12 @@ function addNewServiceDependency(component, source_element, source_obj, componen
         if (ev.keyCode === 46 || ev.keyCode == 8) {
             if (confirm('Are you sure you want to delete this dependency?')){
                 // Delete it!
-                // dependency.destroy();
-                // stem.destroy();
-                // stub.destroy();
-                // symbol.destroy();
-                dependency_group.destroy();
+                //dependency_group.destroy();
                 tooltip.destroy();
-                layer.draw();
-
-                // remove connection if created from dependency stub
-
-                // set source_obj dependency boolean to false
-                source_obj.dependency = false;
-                // decrement dependency count
-                source_obj.dependency_count--;
 
                 // remove the depedency obj from its components dependency list
-                removeDependencyObj(component_obj, dependency_obj);
-                layer.batchDraw();
+                //removeDependencyObj(component_obj, dependency_obj);
+                deletor(dependency_obj);
             } else {
                 // Do nothing!
                 return;
@@ -638,7 +626,7 @@ function addNewDataDependency(component, source_element, source_obj, component_o
         if (ev.keyCode === 46) {
             if (confirm('Are you sure you want to delete this dependency?')){
                 // Delete it!
-                dependency_group.destroy();
+                //dependency_group.destroy();
                 tooltip.destroy();
 
                 // remove connection if created from dependency stub
@@ -647,8 +635,8 @@ function addNewDataDependency(component, source_element, source_obj, component_o
                 source_obj.dependency = false;
 
                 // remove the depedency obj from its components dependency list
-                removeDependencyObj(component_obj, dependency_obj);
-                layer.batchDraw();
+                //removeDependencyObj(component_obj, dependency_obj);
+                deletor(dependency_obj);
             } else {
                 // Do nothing!
                 return;
