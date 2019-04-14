@@ -151,31 +151,6 @@ function closeNewWindow() {
     window.close();
 };
 
-/*
- * This is the ***DELETOR***
- * All objects that need to be deleted, go through him.
- * Before an obj is deleted. The deletor will remove all dependent obj's first. 
- * i.e., 
- *  - transitions attached to a place marked for deletion
- *  - dependency port attached to a place or transition marked for deletion
- * 
- */
-function deletor(deletion_obj){
-
-    // PLACE HOLDER
-    if(deletion_obj.type == 'Component'){
-        console.log("Deletor has marked a Component for deletion");
-        // remove connections attached to this component obj
-        removeConnectionsAttachedToComponent(deletion_obj);
-        // remove component konva elements
-        deletion_obj.component_group_konva.destroy();
-        // remove reference to this obj from Global Component List
-        removeComponentObjFromComponentList(deletion_obj);
-    }
-    // redraw layer
-    layer.draw();
-}
-
 // remove the place obj from the component_obj's place list
 function removePlaceObj(component_obj, place_obj){
     console.log("Before " + component_obj.place_list);
@@ -299,37 +274,6 @@ function changeComponentName(component_name, new_comp_name) {
      // find the component obj
     var found_component_obj = component_list.find(function(element) { return element.name == component_name; });
     if(found_component_obj){ found_component_obj.name = new_comp_name; }
-};
-
-function removeComponentObjFromComponentList(component_obj){
-    console.log("Before " + component_list);
-    // find index of component in component_list and remove
-    component_list.splice( component_list.indexOf(component_obj), 1 );
-    console.log("After " + component_list);
-};
-
-function removeConnectionsAttachedToComponent(component_obj){
-    // check if connection is connected to this component
-    for (var i = 0; i < component_obj.dependency_list.length; i++){
-        for (var j = 0; j < connection_list.length; j++) {
-            if (connection_list[j].provide_port_obj == component_obj.dependency_list[i] || connection_list[j].use_port_obj == component_obj.dependency_list[i]){
-                removeConnectionKonva(connection_list[j]);
-                removeConnectionObj(connection_list[j]);
-            }
-        }
-    }
-};
-
-function removeComponentObj(component_obj) {
-    // check if connection is connected to this component
-    for (var i = 0; i < component_obj.dependency_list.length; i++){
-        for (var j = 0; j < connection_list.length; j++) {
-            if (connection_list[j].provide_port_obj == component_obj.dependency_list[i] || connection_list[j].use_port_obj == component_obj.dependency_list[i]){
-                removeConnectionKonva(connection_list[j]);
-                removeConnectionObj(connection_list[j]);
-            }
-        }
-    }
 };
 
 // Function to change transition name
