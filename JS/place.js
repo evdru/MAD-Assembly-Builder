@@ -442,30 +442,25 @@ function createDependencyPort(component_obj, place_obj) {
 };
 
 // set the offset of the transition
-function setTransitionOffset(num_occurences) {
+function setTransitionOffset(source_obj, dest_obj){
 
-    let offset;
+    var offset;
 
-    switch (num_occurences) {
+    var offset_selection = new Array(0, 30, -30);
 
-        case 1:
-            offset = 0
-            break;
-
-        case 2:
-            offset = 30;
-            break;
-
-        case 3:
-            offset = -30;
-            break;
-
-        default:
-            // what are you doing here!?
-            offset = 0;
-
+    for (var i = 0; i < source_obj.transition_outbound_list.length; i++) {
+        // outbound transition has same dest place
+        if(source_obj.transition_outbound_list[i].dest == dest_obj){
+            // dont set offset to this
+            var tran_offset = source_obj.transition_outbound_list[i].offset;
+            // remove offset from selections list
+            var index = offset_selection.indexOf(tran_offset);
+            if (index > -1) {
+                offset_selection.splice(index, 1);
+            }
         }
-
+    }
+    offset = offset_selection[0];
     return offset;
 
 }
