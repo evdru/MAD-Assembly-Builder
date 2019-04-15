@@ -9,7 +9,7 @@ function addNewTransition(component_obj, source_obj, dest_obj) {
 
     // set transition offset
     let num_occurences = pushTransitionDictionary(component_obj, source_obj, dest_obj);
-    var offset = setTransitionOffset(num_occurences);
+    var offset = setTransitionOffset(source_obj, dest_obj);
     source_obj.offset = offset;
 
     var transition_group = new Konva.Group({
