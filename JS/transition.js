@@ -66,6 +66,8 @@ function addNewTransition(component_obj, source_obj, dest_obj) {
     // add transition konva obj to component group
     transition_group.add(transition);
     transition_group.add(transition_selection_area);
+    source_obj.transition_outbound_list.push(transition_obj);
+    dest_obj.transition_inbound_list.push(transition_obj);
     component_obj.component_group_konva.add(transition_group);
 
     // intilize selection variables to null
@@ -236,8 +238,6 @@ function addNewTransition(component_obj, source_obj, dest_obj) {
     dest_obj.place_konva.moveToTop();
     source_obj.transition_count++;
     layer.batchDraw();
-    source_obj.transition_outbound_list.push(transition_obj)
-    dest_obj.transition_inbound_list.push(transition_obj)
 
     return transition_obj;
 

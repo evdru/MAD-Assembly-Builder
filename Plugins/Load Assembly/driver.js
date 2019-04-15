@@ -135,8 +135,6 @@ function loadDependencies(la_comp_list) {
                 dependency_obj = createDependencyPort(component, source_obj);
             }
 
-            console.log(dependency_obj);
-            console.log(loaded_dependency);
             dependency_obj.name = loaded_dependency.name;
 
         }
@@ -183,7 +181,7 @@ function loadConnections(la_conn_list) {
 
 };
 
-// takes a list of objects (e.g. component list, place list, etc) and returns the object with 'name'
+// takes a list of objects (e.g. component list, place list, etc) and returns the already-created object with 'name'
 function matchObject(list, name) {
 
     for(var list_ctr = 0; list_ctr < list.length; list_ctr++) {
