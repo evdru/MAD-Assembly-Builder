@@ -111,7 +111,7 @@ function addNewPlace(component_obj, placePos) {
             selected_dest_comp = component_obj;
             selected_dest = place_obj;
 
-            if(validTransition(selected_source, selected_source_comp, selected_dest, selected_dest_comp)) {
+            if(validTransition(component_obj.place_list, selected_source, selected_source_comp, selected_dest, selected_dest_comp)) {
                 returned_transition_obj = addNewTransition(component_obj, selected_source, selected_dest);
             }
 
@@ -173,19 +173,23 @@ function addNewPlace(component_obj, placePos) {
 
         stage.container().style.cursor = 'pointer';
 
-        if(selected_source != null && selected_source.index < place_obj.index && selected_source_comp == component_obj) {
+        if(selected_source != null) {
 
-            highlighted = true;
-            place.stroke('green');
-            place.strokeWidth(3);
-            place.draw();
+            if(validTransition(component_obj.place_list, selected_source, selected_source_comp, place_obj, component_obj)) {
 
-        } else if(selected_source != null && selected_source.index >= place_obj.index && selected_source_comp == component_obj) {
+                highlighted = true;
+                place.stroke('green');
+                place.strokeWidth(3);
+                place.draw();
 
-            highlighted = true;
-            place.stroke('red');
-            place.strokeWidth(3);
-            place.draw();
+            } else {
+
+                highlighted = true;
+                place.stroke('red');
+                place.strokeWidth(3);
+                place.draw();
+
+            }
 
         }
 
@@ -312,8 +316,75 @@ function addNewPlace(component_obj, placePos) {
 
     };
 
-    function validTransition(source_obj, source_comp, dest_obj, dest_comp) {
-        return (source_obj.index < dest_obj.index && source_comp == dest_comp);
+    function validTransition(place_list, source_obj, source_comp, dest_obj, dest_comp) {
+
+        if(source_comp != dest_comp) {
+            return false;
+        }
+
+        if(source_comp.transition_list.length == 0) {
+            return true;
+        }
+
+        // get root place; i.e. place with no in-transitions
+        var root_place;
+        for(var place_index = 0; place_index < place_list.length; place_index++) {
+            if(place_list[place_index].transition_inbound_list.length == 0) {
+                root_place = place_list[place_index];
+            }
+        }
+
+        // add prospective transition
+        var new_trans = new Transition('Transition', 'TransitionX', source_obj, dest_obj, 'defaultFunctionX');
+        source_obj.transition_outbound_list.push(new_trans);
+        dest_obj.transition_inbound_list.push(new_trans);
+
+        // is there a cycle?
+        cyclic = cycle(root_place);
+
+        // remove transition from source and dest
+        for(var trans_index = 0; trans_index < source_obj.transition_outbound_list.length; trans_index++) {
+            if(source_obj.transition_outbound_list[trans_index] === new_trans) {
+                source_obj.transition_outbound_list.splice(trans_index, 1);
+            }
+        }
+        for(var trans_index = 0; trans_index < dest_obj.transition_inbound_list.length; trans_index++) {
+            if(dest_obj.transition_inbound_list[trans_index] === new_trans) {
+                dest_obj.transition_inbound_list.splice(trans_index, 1);
+            }
+        }
+
+        // if a transition doesn't make a cycle, it's valid
+        return !cyclic;
+
+    }
+
+    // depth-first search for cycle
+    function cycle(place, visited=[]) {
+
+        // if 'place' has already been 'visited', there is a cycle
+        for(var index = 0; index < visited.length; index++) {
+
+            if(visited[index] === place) {
+                return true;
+            }
+
+        }
+
+        // 'place' has now been visited
+        visited.push(place);
+
+        // depth-first dive into place's transitions, until there are no transitions out
+        for(var outTransIndex = 0; outTransIndex < place.transition_outbound_list.length; outTransIndex++) {
+
+            cyclic = cycle(place.transition_outbound_list[outTransIndex].dest, visited);
+            visited.pop();
+            if(cyclic) { return true; }
+
+        }
+
+        return false;
+
     };
 
     function generateNextIndex(place_list) {
