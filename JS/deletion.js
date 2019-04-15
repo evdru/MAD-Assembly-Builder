@@ -13,20 +13,14 @@ function deletor(deletion_obj){
     switch(deletion_obj.type){
         case 'Component':
             console.log("Deletor has marked a " + deletion_obj.type + " for deletion");
-            // remove connections attached to this component obj
-            removeConnectionsAttachedToComponent(deletion_obj);
-            // remove component konva elements
-            removeComponentGroupKonva(deletion_obj);
-            // remove reference to this obj from Global Component List
-            removeComponentObjFromComponentList(deletion_obj);
+            componentDeletionHandler(deletion_obj);
             break;
         case 'PROVIDE':
         case 'USE':
         case 'DATA_PROVIDE':
         case 'DATA_USE':
             // all dependency obj's
-            removeDependencyGroupKonva(deletion_obj);
-            removeDependencyObj(deletion_obj);
+            dependencyDeletionHandler(deletion_obj);
             break;
 
         default:
@@ -35,6 +29,27 @@ function deletor(deletion_obj){
 
     // redraw layer
     layer.draw();
+};
+
+// Handles deletion of Component Obj
+function componentDeletionHandler(component_obj){
+    // remove connections attached to this component obj
+    removeConnectionsAttachedToComponent(component_obj);
+    // remove component konva elements
+    removeComponentGroupKonva(component_obj);
+    // remove reference to this obj from Global Component List
+    removeComponentObjFromComponentList(component_obj);
+};
+
+// Handles deletion of Dependency Obj
+function dependencyDeletionHandler(dependency_obj){
+    removeDependencyGroupKonva(dependency_obj);
+    //removeDependencyObj(dependency_obj);
+    removeConnectionObjFromDependencyConnectionList(dependency_obj);
+    removeDependencyObjFromComponentDependencyList(dependency_obj);
+    decrementSourceObjDependencyCount(dependency_obj.source_obj);
+    // if the dependency is coming out of a transition
+    if(dependency_obj.source_obj.type == "Transition"){ hideTransitionSelectionArea(dependency_obj.source_obj); }
 };
 
 function removeComponentGroupKonva(component_obj){
@@ -66,41 +81,37 @@ function removeDependencyGroupKonva(dependency_obj){
     dependency_obj.dep_group_konva.destroy();
 };
 
-// func to remove the dependency obj from its references
-function removeDependencyObj(dependency_obj){
+function removeDependencyObjFromComponentDependencyList(dependency_obj){
     component_obj = dependency_obj.component_obj;
-    // check if dependency has a connection with it, remove the connection
-    if(dependency_obj.connection_obj){
-        console.log("its removing connection")
-        removeConnectionObj(dependency_obj.connection_obj);
-    }
-    // if the dependency is coming out of a transition
-    if(dependency_obj.source_obj.type == "Transition"){
-        // hide transition selection area opacity
-        hideTransitionSelectionArea(dependency_obj.source_obj);
-    }
-    // hide the circle on transition
-    //if(dependency_obj.source_obj.type == 'Transition'){ dependency_obj.source_obj.tran_select_konva.opacity(0); }
-
-    console.log("Before " + component_obj.dependency_list);
-    // find index of dependency_obj in component_list.dependency_list and remove
     component_obj.dependency_list.splice( component_obj.dependency_list.indexOf(dependency_obj), 1 );
-    console.log("After " + component_obj.dependency_list);
+};
 
-    // decrement source obj dependency count
-    dependency_obj.source_obj.dependency_count--;
+// Called when a dependency removed from a place/transition
+function decrementSourceObjDependencyCount(source_obj){
+    source_obj.dependency_count--;
 };
 
 function removeConnectionObj(connection_obj){
     connection_obj.use_port_obj.connection_obj = undefined
     connection_obj.provide_port_obj.connection_obj = undefined
     // set opacity to 0 for dependencies
-    connection_obj.provide_port_obj.dep_stub_konva.opacity(0);
-    connection_obj.use_port_obj.dep_stub_konva.opacity(0);
+    if(connection_obj.provide_port_obj.connection_list.length == 1){
+        connection_obj.provide_port_obj.dep_stub_konva.opacity(0);
+    }
+    
+    if(connection_obj.use_port_obj.connection_list.length == 1){
+        connection_obj.use_port_obj.dep_stub_konva.opacity(0);
+    }
     // remove connection from connection list
     connection_list.splice( connection_list.indexOf(connection_obj), 1 );
     removeConnectionKonva(connection_obj);
 };
+
+function removeConnectionObjFromDependencyConnectionList(dependency_obj){
+    for(var i = 0; i < dependency_obj.connection_list.length; i++){
+        removeConnectionObj(dependency_obj.connection_list[i]);
+    }
+}
 
 // function to remove connection konva group
 function removeConnectionKonva(connection_obj){
@@ -126,7 +137,7 @@ function removePlaceObj(component_obj, place_obj){
             // destroy konva dependency group first
             component_obj.dependency_list[i].dep_group_konva.destroy();
             // remove dependency obj from list
-            removeDependencyObj(component_obj, component_obj.dependency_list[i]);
+            removeDependencyObj(component_obj.dependency_list[i]);
         }
     }
 };
