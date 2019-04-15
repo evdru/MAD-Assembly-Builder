@@ -24,7 +24,7 @@ function deletor(deletion_obj){
             break;
 
         default:
-            console.log("Object to be deleted has unknown type " + deletion_obj.type);
+            console.log("Object to be deleted has unknown type: " + deletion_obj.type);
     }
 
     // redraw layer
@@ -87,6 +87,7 @@ function removeDependencyObjFromComponentDependencyList(dependency_obj){
 };
 
 // Called when a dependency removed from a place/transition
+// source_obj can be either place or transition
 function decrementSourceObjDependencyCount(source_obj){
     source_obj.dependency_count--;
 };
@@ -115,10 +116,6 @@ function removeConnectionObjFromDependencyConnectionList(dependency_obj){
 
 // function to remove connection konva group
 function removeConnectionKonva(connection_obj){
-    // change opacity of provide and use ports
-    // dependency_obj.connection_obj.provide_port_obj.dep_group_konva.provide_symbol.opacity(0);
-    // dependency_obj.connection_obj.use_port_obj.dep_group_konva.use_stub_konva.opacity(0);
-
     // destroy the connection group
     connection_obj.connection_group_konva.destroy();
 };
@@ -162,7 +159,7 @@ function removeOutboundAndInboundTransitions(component_obj, place_obj){
     }
 };
 
-function removeTransitionObj(component_obj, transition_obj) {
+function removeTransitionObj(component_obj, transition_obj){
     // remove all dependencies belonging to this transition_obj
     for(var i = 0; i < component_obj.dependency_list.length; i++){
         // if this dependency belongs to transition_obj
