@@ -31,6 +31,9 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
     // set offset
     transition_obj.offset = offset;
 
+    // ref to component
+    transition_obj.component_obj = component_obj;
+
     var transition = new Konva.Line({
         points: [source_konva.getX(), source_konva.getY(), ((source_konva.getX() + dest_konva.getX()) / 2) + offset, (source_konva.getY() + dest_konva.getY()) / 2, dest_konva.getX(), dest_konva.getY()],
         stroke: 'black',
@@ -234,14 +237,11 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
         if (ev.keyCode === 46 || ev.keyCode == 8) {
             if (confirm('Are you sure you want to delete this Transition?')){
                 // Delete it!
-                transition.destroy();
-                transition_selection_area.destroy();
                 tooltip.destroy();
-                layer.draw();
                 source_transition_konva = null;
                 source_transition_obj = null;
                 // remove the transition obj from its components transition list
-                removeTransitionObj(component_obj, transition_obj);
+                deletor(transition_obj);
             } else {
                 // Do nothing!
                 return;

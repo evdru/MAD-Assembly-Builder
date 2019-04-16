@@ -40,6 +40,7 @@ class Place {
         this.type = type;
         this.name = name;
         this.index = index;
+        this.component_obj;
         this.place_konva;
         this.transition_count = 0; // 3 max
         this.dependency_count = 0; // 3 max
@@ -64,6 +65,7 @@ class Transition {
         this.tran_konva;
         this.dest = dest;
         this.func = func;
+        this.component_obj;
         this.dependency_count = 0; // 3 max
         this.dependency = false;
         this.dependency_type = '';

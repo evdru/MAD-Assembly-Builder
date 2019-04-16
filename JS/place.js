@@ -53,6 +53,8 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
 
     // add the place_konva to place_obj
     place_obj.place_konva = place;
+    // ref to component
+    place_obj.component_obj = component_obj;
     // add the konva place to the component group
     component_group.add(place);
 
@@ -231,24 +233,11 @@ function addNewPlace(component_group, component, placePos, component_obj, toolti
         if (ev.keyCode === 46 || ev.keyCode == 8) {
             if (confirm('Are you sure you want to delete this Place?')){
                 // Delete it!
-                place.destroy();
                 tooltip.destroy();
-                layer.draw();
                 source_konva = null;
                 dest_transition = null;
 
-                // remove all transitions that are connected to this place
-                removeOutboundAndInboundTransitions(component_obj, place_obj);
-
-                // remove dependency stub if created
-                if(place_obj.dependency){
-                    console.log("It had a dependency attached!")
-
-                }
-
-                // remove the place obj from its components place list
-                removePlaceObj(component_obj, place_obj);
-                layer.batchDraw();
+                deletor(place_obj);
             } else {
                 // Do nothing!
                 return;
