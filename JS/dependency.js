@@ -288,11 +288,13 @@ function addNewServiceDependency(component, source_element, source_obj, componen
                             // check if connection already exists between these two depedencies
                             if(!checkConnectionExist(provide_dependency_obj, use_dependency_obj)){
                                 // check if arc is visible
-                                if(provide_symbol.opacity() == 0){
-                                    // make it visible
-                                    provide_symbol.opacity(1);
-                                    use_stub_konva.opacity(1);
-                                }
+                                provide_dependency_obj.dep_stub_konva.opacity(1);
+                                use_dependency_obj.dep_stub_konva.opacity(1);
+                                // if(provide_symbol.opacity() == 0){
+                                //     // make it visible
+                                //     provide_symbol.opacity(1);
+                                //     use_stub_konva.opacity(1);
+                                // }
                                 // create new connection here
                                 connection_obj = addNewConnection(provide_component_obj, provide_source_obj, provide_stub_konva, provide_component_group, use_component_obj, use_source_obj, use_stub_konva, use_component_group, provide_dependency_obj, use_dependency_obj);
                             } else {
@@ -345,7 +347,7 @@ function hideTransitionSelectionArea(source_obj){
     if(source_obj.type != "Transition"){
         return;
     } else {
-        if(source_obj.transition_selection_area.opacity() == 1){
+        if(source_obj.transition_selection_area.opacity() == 1 && source_obj.dependency_count == 0){
             source_obj.transition_selection_area.opacity(0);
         }
     }
@@ -759,12 +761,15 @@ function addNewDataDependency(component, source_element, source_obj, component_o
                             use_dependency_obj.dep_stub_konva = data_stub_use;
                             // check if connection already exists between these two depedencies
                             if(!checkConnectionExist(provide_dependency_obj, use_dependency_obj)){
+                                //provide_symbol.opacity(1);
+                                provide_dependency_obj.dep_stub_konva.opacity(1);
+                                use_dependency_obj.dep_stub_konva.opacity(1);
                                 // check if arc is visible
-                                if(provide_symbol.opacity() == 0){
-                                    // make things visible
-                                    provide_symbol.opacity(1);
-                                    data_stub_use.opacity(1);
-                                }
+                                // if(provide_symbol.opacity() == 0){
+                                //     // make things visible
+                                //     provide_symbol.opacity(1);
+                                //     data_stub_use.opacity(1);
+                                // }
                                 // create new connection here
                                 connection_obj = addNewConnection(provide_component_obj, provide_source_obj, provide_stub_konva, provide_component_group, use_component_obj, use_source_obj, use_stub_konva, use_component_group, provide_dependency_obj, use_dependency_obj);
                             } else {
@@ -805,7 +810,8 @@ function addNewDataDependency(component, source_element, source_obj, component_o
 // func to check if connection already exists in connection list
 function checkConnectionExist(provide_dependency_obj, use_dependency_obj){
     for (var i = 0; i < connection_list.length; i++){
-        if(connection_list[i].provide_port_obj == provide_dependency_obj && connection_list[i].use_port_obj == use_dependency_obj){
+        if((connection_list[i].provide_port_obj == provide_dependency_obj && connection_list[i].use_port_obj == use_dependency_obj) ||  
+           (connection_list[i].provide_port_obj.source_obj == provide_dependency_obj.source_obj && connection_list[i].use_port_obj.source_obj == use_dependency_obj.source_obj)){
             return true;
         }
     }

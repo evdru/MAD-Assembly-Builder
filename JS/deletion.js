@@ -50,12 +50,25 @@ function componentDeletionHandler(component_obj){
 // Handles deletion of Dependency Obj
 function dependencyDeletionHandler(dependency_obj){
     //removeDependencyObj(dependency_obj);
-    removeConnectionObjFromDependencyConnectionList(dependency_obj);
+    for(var i = 0; i < dependency_obj.connection_list.length; i++){
+        console.log("Connection number " + i + 1);
+        // hide dependency stub of other dependency
+        connectionDeletionHandler(dependency_obj.connection_list[i]);
+    }
     removeDependencyObjFromComponentDependencyList(dependency_obj);
     decrementSourceObjDependencyCount(dependency_obj.source_obj);
     removeDependencyGroupKonva(dependency_obj);
     // if the dependency is coming out of a transition
     if(dependency_obj.source_obj.type == "Transition"){ hideTransitionSelectionArea(dependency_obj.source_obj); }
+};
+
+// Handles deletion of Connection obj
+function connectionDeletionHandler(connection_obj){
+    console.log("removing connection attached from PROVIDE port " + connection_obj.provide_port_obj.name + " and USE port " + connection_obj.use_port_obj.name);
+    hideDependencyStub(connection_obj);
+    removeConnectionObjFromDependencyConnectionList(connection_obj);
+    removeConnectionObjFromConnectionList(connection_obj);
+    removeConnectionKonva(connection_obj);
 };
 
 // Handles deletion of Place Obj
@@ -95,8 +108,7 @@ function removeConnectionsAttachedToComponent(component_obj){
     for (var i = 0; i < component_obj.dependency_list.length; i++){
         for (var j = 0; j < connection_list.length; j++) {
             if (connection_list[j].provide_port_obj == component_obj.dependency_list[i] || connection_list[j].use_port_obj == component_obj.dependency_list[i]){
-                removeConnectionKonva(connection_list[j]);
-                removeConnectionObj(connection_list[j]);
+                connectionDeletionHandler(connection_list[j]);
             }
         }
     }
@@ -125,27 +137,28 @@ function decrementSourceObjDependencyCount(source_obj){
     source_obj.dependency_count--;
 };
 
-function removeConnectionObj(connection_obj){
-    connection_obj.use_port_obj.connection_obj = undefined
-    connection_obj.provide_port_obj.connection_obj = undefined
-    // set opacity to 0 for dependencies
-    if(connection_obj.provide_port_obj.connection_list.length == 1){
-        connection_obj.provide_port_obj.dep_stub_konva.opacity(0);
-    }
-    
-    if(connection_obj.use_port_obj.connection_list.length == 1){
-        connection_obj.use_port_obj.dep_stub_konva.opacity(0);
-    }
+function removeConnectionObjFromConnectionList(connection_obj){
     // remove connection from connection list
     connection_list.splice( connection_list.indexOf(connection_obj), 1 );
-    removeConnectionKonva(connection_obj);
 };
 
-function removeConnectionObjFromDependencyConnectionList(dependency_obj){
-    for(var i = 0; i < dependency_obj.connection_list.length; i++){
-        removeConnectionObj(dependency_obj.connection_list[i]);
+// hides both dependency ports that this connection obj is attached to
+function hideDependencyStub(connection_obj){
+    // if this is the only connection on this dependency port, hide the dependency stub
+    if(connection_obj.provide_port_obj.connection_list.length <= 1){
+        connection_obj.provide_port_obj.dep_stub_konva.opacity(0);
     }
-}
+    if(connection_obj.use_port_obj.connection_list.length <= 1){
+        connection_obj.use_port_obj.dep_stub_konva.opacity(0);
+    }
+};
+
+function removeConnectionObjFromDependencyConnectionList(connection_obj){
+    connection_obj.use_port_obj.connection_list.splice( connection_obj.use_port_obj.connection_list.indexOf(connection_obj), 1 );
+    connection_obj.provide_port_obj.connection_list.splice( connection_obj.provide_port_obj.connection_list.indexOf(connection_obj), 1 );
+    // connection_obj.use_port_obj.connection_obj = undefined;
+    // connection_obj.provide_port_obj.connection_obj = undefined;
+};
 
 // function to remove connection konva group
 function removeConnectionKonva(connection_obj){
