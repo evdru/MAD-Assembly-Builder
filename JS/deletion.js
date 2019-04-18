@@ -158,6 +158,7 @@ function hideDependencyStub(connection_obj){
 function removeConnectionObjFromDependencyConnectionList(connection_obj){
     connection_obj.use_port_obj.connection_list.splice( connection_obj.use_port_obj.connection_list.indexOf(connection_obj), 1 );
     connection_obj.provide_port_obj.connection_list.splice( connection_obj.provide_port_obj.connection_list.indexOf(connection_obj), 1 );
+    connection_obj = undefined;
 };
 
 // function to remove connection konva group
