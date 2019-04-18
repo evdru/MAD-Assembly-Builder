@@ -50,11 +50,7 @@ function componentDeletionHandler(component_obj){
 // Handles deletion of Dependency Obj
 function dependencyDeletionHandler(dependency_obj){
     //removeDependencyObj(dependency_obj);
-    for(var i = 0; i < dependency_obj.connection_list.length; i++){
-        console.log("Connection number " + i + 1);
-        // hide dependency stub of other dependency
-        connectionDeletionHandler(dependency_obj.connection_list[i]);
-    }
+    removeConnectionObjConnectedToDependency(dependency_obj);
     removeDependencyObjFromComponentDependencyList(dependency_obj);
     decrementSourceObjDependencyCount(dependency_obj.source_obj);
     removeDependencyGroupKonva(dependency_obj);
@@ -66,7 +62,9 @@ function dependencyDeletionHandler(dependency_obj){
 function connectionDeletionHandler(connection_obj){
     console.log("removing connection attached from PROVIDE port " + connection_obj.provide_port_obj.name + " and USE port " + connection_obj.use_port_obj.name);
     hideDependencyStub(connection_obj);
+    // removes connection from both PROVIDE and USE dependencies
     removeConnectionObjFromDependencyConnectionList(connection_obj);
+    // removes connection obj from global connection list
     removeConnectionObjFromConnectionList(connection_obj);
     removeConnectionKonva(connection_obj);
 };
@@ -91,16 +89,20 @@ function transitionDeletionHandler(transition_obj){
     removeTransitionObjFromComponentTransitionList(transition_obj);
 };
 
+function removeConnectionObjConnectedToDependency(dependency_obj){
+    for (var i = 0; i < dependency_obj.connection_list.length; i++) {
+        connectionDeletionHandler(dependency_obj.connection_list[i]);
+    }
+}
+
 function removeComponentGroupKonva(component_obj){
     // destroys the component group and all of its children
     component_obj.component_group_konva.destroy();
 };
 
 function removeComponentObjFromComponentList(component_obj){
-    console.log("Before " + component_list);
     // find index of component in component_list and remove
     component_list.splice( component_list.indexOf(component_obj), 1 );
-    console.log("After " + component_list);
 };
 
 function removeConnectionsAttachedToComponent(component_obj){
@@ -156,8 +158,6 @@ function hideDependencyStub(connection_obj){
 function removeConnectionObjFromDependencyConnectionList(connection_obj){
     connection_obj.use_port_obj.connection_list.splice( connection_obj.use_port_obj.connection_list.indexOf(connection_obj), 1 );
     connection_obj.provide_port_obj.connection_list.splice( connection_obj.provide_port_obj.connection_list.indexOf(connection_obj), 1 );
-    // connection_obj.use_port_obj.connection_obj = undefined;
-    // connection_obj.provide_port_obj.connection_obj = undefined;
 };
 
 // function to remove connection konva group

@@ -87,7 +87,6 @@ class Dependency {
         this.dep_group_konva;
         this.dep_stub_konva;
         this.source_obj;
-        this.connection_obj;
         this.connection_list = [];
         this.component_obj;
         this.enabled = false;
