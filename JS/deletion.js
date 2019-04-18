@@ -92,6 +92,7 @@ function transitionDeletionHandler(transition_obj){
 function removeConnectionObjConnectedToDependency(dependency_obj){
     for (var i = 0; i < dependency_obj.connection_list.length; i++) {
         connectionDeletionHandler(dependency_obj.connection_list[i]);
+        i--;
     }
 }
 
@@ -156,10 +157,21 @@ function hideDependencyStub(connection_obj){
 };
 
 function removeConnectionObjFromDependencyConnectionList(connection_obj){
-    connection_obj.use_port_obj.connection_list.splice( connection_obj.use_port_obj.connection_list.indexOf(connection_obj), 1 );
-    connection_obj.provide_port_obj.connection_list.splice( connection_obj.provide_port_obj.connection_list.indexOf(connection_obj), 1 );
+    for( var i = 0; i < connection_obj.use_port_obj.connection_list.length; i++){ 
+        if (connection_obj.use_port_obj.connection_list[i] == connection_obj) {
+            connection_obj.use_port_obj.connection_list.splice(i, 1); 
+            i--;
+        }
+        }
+    for( var i = 0; i < connection_obj.provide_port_obj.connection_list.length; i++){ 
+        if (connection_obj.provide_port_obj.connection_list[i] == connection_obj) {
+            connection_obj.provide_port_obj.connection_list.splice(i, 1); 
+            i--;
+        }
+    }
     connection_obj = undefined;
 };
+
 
 // function to remove connection konva group
 function removeConnectionKonva(connection_obj){
