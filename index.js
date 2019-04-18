@@ -158,7 +158,7 @@ ipcMain.on("set_dependency_type", function(event, args) {
 	const {dialog} = require('electron');
 
 	const options = {
-		type: 'question',
+		//type: 'question',
 		buttons: ['Cancel', 'SERVICE', 'DATA'],
 		title: 'Question',
 		message: 'What kind of dependency port do you wish to create?'
