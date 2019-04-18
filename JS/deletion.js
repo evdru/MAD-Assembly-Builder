@@ -112,6 +112,7 @@ function removeConnectionsAttachedToComponent(component_obj){
         for (var j = 0; j < connection_list.length; j++) {
             if (connection_list[j].provide_port_obj == component_obj.dependency_list[i] || connection_list[j].use_port_obj == component_obj.dependency_list[i]){
                 connectionDeletionHandler(connection_list[j]);
+                j--;
             }
         }
     }
