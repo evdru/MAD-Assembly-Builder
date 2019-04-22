@@ -37,12 +37,13 @@ function loadAssembly() {
     loadTransitions(la_comp_list);
     loadDependencies(la_comp_list);
     loadConnections(la_conn_list);
+
 };
 
 function clear() {
 
-    for(var comp_ctr = 0; comp_ctr < component_list.length; comp_ctr++) {
-        component_obj = component_list[comp_ctr];
+    while(component_list.length != 0) {
+        component_obj = component_list[0];
         removeComponentObj(component_obj);
         component_obj.component_group_konva.destroy();
         layer.batchDraw();

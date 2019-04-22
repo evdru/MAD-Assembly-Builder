@@ -277,7 +277,7 @@ function changeComponentName(component_name, new_comp_name) {
 };
 
 function removeComponentObj(component_obj) {
-    console.log("The connection list is: " + connection_list);
+
     // check if connection is connected to this component
     for (var i = 0; i < component_obj.dependency_list.length; i++){
         for (var j = 0; j < connection_list.length; j++) {
@@ -287,10 +287,10 @@ function removeComponentObj(component_obj) {
             }
         }
     }
-    console.log("Before " + component_list);
+
     // find index of component in component_list and remove
     component_list.splice( component_list.indexOf(component_obj), 1 );
-    console.log("After " + component_list);
+
 };
 
 // Function to change transition name
