@@ -18,13 +18,14 @@ la_ipcRenderer.on('load_assembly', function() {
 
 function loadAssembly() {
 
-    // @todo: clear/reload gui
     fileName = la_dialog.showOpenDialog( {properties: ['showHiddenFiles']} );
 
     if (fileName === undefined) {
         console.log("You didn't load a file.");
         return;
     }
+
+    clear();
 
     data = la_fs.readFileSync(fileName.toString());
     la_load_list = la_yaml.safeLoadAll(data)[0];
@@ -36,6 +37,17 @@ function loadAssembly() {
     loadTransitions(la_comp_list);
     loadDependencies(la_comp_list);
     loadConnections(la_conn_list);
+};
+
+function clear() {
+
+    for(var comp_ctr = 0; comp_ctr < component_list.length; comp_ctr++) {
+        component_obj = component_list[comp_ctr];
+        removeComponentObj(component_obj);
+        component_obj.component_group_konva.destroy();
+        layer.batchDraw();
+    }
+
 };
 
 function loadComponents(la_comp_list) {
