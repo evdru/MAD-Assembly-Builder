@@ -1,6 +1,7 @@
 const fs = require('fs');
+const path = require('path');
 
-const plugins_folder = './Plugins/';
+const plugins_folder = path.join(__dirname, '../Plugins/');
 
 let valid_plugins = [];
 let valid_paths = [];
