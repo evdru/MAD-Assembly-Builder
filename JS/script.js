@@ -39,7 +39,7 @@ class Place {
     constructor(type, name) {
         this.type = type;
         this.name = name;
-        this.index = index;
+        this.index;
         this.component_obj;
         this.place_konva;
         this.transition_count = 0; // 3 max

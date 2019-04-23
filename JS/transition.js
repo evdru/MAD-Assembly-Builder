@@ -16,9 +16,6 @@ function addNewTransition(component_obj, source_obj, dest_obj) {
         name: 'transition_group'
     });
 
-    // ref to component
-    transition_obj.component_obj = component_obj;
-
     var transition = new Konva.Line({
         points: [source_obj.place_konva.getX(), source_obj.place_konva.getY(),
                ((source_obj.place_konva.getX() + dest_obj.place_konva.getX()) / 2) + offset, ((source_obj.place_konva.getY() + dest_obj.place_konva.getY()) / 2),
@@ -64,6 +61,7 @@ function addNewTransition(component_obj, source_obj, dest_obj) {
     transition_obj.tran_select_konva = transition_selection_area;
     transition_obj.transition_selection_area = transition_selection_area;
     transition_obj.tran_konva = transition;
+    transition_obj.component_obj = component_obj;
     component_obj.transition_list.push(transition_obj);
 
     // add transition konva obj to component group
