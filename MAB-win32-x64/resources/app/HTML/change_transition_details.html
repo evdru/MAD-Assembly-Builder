@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="Change Transition Details" charset="utf-8">
+        <script src="../JS/script.js"></script>
+    </head>
+
+    <body>
+        <p>Please enter the transitions's new name:</p>
+        New Transition Name: <input type="text" name="transition_name" id="transition_name" autofocus><br>
+        New Transition Function: <input type="text" name="function_name" id="function_name"><br>
+        New Transition Duration Minimum: <input type="text" name="duration_min" id="duration_min"><br>
+        New Transition Duration Maximum: <input type="text" name="duration_max" id="duration_max"><br>
+        <hr>
+        <button id="submit">Change Transition Details</button>
+        
+        <script>
+            const electron = require('electron');
+            const {ipcRenderer} = electron;
+
+            const submit = document.getElementById("submit");
+            submit.addEventListener('click', function(e) {
+                e.preventDefault();
+                const transition_name = document.querySelector('#transition_name').value.replace(/ /g,"_");
+                const function_name = document.querySelector('#function_name').value.replace(/ /g,"_");
+                const duration_min = document.querySelector('#duration_min').value.replace(/ /g,"_");
+                const duration_max = document.querySelector('#duration_max').value.replace(/ /g,"_");
+
+                ipcRenderer.send('transition->main', {name: transition_name, function: function_name, duration_min: duration_min, duration_max: duration_max});
+                //Close the window on button press.
+                closeNewWindow();
+            });
+        </script>
+
+    </body>
+</html>

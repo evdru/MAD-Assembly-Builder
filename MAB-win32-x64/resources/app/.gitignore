@@ -1,0 +1,9 @@
+#Ignore folder name '.vs', 'node_modules'
+.vs/
+node_modules/
+
+#Ignore file name 'package-lock.json'
+package-lock.json
+
+#Ignore file name 'package.json'
+package.json

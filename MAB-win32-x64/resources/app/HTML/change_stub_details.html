@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="Change Stub Details" charset="utf-8">
+        <script src="../JS/script.js"></script>
+    </head>
+
+    <body>
+        <p>Please enter the stub's new name:</p>
+        New Stub Name: <input type="text" name="stub_name" id="stub_name" autofocus><br><br>
+        <button id="submit">Change Details</button>
+
+        <script>
+            const electron = require('electron');
+            const {ipcRenderer} = electron;
+
+            const submit = document.getElementById("submit");
+            submit.addEventListener('click', function(e) {
+                e.preventDefault();
+                const stub_name = document.querySelector('#stub_name').value.replace(/ /g,"_");
+                console.log(stub_name);
+                ipcRenderer.send('stub->main', {name: stub_name});
+
+                //Close the window on button press.
+                closeNewWindow();
+            });
+            </script>
+
+    </body>
+</html>
