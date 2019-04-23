@@ -15,6 +15,8 @@ Node.js
 Electron
 Konva
 JS-YAML
+GSAP
+timer-stopwatch
 ```
 
 ### Installing
@@ -43,6 +45,7 @@ Once node.js & electron have been installed, navigate to the newly cloned reposi
 ```
 npm install konva
 npm install timer-stopwatch
+npm install gsap
 npm install js-yaml
 ```
 
@@ -60,9 +63,9 @@ Future iterations will run via a platform specific executable.
 
 * [Node.js](https://nodejs.org/en/) - An asynchronous event driven JavaScript runtime
 * [Electron](https://electronjs.org/) - Electron is an open source library developed by GitHub for building cross-platform desktop applications with HTML, CSS, and JavaScript.
-* [Konva](https://rometools.github.io/rome/) - An HTML5 Canvas JavaScript framework that extends the 2d context
-by enabling canvas interactivity for desktop and mobile applications.
+* [Konva](https://rometools.github.io/rome/) - An HTML5 Canvas JavaScript framework that extends the 2d context by enabling canvas interactivity for desktop and mobile applications.
 * [Timer-Stopwatch](https://www.npmjs.com/package/timer-stopwatch) - A stopwatch and countdown clock module for node.js.
+* [GSAP](https://www.npmjs.com/package/gsap) - GSAP is a JavaScript library for creating high-performance animations.
 * [JS-YAML](https://github.com/nodeca/js-yaml) - An implementation of YAML, a human-friendly data serialization language.
 
 ## Authors

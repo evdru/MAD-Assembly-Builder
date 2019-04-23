@@ -14,7 +14,9 @@ var stub_args = 'global'
 
 function boot() {
 	// Create new window
-	window = new BrowserWindow()
+	window = new BrowserWindow({
+		icon: __dirname + './Icons/logo.ico'
+	});
 	window.maximize()
 	window.loadURL(url.format({
 		pathname: path.join(__dirname, './HTML/index.html'),
@@ -158,7 +160,7 @@ ipcMain.on("set_dependency_type", function(event, args) {
 	const {dialog} = require('electron');
 
 	const options = {
-		type: 'question',
+		//type: 'question',
 		buttons: ['Cancel', 'SERVICE', 'DATA'],
 		title: 'Question',
 		message: 'What kind of dependency port do you wish to create?'

@@ -66,9 +66,10 @@ function addNewConnection(provide_component_obj, provide_source_obj, provide_stu
     connection_obj.provide_component_name = provide_component_obj.name;
     connection_obj.connection_line_konva = connection;
     connection_obj.connection_group_konva = connection_group;
-
-    provide_dependency_obj.connection_obj = connection_obj;
-    use_dependency_obj.connection_obj = connection_obj;
+    // // create pointer to connection_obj from provide_dependency_obj
+    provide_dependency_obj.connection_list.push(connection_obj);
+    // create pointer to connection_obj from use_dependency_obj
+    use_dependency_obj.connection_list.push(connection_obj);
 
     // add connection to global list
     connection_list.push(connection_obj);

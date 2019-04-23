@@ -39,7 +39,8 @@ class Place {
     constructor(type, name) {
         this.type = type;
         this.name = name;
-        this.index;
+        this.index = index;
+        this.component_obj;
         this.place_konva;
         this.transition_count = 0; // 3 max
         this.dependency_count = 0; // 3 max
@@ -64,6 +65,7 @@ class Transition {
         this.tran_konva;
         this.dest = dest;
         this.func = func;
+        this.component_obj;
         this.dependency_count = 0; // 3 max
         this.dependency = false;
         this.dependency_type = '';
@@ -85,7 +87,7 @@ class Dependency {
         this.dep_group_konva;
         this.dep_stub_konva;
         this.source_obj;
-        this.connection_obj;
+        this.connection_list = [];
         this.component_obj;
         this.enabled = false;
     };
@@ -151,45 +153,6 @@ function closeNewWindow() {
     window.close();
 };
 
-// remove the place obj from the component_obj's place list
-function removePlaceObj(component_obj, place_obj){
-    console.log("Before " + component_obj.place_list);
-    // find index of component in component_list and remove
-    component_obj.place_list.splice( component_obj.place_list.indexOf(place_obj), 1 );
-    console.log("After " + component_obj.place_list);
-
-    // remove all dependencies belonging to this place
-    for(var i = 0; i < component_obj.dependency_list.length; i++){
-        // if this dependency belongs to place obj
-        if(component_obj.dependency_list[i].source_obj == place_obj){
-            // destroy konva dependency group first
-            component_obj.dependency_list[i].dep_group_konva.destroy();
-            // remove dependency obj from list
-            removeDependencyObj(component_obj, component_obj.dependency_list[i]);
-        }
-    }
-};
-
-// function gets called when a place is deleted
-function removeOutboundAndInboundTransitions(component_obj, place_obj){
-    // remove all inbound transitions from this place_obj
-    if(place_obj.transition_inbound_list.length > 0){
-        for (var i = 0; i < place_obj.transition_inbound_list.length; i++){
-            place_obj.transition_inbound_list[i].tran_group_konva.destroy();
-            removeTransitionObj(component_obj, place_obj.transition_inbound_list[i]);
-        }
-    }
-    if(place_obj.transition_outbound_list.length > 0){
-        // remove all outbound transitions from this place_obj
-        for (var j = 0; j < place_obj.transition_outbound_list.length; j++){
-            // destroy the konva transition group
-            place_obj.transition_outbound_list[j].tran_group_konva.destroy();
-            // remove the transition obj
-            removeTransitionObj(component_obj, place_obj.transition_outbound_list[j]);
-        }
-    }
-};
-
 // Function to change place name
 function changePlaceName(component, place, new_place_name) {
     // find the component obj
@@ -227,70 +190,11 @@ function changePlaceDependencyType(component, place, dependency_type) {
     }
 };
 
-// func to remove the dependency obj from its global comp_obj.depedency_list
-function removeDependencyObj(component_obj, dependency_obj){
-    // check if dependency has a connection with it
-    if(dependency_obj.connection_obj){
-        console.log("its removing connection")
-        removeConnectionObj(dependency_obj.connection_obj);
-    }
-    if(dependency_obj.source_obj.type == "Transition"){
-        // toggle transition selection area opacity
-        hideTransitionSelectionArea(dependency_obj.source_obj);
-    }
-    // hide the circle on transition
-    if(dependency_obj.source_obj.type == 'Transition'){ dependency_obj.source_obj.tran_select_konva.opacity(0); }
-
-    console.log("Before " + component_obj.dependency_list);
-    // find index of dependency_obj in component_list.dependency_list and remove
-    component_obj.dependency_list.splice( component_obj.dependency_list.indexOf(dependency_obj), 1 );
-    console.log("After " + component_obj.dependency_list);
-};
-
-function removeConnectionObj(connection_obj){
-    connection_obj.use_port_obj.connection_obj = undefined
-    connection_obj.provide_port_obj.connection_obj = undefined
-    // set opacity to 0 for dependencies
-    connection_obj.provide_port_obj.dep_stub_konva.opacity(0);
-    connection_obj.use_port_obj.dep_stub_konva.opacity(0);
-    // remove connection from connection list
-    connection_list.splice( connection_list.indexOf(connection_obj), 1 );
-    removeConnectionKonva(connection_obj);
-}
-
-// function to remove connection konva group
-function removeConnectionKonva(connection_obj){
-    // change opacity of provide and use ports
-    // dependency_obj.connection_obj.provide_port_obj.dep_group_konva.provide_symbol.opacity(0);
-    // dependency_obj.connection_obj.use_port_obj.dep_group_konva.use_stub_konva.opacity(0);
-
-    // destroy the connection group
-    connection_obj.connection_group_konva.destroy();
-    layer.batchDraw();
-}
-
 // Function to change component name
 function changeComponentName(component_name, new_comp_name) {
      // find the component obj
     var found_component_obj = component_list.find(function(element) { return element.name == component_name; });
     if(found_component_obj){ found_component_obj.name = new_comp_name; }
-};
-
-function removeComponentObj(component_obj) {
-
-    // check if connection is connected to this component
-    for (var i = 0; i < component_obj.dependency_list.length; i++){
-        for (var j = 0; j < connection_list.length; j++) {
-            if (connection_list[j].provide_port_obj == component_obj.dependency_list[i] || connection_list[j].use_port_obj == component_obj.dependency_list[i]){
-                removeConnectionKonva(connection_list[j]);
-                removeConnectionObj(connection_list[j]);
-            }
-        }
-    }
-
-    // find index of component in component_list and remove
-    component_list.splice( component_list.indexOf(component_obj), 1 );
-
 };
 
 // Function to change transition name
@@ -325,54 +229,6 @@ function changeTransitionDurationMax(component, transition_name, new_max_duratio
     console.log(found_transition_obj.name + " old max duration is " + found_transition_obj.duration_max);
     if (found_transition_obj){ found_transition_obj.duration_max = new_max_duration; }
     console.log(found_transition_obj.name + " new max duration is " + found_transition_obj.duration_max);
-}
-
-function removeTransitionObj(component_obj, transition_obj) {
-    // remove all dependencies belonging to this transition_obj
-    for(var i = 0; i < component_obj.dependency_list.length; i++){
-        // if this dependency belongs to transition_obj
-        if(component_obj.dependency_list[i].source_obj == transition_obj){
-            // destroy konva dependency group first
-            component_obj.dependency_list[i].dep_group_konva.destroy();
-            // remove dependency obj from list
-            removeDependencyObj(component_obj, component_obj.dependency_list[i]);
-            layer.batchDraw();
-        }
-    }
-
-    removeOutboundTransitionObj(transition_obj);
-
-    removeInboundTransitionObj(transition_obj);
-
-    decrementPlaceTransitionDict(component_obj, transition_obj.src, transition_obj.dest);
-    // decrement the transition count of source place
-    transition_obj.src.transition_count--;
-    // find index of transition in component_list and remove
-    component_obj.transition_list.splice( component_obj.transition_list.indexOf(transition_obj), 1 );
-};
-
-function removeOutboundTransitionObj(transition_obj){
-    // remove itself from its src outbound list
-    transition_obj.src.transition_outbound_list.splice( transition_obj.src.transition_outbound_list.indexOf(transition_obj), 1 );
-}
-
-function removeInboundTransitionObj(transition_obj){
-    // remove itself from its dest inbound list
-    transition_obj.dest.transition_inbound_list.splice( transition_obj.dest.transition_inbound_list.indexOf(transition_obj), 1 );
-}
-
-function decrementPlaceTransitionDict(component_obj, source_place, dest_place){
-    var source_obj_name = source_place.name;
-    var dest_obj_name = dest_place.name;
-    // check the transition dictionary for parallel transitions
-    if(component_obj.transition_dictionary[source_obj_name] && component_obj.transition_dictionary[source_obj_name][dest_obj_name]){
-        console.log("Decrementing dictionary keys");
-        console.log("source name: " + source_obj_name);
-        console.log("dest name: " + dest_obj_name);
-        console.log(Object.entries(component_obj.transition_dictionary));
-        // decrement the trans dict
-        component_obj.transition_dictionary[source_obj_name][dest_obj_name]--;
-    }
 }
 
 // Function to change transitions's dependency status

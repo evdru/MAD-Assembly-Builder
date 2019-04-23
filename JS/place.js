@@ -46,6 +46,7 @@ function addNewPlace(component_obj, placePos) {
     var place_obj = new Place('Place', "Place_" + generateNextIndex(component_obj.place_list));
     place_obj.index = generateNextIndex(component_obj.place_list);
     place_obj.place_konva = place;
+    place_obj.component_obj = component_obj;
 
     component_obj.component_group_konva.add(place);
     component_obj.place_list.push(place_obj);
@@ -294,24 +295,17 @@ function addNewPlace(component_obj, placePos) {
             if(confirm('Are you sure you want to delete this Place?')) {
 
                 // Delete it!
-                place.destroy();
                 tooltip.destroy();
-                layer.draw();
-
                 selected_source = null;
                 selected_source_comp = null;
                 selected_dest = null;
                 selected_dest_comp = null;
 
-                // remove all transitions that are connected to this place
-                removeOutboundAndInboundTransitions(component_obj, place_obj);
-
-                // remove the place obj from its components place list
-                removePlaceObj(component_obj, place_obj);
-                layer.batchDraw();
-
-            }
-
+                deletor(place_obj);
+            } else {
+                // Do nothing!
+                return;
+            }   
         }
 
     };
