@@ -190,24 +190,12 @@ function addNewServiceDependency(component, source_element, source_obj, componen
         if (ev.keyCode === 46 || ev.keyCode == 8) {
             if (confirm('Are you sure you want to delete this dependency?')){
                 // Delete it!
-                // dependency.destroy();
-                // stem.destroy();
-                // stub.destroy();
-                // symbol.destroy();
-                dependency_group.destroy();
+                //dependency_group.destroy();
                 tooltip.destroy();
-                layer.draw();
-
-                // remove connection if created from dependency stub
-
-                // set source_obj dependency boolean to false
-                source_obj.dependency = false;
-                // decrement dependency count
-                source_obj.dependency_count--;
 
                 // remove the depedency obj from its components dependency list
-                removeDependencyObj(component_obj, dependency_obj);
-                layer.batchDraw();
+                //removeDependencyObj(component_obj, dependency_obj);
+                deletor(dependency_obj);
             } else {
                 // Do nothing!
                 return;
@@ -262,7 +250,6 @@ function addNewServiceDependency(component, source_element, source_obj, componen
     stub.on("click", function(e){
         if (e.evt.button === 0){
             // first left click
-            console.log("Left clicked stub: ", source_obj.name);
             // check if stub is a provide
             if(source_obj.type == 'Place'){
                 provide_component_obj = component_obj;
@@ -274,7 +261,6 @@ function addNewServiceDependency(component, source_element, source_obj, componen
                 // set pointer to dependency obj stub/symbol
                 provide_dependency_obj.dep_stub_konva = provide_symbol;
                 provide_dependency_type = source_obj.dependency_type;
-                console.log("PROVIDE dependency type is " + provide_dependency_type);
                 // set source selected true
                 source_selected = true;
             }
@@ -285,7 +271,6 @@ function addNewServiceDependency(component, source_element, source_obj, componen
                 if(source_obj.type == 'Transition'){
                     // get the use stub depedency type
                     use_dependency_type = source_obj.dependency_type;
-                    console.log("USE dependency type is " + use_dependency_type);
                     // check if source stub and dest stub is the same dependency type
                     if((provide_dependency_type == 'PROVIDE' && use_dependency_type == 'USE') || (provide_dependency_type == 'DATA_PROVIDE' && use_dependency_type == 'DATA_USE')){
                         use_component_obj = component_obj;
@@ -300,11 +285,13 @@ function addNewServiceDependency(component, source_element, source_obj, componen
                             // check if connection already exists between these two depedencies
                             if(!checkConnectionExist(provide_dependency_obj, use_dependency_obj)){
                                 // check if arc is visible
-                                if(provide_symbol.opacity() == 0){
-                                    // make it visible
-                                    provide_symbol.opacity(1);
-                                    use_stub_konva.opacity(1);
-                                }
+                                provide_dependency_obj.dep_stub_konva.opacity(1);
+                                use_dependency_obj.dep_stub_konva.opacity(1);
+                                // if(provide_symbol.opacity() == 0){
+                                //     // make it visible
+                                //     provide_symbol.opacity(1);
+                                //     use_stub_konva.opacity(1);
+                                // }
                                 // create new connection here
                                 connection_obj = addNewConnection(provide_component_obj, provide_source_obj, provide_stub_konva, provide_component_group, use_component_obj, use_source_obj, use_stub_konva, use_component_group, provide_dependency_obj, use_dependency_obj);
                             } else {
@@ -321,7 +308,6 @@ function addNewServiceDependency(component, source_element, source_obj, componen
                 }
             } else {
                 // right clk source was not selected, open window for editing
-                console.log("Open window for editing " + source_obj.name + " stub details");
                 ipcRend.send("change_stub_details", {component: component_obj.name, stub: dependency_obj.name});
             }
             // reset source and dest
@@ -357,7 +343,7 @@ function hideTransitionSelectionArea(source_obj){
     if(source_obj.type != "Transition"){
         return;
     } else {
-        if(source_obj.transition_selection_area.opacity() == 1){
+        if(source_obj.transition_selection_area.opacity() == 1 && source_obj.dependency_count == 0){
             source_obj.transition_selection_area.opacity(0);
         }
     }
@@ -375,7 +361,6 @@ function isDependencyAllowed(source_obj){
 function getVerticalOffset(source_obj){
     var verticalOffset;
     var parallelOffset = 0;
-    console.log(source_obj.offset * 5);
     if(source_obj.type == 'Transition'){
         parallelOffset = source_obj.offset * 5;
     }
@@ -421,7 +406,6 @@ function addNewDataDependency(component, source_element, source_obj, component_o
         // create the dependency object
         var dependency_obj = new Dependency('DATA_PROVIDE', "Dependency_" + index);
         component_obj.dependency_list.push(dependency_obj);
-        console.log('Created new DATA_PROVIDE dependency dock');
         offset = component.getWidth();
         add = 20;
         stub_x = -5;
@@ -432,7 +416,6 @@ function addNewDataDependency(component, source_element, source_obj, component_o
         // create the dependency object
         var dependency_obj = new Dependency('DATA_USE', "Dependency_" + index);
         component_obj.dependency_list.push(dependency_obj);
-        console.log('Created new DATA_USE dependency dock');
         // use connection going left of a transition
         offset = 0;
         add = -20;
@@ -449,14 +432,11 @@ function addNewDataDependency(component, source_element, source_obj, component_o
 
     // set source obj of dependency stub
     dependency_obj.source_obj = source_obj;
-    console.log("This dependencys source obj is " + dependency_obj.source_obj.name);
-
     // add dependency obj to source_obj dep list
     source_obj.dependency_obj_list.push(dependency_obj);
 
     // increment source obj dependency count
     source_obj.dependency_count++;
-    console.log(source_obj.name + " dependency count is now " + source_obj.dependency_count);
 
     dependency_obj.component_obj = component_obj;
 
@@ -635,10 +615,10 @@ function addNewDataDependency(component, source_element, source_obj, component_o
 
     function removeStub(ev){
         // keyCode Delete key = 46
-        if (ev.keyCode === 46) {
+        if (ev.keyCode === 46 || ev.keyCode == 8) {
             if (confirm('Are you sure you want to delete this dependency?')){
                 // Delete it!
-                dependency_group.destroy();
+                //dependency_group.destroy();
                 tooltip.destroy();
 
                 // remove connection if created from dependency stub
@@ -647,8 +627,8 @@ function addNewDataDependency(component, source_element, source_obj, component_o
                 source_obj.dependency = false;
 
                 // remove the depedency obj from its components dependency list
-                removeDependencyObj(component_obj, dependency_obj);
-                layer.batchDraw();
+                //removeDependencyObj(component_obj, dependency_obj);
+                deletor(dependency_obj);
             } else {
                 // Do nothing!
                 return;
@@ -771,12 +751,15 @@ function addNewDataDependency(component, source_element, source_obj, component_o
                             use_dependency_obj.dep_stub_konva = data_stub_use;
                             // check if connection already exists between these two depedencies
                             if(!checkConnectionExist(provide_dependency_obj, use_dependency_obj)){
+                                //provide_symbol.opacity(1);
+                                provide_dependency_obj.dep_stub_konva.opacity(1);
+                                use_dependency_obj.dep_stub_konva.opacity(1);
                                 // check if arc is visible
-                                if(provide_symbol.opacity() == 0){
-                                    // make things visible
-                                    provide_symbol.opacity(1);
-                                    data_stub_use.opacity(1);
-                                }
+                                // if(provide_symbol.opacity() == 0){
+                                //     // make things visible
+                                //     provide_symbol.opacity(1);
+                                //     data_stub_use.opacity(1);
+                                // }
                                 // create new connection here
                                 connection_obj = addNewConnection(provide_component_obj, provide_source_obj, provide_stub_konva, provide_component_group, use_component_obj, use_source_obj, use_stub_konva, use_component_group, provide_dependency_obj, use_dependency_obj);
                             } else {
@@ -817,7 +800,8 @@ function addNewDataDependency(component, source_element, source_obj, component_o
 // func to check if connection already exists in connection list
 function checkConnectionExist(provide_dependency_obj, use_dependency_obj){
     for (var i = 0; i < connection_list.length; i++){
-        if(connection_list[i].provide_port_obj == provide_dependency_obj && connection_list[i].use_port_obj == use_dependency_obj){
+        if((connection_list[i].provide_port_obj == provide_dependency_obj && connection_list[i].use_port_obj == use_dependency_obj) ||  
+           (connection_list[i].provide_port_obj.source_obj == provide_dependency_obj.source_obj && connection_list[i].use_port_obj.source_obj == use_dependency_obj.source_obj)){
             return true;
         }
     }
