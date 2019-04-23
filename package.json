@@ -4,7 +4,10 @@
 	"description": "MAD Assembly Builder",
 	"main": "index.js",
 	"scripts": {
-		"start": "electron ."
+		"start": "electron .",
+		"package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds",
+		"package-win": "electron-packager . mad-assembly-builder --overwrite --platform=win32 --arch=ia32 --icon=assets/icons/win/logo.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"MAD Assembly Builder\"",
+		"package-linux": "electron-packager . mad-assembly-builder --overwrite --asar=true --platform=linux --arch=x64 --icon=assets/icons/png/logo.png --prune=true --out=release-builds"
 	},
 	"author": "Team Amadeus",
 	"license": "ISC",
@@ -14,6 +17,7 @@
 		"timer-stopwatch": "^0.2.0"
 	},
 	"devDependencies": {
-		"electron": "^4.1.4"
+		"electron": "^4.1.4",
+		"electron-packager": "^13.1.1"
 	}
 }

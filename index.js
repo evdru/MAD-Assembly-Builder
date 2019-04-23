@@ -6,6 +6,9 @@ const ipcMain = electron.ipcMain;
 
 const {app, BrowserWindow, Menu} = electron;
 
+// SET ENV (removes developer tools)
+process.env.NODE_ENV = 'production';
+
 let window;
 var place_args = 'global';
 var component_args = 'global';
