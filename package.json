@@ -10,7 +10,10 @@
 	"license": "ISC",
 	"dependencies": {
 		"gsap": "^2.1.2",
-		"js-yaml": "^3.12.2",
+		"js-yaml": "^3.13.1",
 		"timer-stopwatch": "^0.2.0"
+	},
+	"devDependencies": {
+		"electron": "^4.1.4"
 	}
 }

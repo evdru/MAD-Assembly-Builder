@@ -14,7 +14,9 @@ var stub_args = 'global'
 
 function boot() {
 	// Create new window
-	window = new BrowserWindow()
+	window = new BrowserWindow({
+		icon: __dirname + './Icons/logo.ico'
+	});
 	window.maximize()
 	window.loadURL(url.format({
 		pathname: path.join(__dirname, './HTML/index.html'),
