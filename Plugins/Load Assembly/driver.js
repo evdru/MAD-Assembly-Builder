@@ -43,10 +43,7 @@ function loadAssembly() {
 function clear() {
 
     while(component_list.length != 0) {
-        component_obj = component_list[0];
-        removeComponentObj(component_obj);
-        component_obj.component_group_konva.destroy();
-        layer.batchDraw();
+        deletor(component_list[0]);
     }
 
 };
