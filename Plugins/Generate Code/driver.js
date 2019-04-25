@@ -22,7 +22,7 @@ function createComponentString(component) {
     //Append to content
 	content += "from mad import *\n";
 	content += "import time\n\n";
-    content += "class " + component.name + "(Component):\n";
+    content += "class " + component.name.charAt(0).toUpperCase() + component.name.slice(1) + "(Component):\n";
 
     //Create places list
     content += "\tdef create(self):\n";
@@ -121,7 +121,7 @@ function createAssemblyString(comp_list) {
     
     //Import component files and classes
     for (var i = 0; i < comp_list.length; i++) {
-        content += "from " + comp_list[i].name.toLowerCase() + " import " + comp_list[i].name + "\n";
+        content += "from " + comp_list[i].name.toLowerCase() + " import " + comp_list[i].name.charAt(0).toUpperCase() + comp_list[i].name.slice(1) + "\n";
         if (i == comp_list.length - 1) {
             content += "\n";
         }
@@ -132,7 +132,7 @@ function createAssemblyString(comp_list) {
     
     //Create new classes of imported types
     for (var j = 0; j < comp_list.length; j++) {
-        content += "\t" + comp_list[j].name.toLowerCase() + " = " + comp_list[j].name + "()\n\n";
+        content += "\t" + comp_list[j].name.toLowerCase() + " = " + comp_list[j].name.charAt(0).toUpperCase() + comp_list[j].name.slice(1) + "()\n\n";
     }
 
     //Add components to the assembly
