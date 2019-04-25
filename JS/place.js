@@ -253,8 +253,11 @@ function addNewPlace(component_obj, placePos) {
 
             createDependencyPort(selected_source_comp, selected_source);
 
+            selected_source.place_konva.stroke('black');
+            selected_source.place_konva.strokeWidth(1);
             selected_source = null;
             selected_source_comp = null;
+            layer.batchDraw();
 
         }
 
