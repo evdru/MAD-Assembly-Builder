@@ -24,7 +24,10 @@ function saveAssembly() {
 
     var saveContent = sa_yaml.safeDump(save_list);
 
-    fileName = sa_dialog.showSaveDialog( {defaultPath: "~/*.yaml"} );
+    fileName = sa_dialog.showSaveDialog( {
+        defaultPath: "~/*.yaml",
+        filters: [ { name: 'yaml', extensions: ['yaml'] } ]
+    } );
 
     if (fileName === undefined) {
         console.log("You didn't save a file.");

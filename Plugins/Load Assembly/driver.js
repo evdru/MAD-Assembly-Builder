@@ -18,7 +18,10 @@ la_ipcRenderer.on('load_assembly', function() {
 
 function loadAssembly() {
 
-    fileName = la_dialog.showOpenDialog( {properties: ['showHiddenFiles']} );
+    fileName = la_dialog.showOpenDialog( {
+        properties: ['showHiddenFiles'],
+        filters: [ { name: 'yaml', extensions: ['yaml'] } ]
+    } );
 
     if (fileName === undefined) {
         console.log("You didn't load a file.");
