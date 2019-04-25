@@ -4,16 +4,19 @@
 	"description": "MAD Assembly Builder",
 	"main": "index.js",
 	"scripts": {
-		"start": "electron ."
+		"start": "electron .",
+		"pack-win": "electron-packager . MAB --asar --overwrite --out=release-builds --icon=Icons/logo.ico --tmpdir=C:"
 	},
 	"author": "Team Amadeus",
 	"license": "ISC",
 	"dependencies": {
 		"gsap": "^2.1.2",
 		"js-yaml": "^3.13.1",
+		"konva": "^3.2.5",
 		"timer-stopwatch": "^0.2.0"
 	},
 	"devDependencies": {
-		"electron": "^4.1.4"
+		"electron": "^4.1.4",
+		"electron-packager": "^13.1.1"
 	}
 }

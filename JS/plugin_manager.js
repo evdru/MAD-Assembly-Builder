@@ -1,6 +1,7 @@
 const fs = require('fs');
+const path = require('path');
 
-const plugins_folder = './Plugins/';
+const plugins_folder = path.join(__dirname, '../Plugins/');
 
 let valid_plugins = [];
 let valid_paths = [];
@@ -18,8 +19,6 @@ for (var i = 0; i < plugins.length; i++) {
             valid_paths.push(plugins_folder + plugins[i] + '/');
         }
     }
-
-
 }
 
 console.log('\nThe following ' + valid_plugins.length + ' Plugin(s) have been Validated:\n    ' + valid_plugins);
