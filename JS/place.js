@@ -315,7 +315,7 @@ function addNewPlace(component_obj, placePos) {
 
     function validTransition(place_list, source_obj, source_comp, dest_obj, dest_comp) {
 
-        if(source_comp != dest_comp) {
+        if(source_comp != dest_comp || source_obj == dest_obj) {
             return false;
         }
 
