@@ -18,13 +18,17 @@ la_ipcRenderer.on('load_assembly', function() {
 
 function loadAssembly() {
 
-    // @todo: clear/reload gui
-    fileName = la_dialog.showOpenDialog( {properties: ['showHiddenFiles']} );
+    fileName = la_dialog.showOpenDialog( {
+        properties: ['showHiddenFiles'],
+        filters: [ { name: 'yaml', extensions: ['yaml'] } ]
+    } );
 
     if (fileName === undefined) {
         console.log("You didn't load a file.");
         return;
     }
+
+    clear();
 
     data = la_fs.readFileSync(fileName.toString());
     la_load_list = la_yaml.safeLoadAll(data)[0];
@@ -36,6 +40,15 @@ function loadAssembly() {
     loadTransitions(la_comp_list);
     loadDependencies(la_comp_list);
     loadConnections(la_conn_list);
+
+};
+
+function clear() {
+
+    while(component_list.length != 0) {
+        deletor(component_list[0]);
+    }
+
 };
 
 function loadComponents(la_comp_list) {
@@ -74,7 +87,7 @@ function loadPlaces(la_comp_list) {
 
             loaded_place = loaded_component.place_list[j];
 
-            var place_obj = addNewPlace(component.component_group_konva, component.konva_component, {x: loaded_place.posX, y: loaded_place.posY}, component, component.tooltipLayer, component.use_selection_area, component.provide_selection_area);
+            var place_obj = addNewPlace(component, {x: loaded_place.posX, y: loaded_place.posY});
             place_obj.name = loaded_place.name;
 
             layer.batchDraw();
@@ -99,7 +112,7 @@ function loadTransitions(la_comp_list) {
             var src = matchObject(component.place_list, loaded_transition.src.name);
             var dest = matchObject(component.place_list, loaded_transition.dest.name);
 
-            var transition_obj = addNewTransition(src.place_konva, dest.place_konva, src, dest, component, component.component_group_konva, component.konva_component, component.tooltipLayer, component.use_selection_area, component.provide_selection_area);
+            var transition_obj = addNewTransition(component, src, dest);
             transition_obj.name = loaded_transition.name;
         }
     }
@@ -129,14 +142,12 @@ function loadDependencies(la_comp_list) {
             var dependency_obj;
 
             if(loaded_dependency.type == "USE" || loaded_dependency.type == "DATA_USE") {
-                dependency_obj = createDependencyUsePort(component.konva_component, component, component.component_group_konva, source_obj, source_obj.transition_selection_area, component.tooltipLayer);
+                dependency_obj = createDependencyUsePort(component, source_obj);
             }
             else if(loaded_dependency.type == "PROVIDE" || loaded_dependency.type == "DATA_PROVIDE") {
-                dependency_obj = createDependencyPort(component.konva_component, component, component.component_group_konva, source_obj, source_obj.place_konva, component.tooltipLayer);
+                dependency_obj = createDependencyPort(component, source_obj);
             }
 
-            console.log(dependency_obj);
-            console.log(loaded_dependency);
             dependency_obj.name = loaded_dependency.name;
 
         }
@@ -183,7 +194,7 @@ function loadConnections(la_conn_list) {
 
 };
 
-// takes a list of objects (e.g. component list, place list, etc) and returns the object with 'name'
+// takes a list of objects (e.g. component list, place list, etc) and returns the already-created object with 'name'
 function matchObject(list, name) {
 
     for(var list_ctr = 0; list_ctr < list.length; list_ctr++) {

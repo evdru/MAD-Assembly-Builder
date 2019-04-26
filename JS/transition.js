@@ -1,9 +1,9 @@
 // function that adds new transition obj and konva arrow
-function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, component_obj, component_group, component, tooltipLayer, use_selection_area, provide_selection_area) {
+function addNewTransition(component_obj, source_obj, dest_obj) {
 
-    // max number of transitions out of the same source = 3
-    if(source_obj.transition_count >= max_transition_count){
-        alert("Cant create more than 3 transitions from " + source_obj.name);
+    // check max transition count
+    if(source_obj.transition_count >= max_transition_count) {
+        alert("Cant create more than " + max_transition_count + " transitions from " + source_obj.name);
         return false;
     }
 
@@ -12,30 +12,14 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
     var offset = setTransitionOffset(source_obj, dest_obj);
     source_obj.offset = offset;
 
-    // get index
-    var index;
-    if (component_obj.transition_list.length == 0){
-        index = 1;
-    } else {
-        index = component_obj.transition_list[component_obj.transition_list.length - 1].index + 1;
-    }
-
-    // Transition Creation arguments: type, name, src, src_konva, dest, dest_konva, func
-    var transition_obj = new Transition('Transition', "Transition_" + index,
-                                        source_obj, dest_obj, "defaultFunction_" + index);
-    component_obj.transition_list.push(transition_obj);
-
-    // set index
-    transition_obj.index = index;
-
-    // set offset
-    transition_obj.offset = offset;
-
-    // ref to component
-    transition_obj.component_obj = component_obj;
+    var transition_group = new Konva.Group({
+        name: 'transition_group'
+    });
 
     var transition = new Konva.Line({
-        points: [source_konva.getX(), source_konva.getY(), ((source_konva.getX() + dest_konva.getX()) / 2) + offset, (source_konva.getY() + dest_konva.getY()) / 2, dest_konva.getX(), dest_konva.getY()],
+        points: [source_obj.place_konva.getX(), source_obj.place_konva.getY(),
+               ((source_obj.place_konva.getX() + dest_obj.place_konva.getX()) / 2) + offset, ((source_obj.place_konva.getY() + dest_obj.place_konva.getY()) / 2),
+                 dest_obj.place_konva.getX(), dest_obj.place_konva.getY()],
         stroke: 'black',
         strokeWidth: 1,
         name: 'transition',
@@ -43,8 +27,8 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
     });
 
     var transition_selection_area = new Konva.Circle({
-        x: ((source_konva.getX() + dest_konva.getX()) / 2) + offset,
-        y: (source_konva.getY() + dest_konva.getY()) / 2,
+        x: ((source_obj.place_konva.getX() + dest_obj.place_konva.getX()) / 2) + offset,
+        y: (source_obj.place_konva.getY() + dest_obj.place_konva.getY()) / 2,
         radius: 10,
         opacity: 0,
         stroke: 'black',
@@ -54,36 +38,6 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
         name: 'Transition'
     });
 
-    // create a new transition group
-    var transition_group = new Konva.Group({
-        name: 'transition_group'
-    });
-
-    // add transition konva obj to component group
-    transition_group.add(transition);
-    transition_group.add(transition_selection_area);
-    component_group.add(transition_group);
-
-    // add the konva group to transition obj attribute
-    transition_obj.tran_group_konva = transition_group;
-    transition_obj.transition_selection_area = transition_selection_area;
-
-    // set reference to transition selection area
-    transition_obj.tran_select_konva = transition_selection_area;
-
-    // set reference to transition
-    transition_obj.tran_konva = transition;
-
-    // add the transition obj to both souce place and dest place transition_connected list
-    source_obj.transition_outbound_list.push(transition_obj);
-    dest_obj.transition_inbound_list.push(transition_obj);
-    
-
-    // intilize selection variables to null
-    source_transition_konva = null;
-    source_transition_obj = null;
-
-    // tooltip to display name of object
     var tooltip = new Konva.Text({
         text: "",
         fontFamily: "Calibri",
@@ -95,65 +49,67 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
         visible: false
     });
 
-    tooltipLayer.add(tooltip);
-    stage.add(tooltipLayer);
+    component_obj.tooltipLayer.add(tooltip);
+    stage.add(component_obj.tooltipLayer);
 
-    // source place is moved update the transitions that are connected to it
-    source_konva.on('dragmove', (e) => {
-        transition.setPoints([snapToGrid(source_konva.getX()),
-                              snapToGrid(source_konva.getY()),
-                              snapToGrid(((source_konva.getX() + dest_konva.getX()) / 2) + offset),
-                              snapToGrid(source_konva.getY() + dest_konva.getY()) / 2,
-                              snapToGrid(dest_konva.getX()),
-                              snapToGrid(dest_konva.getY())]);
-        transition_selection_area.position({
-            x: snapToGrid(((source_konva.getX() + dest_konva.getX()) / 2) + offset),
-            y: snapToGrid((source_konva.getY() + dest_konva.getY()) / 2)
-        });
-        //layer.draw();
-    });
+    // create transition object
+    var transition_obj = new Transition('Transition', "Transition_" + generateNextIndex(component_obj.transition_list),
+                                        source_obj, dest_obj, "defaultFunction_" + generateNextIndex(component_obj.transition_list));
+    transition_obj.index = generateNextIndex(component_obj.transition_list);
+    transition_obj.offset = offset;
+    transition_obj.tran_group_konva = transition_group;
+    transition_obj.tran_select_konva = transition_selection_area;
+    transition_obj.transition_selection_area = transition_selection_area;
+    transition_obj.tran_konva = transition;
+    transition_obj.component_obj = component_obj;
+    component_obj.transition_list.push(transition_obj);
 
-    // destination place is moved update the transitions that are connected to it
-    dest_konva.on('dragmove', (e) => {
-        transition.setPoints([snapToGrid(source_konva.getX()),
-                              snapToGrid(source_konva.getY()),
-                              snapToGrid(((source_konva.getX() + dest_konva.getX()) / 2) + offset),
-                              snapToGrid(source_konva.getY() + dest_konva.getY()) / 2,
-                              snapToGrid(dest_konva.getX()),
-                              snapToGrid(dest_konva.getY())]);
-        transition_selection_area.position({
-            x: snapToGrid(((source_konva.getX() + dest_konva.getX()) / 2) + offset),
-            y: snapToGrid((source_konva.getY() + dest_konva.getY()) / 2)
-        });
-        //layer.draw();
-    });
+    // add transition konva obj to component group
+    transition_group.add(transition);
+    transition_group.add(transition_selection_area);
+    source_obj.transition_outbound_list.push(transition_obj);
+    dest_obj.transition_inbound_list.push(transition_obj);
+    component_obj.component_group_konva.add(transition_group);
 
-    use_selection_area.on("mouseover", function() {
-        // if source konva has been selected show green provide selection area on mouse enter
-        if(source_transition_konva == transition_selection_area){
-            use_selection_area.fill('green');
-            use_selection_area.opacity(1);
-            layer.batchDraw();
+    // intilize selection variables to null
+    selected_transition = null;
+
+    // event: left click on transition
+    transition_selection_area.on("click", function(e) {
+        // left clk on tran selection area
+        if (e.evt.button === 0){
+            // highlight the transition
+            transition.stroke('blue');
+            transition.strokeWidth(3);
+            transition.draw();
+            selected_transition = transition_obj;
         }
     });
 
-    use_selection_area.on("mouseout", function() {
-        // if use_selection_area was visible, hide it!
-        if(use_selection_area.opacity() === 1){
-            use_selection_area.opacity(0);
-            layer.batchDraw();
+    // event: right-click on transition
+    transition_selection_area.on("click", function(e) {
+        if(e.evt.button === 2) {
+            // highlight the transition
+            transition.stroke('blue');
+            transition.strokeWidth(3);
+            transition.draw();
+            //open window for editing transition
+            console.log("Open window for editing transition details");
+            ipcRend.send("change_transition_details", {component: component_obj.name, transition: transition_obj.name, function: transition_obj.func});
         }
     });
 
+    // event: mouse enters transition selection
     transition_selection_area.on('moveenter', function() {
         stage.container().style.cursor = 'pointer';
     });
 
+    // event: mouse moves over transition selection
     transition_selection_area.on('mouseover', function() {
         window.addEventListener('keydown', removeTransition);
     });
 
-    // if mouse is over a place
+    // event: mouse moves over place
     transition_selection_area.on('mousemove', function () {
         var mousePos = stage.getPointerPosition();
         tooltip.position({
@@ -162,84 +118,102 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
         });
         tooltip.text(component_obj.name + " - " + transition_obj.name);
         tooltip.show();
-        tooltipLayer.batchDraw();
+        component_obj.tooltipLayer.batchDraw();
     });
 
-    // hide the tooltip on mouse out
+    // event: mouse moves out of transition selection
     transition_selection_area.on('mouseout', function(){
         stage.container().style.cursor = 'default';
         transition.stroke('black');
         transition.strokeWidth(1);
         tooltip.hide();
-        tooltipLayer.draw();
-        //layer.draw();
+        component_obj.tooltipLayer.draw();
         window.removeEventListener('keydown', removeTransition);
     });
 
-    transition_selection_area.on("click", function(e){
-        // left clk on tran selection area
-        if (e.evt.button === 0){
-            // highlight the transition
-            transition.stroke('blue');
-            transition.strokeWidth(3);
-            transition.draw();
-            source_transition_konva = transition_selection_area;
-            source_transition_obj = transition_obj;
-        }
-        else if (e.evt.button === 2){
-            // highlight the transition
-            transition.stroke('blue');
-            transition.strokeWidth(3);
-            transition.draw();
-            //open window for editing transition
-            console.log("Open window for editing transition details");
-            ipcRend.send("change_transition_details", {component: component_obj.name, transition: transition_obj.name, function: transition_obj.func});
-        };
+    // event: source place is moved
+    source_obj.place_konva.on('dragmove', (e) => {
+        transition.setPoints([snapToGrid(source_obj.place_konva.getX()),
+                              snapToGrid(source_obj.place_konva.getY()),
+                              snapToGrid(((source_obj.place_konva.getX() + dest_obj.place_konva.getX()) / 2) + offset),
+                              snapToGrid(source_obj.place_konva.getY() + dest_obj.place_konva.getY()) / 2,
+                              snapToGrid(dest_obj.place_konva.getX()),
+                              snapToGrid(dest_obj.place_konva.getY())]);
+        transition_selection_area.position({
+            x: snapToGrid(((source_obj.place_konva.getX() + dest_obj.place_konva.getX()) / 2) + offset),
+            y: snapToGrid((source_obj.place_konva.getY() + dest_obj.place_konva.getY()) / 2)
+        });
     });
 
-    // if provide_selection_area gets clicked on
-    use_selection_area.on("click", function(e){
-        // right click
-        if(e.evt.button === 2){
-            // if source obj has been assigned with a left click prior
-            if(source_transition_konva != null){
-                source_transition_obj.dependency = true;
+    // event: dest place is moved
+    dest_obj.place_konva.on('dragmove', (e) => {
+        transition.setPoints([snapToGrid(source_obj.place_konva.getX()),
+                              snapToGrid(source_obj.place_konva.getY()),
+                              snapToGrid(((source_obj.place_konva.getX() + dest_obj.place_konva.getX()) / 2) + offset),
+                              snapToGrid(source_obj.place_konva.getY() + dest_obj.place_konva.getY()) / 2,
+                              snapToGrid(dest_obj.place_konva.getX()),
+                              snapToGrid(dest_obj.place_konva.getY())]);
+        transition_selection_area.position({
+            x: snapToGrid(((source_obj.place_konva.getX() + dest_obj.place_konva.getX()) / 2) + offset),
+            y: snapToGrid((source_obj.place_konva.getY() + dest_obj.place_konva.getY()) / 2)
+        });
+    });
 
-                // prompt for dependency type
-                console.log("Open window for setting port type (sync)");
-                var type = ipcRend.sendSync("set_dependency_type");
-                console.log("type: " + type);
+    // event: right click on use_selection_area
+    component_obj.use_selection_area.on("click", function(e){
 
-                if(type ==  'service' ){
-                    type = 'USE';
-                    // set the type
-                    source_transition_obj.dependency_type = type
-                    source_transition_konva.opacity(1);
-                    // args: component, component_obj, component_group, transition_obj, transition_selection_area, tooltipLayer
-                    createDependencyUsePort(component, component_obj, component_group, source_transition_obj, source_transition_konva, tooltipLayer);
-                } else if (type == 'data'){
-                    type = 'DATA_USE';
-                    // set the type
-                    source_transition_obj.dependency_type = type
-                    source_transition_konva.opacity(1);
-                    createDependencyUsePort(component, component_obj, component_group, source_transition_obj, source_transition_konva, tooltipLayer);
-                }
+        if(e.evt.button === 2 && selected_transition != null) {
 
-                // reset the source obj and konva pointers to null
-                source_transition_konva = null;
-                source_transition_obj = null;
+            selected_transition.dependency = true;
+
+            var type = ipcRend.sendSync("set_dependency_type");
+
+            if(type == 'service') {
+                selected_transition.dependency_type = 'USE'
+            } else if (type == 'data') {
+                selected_transition.dependency_type = 'DATA_USE'
             }
+
+            createDependencyUsePort(component_obj, selected_transition);
+
+            // reset the source obj and konva pointers to null
+            selected_transition = null;
+
         }
+
+    });
+
+    // event: mouse goes over use_selection_area
+    component_obj.use_selection_area.on("mouseover", function() {
+
+        // if source konva has been selected show green provide selection area on mouse enter
+        if(selected_transition != null){
+            component_obj.use_selection_area.fill('green');
+            component_obj.use_selection_area.opacity(1);
+            layer.batchDraw();
+        }
+
+    });
+
+    // event: mouse leaves use_selection_area
+    component_obj.use_selection_area.on("mouseout", function() {
+
+        // if use_selection_area was visible, hide it!
+        if(component_obj.use_selection_area.opacity() === 1){
+            component_obj.use_selection_area.opacity(0);
+            layer.batchDraw();
+        }
+
     });
 
     function removeTransition(ev){
+
         // keyCode Delete key
         if (ev.keyCode === 46 || ev.keyCode == 8) {
             if (confirm('Are you sure you want to delete this Transition?')){
                 // Delete it!
                 tooltip.destroy();
-                source_transition_konva = null;
-                source_transition_obj = null;
+                selected_transition = null;
                 // remove the transition obj from its components transition list
                 deletor(transition_obj);
             } else {
@@ -247,76 +221,104 @@ function addNewTransition(source_konva, dest_konva, source_obj, dest_obj, compon
                 return;
             }
         }
+
+    }
+
+    function generateNextIndex(transition_list) {
+
+        if (transition_list.length == 0){
+            return 1;
+        } else {
+            return transition_list[transition_list.length - 1].index + 1;
+        }
+
     }
 
     // move source and dest places above the transition
-    source_konva.moveToTop();
-    dest_konva.moveToTop();
+    source_obj.place_konva.moveToTop();
+    dest_obj.place_konva.moveToTop();
     source_obj.transition_count++;
     layer.batchDraw();
-    //layer.draw();
+
     return transition_obj;
+
 }
 
 // function to create a use port out of a transition
-function createDependencyUsePort(component, component_obj, component_group, transition_obj, transition_selection_area, tooltipLayer){
+function createDependencyUsePort(component_obj, transition_obj){
 
-    console.log(component);
-    console.log(component_obj);
-    console.log(component_group);
-    console.log(transition_obj);
-    console.log(transition_selection_area);
-    console.log(tooltipLayer);
+    var component = component_obj.konva_component;
+    var component_group = component_obj.component_group_konva;
+    var transition_selection_area = transition_obj.transition_selection_area;
+    var tooltipLayer = component_obj.tooltipLayer;
 
-    // create dependency here if set true
-    if(transition_obj.dependency){
-        // determine which type of dependency
-        switch(transition_obj.dependency_type) {
-            case 'USE':
-                // Creating service use dependency
-                console.log("Creating service use dependency");
-                dependency_obj = addNewServiceDependency(component, transition_selection_area, transition_obj, component_obj, component_group, tooltipLayer);
-                // add the return dependency konva elements
-                transition_obj.dependency_konva_list.push(dependency_obj.dep_group_konva);
-                break;
-            case 'DATA_USE':
-                // Creating data use dependency
-                console.log("Creating service use dependency");
-                dependency_obj = addNewDataDependency(component, transition_selection_area, transition_obj, component_obj, component_group, tooltipLayer);
-                // add the return dependency konva elements
-                transition_obj.dependency_konva_list.push(dependency_obj.dep_group_konva);
-                break;
-            default:
-                // invalid dependency type
-                alert("Invalid dependency type: " + transition_obj.dependency_type);
-        }
-        return dependency_obj;
+    if(!transition_obj.dependency) {
+        return;
     }
+
+    // determine which type of dependency
+    switch(transition_obj.dependency_type) {
+
+        // create service-use dep
+        case 'USE':
+            dependency_obj = addNewServiceDependency(component, transition_selection_area, transition_obj, component_obj, component_group, tooltipLayer);
+            transition_obj.dependency_konva_list.push(dependency_obj.dep_group_konva);
+            break;
+
+        // create data-use dep
+        case 'DATA_USE':
+            dependency_obj = addNewDataDependency(component, transition_selection_area, transition_obj, component_obj, component_group, tooltipLayer);
+            transition_obj.dependency_konva_list.push(dependency_obj.dep_group_konva);
+            break;
+
+        // invalid dep type
+        default:
+            alert("Invalid dependency type: " + transition_obj.dependency_type);
+
+        }
+
+    return dependency_obj;
+
 };
+
+// set Transition dictionary value
+function pushTransitionDictionary(source_component, source_obj, dest_obj) {
+
+    let src = source_obj.name;
+    let dest = dest_obj.name;
+
+    // check if this source -> dest combo has been added prior
+    if(source_component.transition_dictionary[src] && source_component.transition_dictionary[src][dest]) {
+        source_component.transition_dictionary[src][dest]++;
+    } else {
+        source_component.transition_dictionary[src] = {};
+        source_component.transition_dictionary[src][dest] = 1;
+    }
+
+    source_obj.offset = source_component.transition_dictionary[src][dest];
+
+    let count = source_component.transition_dictionary[src][dest]
+    return count;
+
+}
 
 // Catch new transition details from ipcMain
 ipcRend.on("transition->renderer", function(event, args) {
-    console.log("Made it to transition->renderer.");
-    console.log(args.name);
-    // change tran func
+
     if (args.new_func != '') {
-        console.log("Changing the transition function name.");
         changeTransitionFunc(args.component, args.old_func, args.new_func);
     }
-    // change duration min
+
     if (args.duration_min != '') {
         changeTransitionDurationMin(args.component, args.transition, args.new_duration_min);
-        //changeTransitionDurationMin(component, transition_name, new_min_duration)
     }
-    // change duration max
+
     if (args.duration_max != '') {
         changeTransitionDurationMax(args.component, args.transition, args.new_duration_max);
-        //changeTransitionDurationMax(component, transition_name, new_max_duration)
     }
-    // If the name is changed
+
     if (args.name != '') {
-        //Time to change transition name
-        console.log("Change transition name");
         changeTransitionName(args.component, args.transition, args.name);
     }
+
 });
