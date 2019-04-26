@@ -202,10 +202,10 @@ function addNewPlace(component_obj, placePos) {
     // event: mouse leaves place
     place.on('mouseleave', function () {
 
+        stage.container().style.cursor = 'default';
+
         // if the mouse leaves a place that *isn't* the place selected, turn it black.
         if(selected_source != place_obj) {
-
-            stage.container().style.cursor = 'default';
 
             // changes the stroke and stroke width back to default if highlighted
             //if(highlighted == true) {
