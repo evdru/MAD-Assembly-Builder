@@ -89,7 +89,7 @@ function bootstrap() {
         animLayer.destroy();
         sd_comp_list = [];
         sd_con_list = [];
-        stopwatch.reset();
+        stopwatch.stop();
         simulator_mode = false;
         console.log("clicked on edit mode label");
     });
@@ -228,9 +228,12 @@ function createToken(tokenPos, tokenColor){
 
 function updateTimerLabels(time){
     var elapsedMilliseconds = time.ms;
-    var elapsedSeconds = elapsedMilliseconds / 1000;
-    var elapsedMinutes = elapsedSeconds / 60;
-    if(elapsedSeconds > 60) {elapsedSeconds -= 60; }
+    var totalSeconds = elapsedMilliseconds / 1000;
+    var totalMinutes = totalSeconds / 60;
+    var elapsedMinutes = Math.trunc(totalMinutes);
+    var elapsedSeconds = totalSeconds;
+    if(totalSeconds >= 60) {elapsedSeconds -= (60 * elapsedMinutes); }
+    
     for (var i = 0; i < timer_label_list.length; i++){
         timer_label_list[i].text(Math.trunc(elapsedMinutes) + ":" + Math.trunc(elapsedSeconds));
     }
@@ -353,78 +356,6 @@ function createTimerLabel(component_konva){
     return timerLabel;
 }
 
-function createPlayButton(){
-     // play label
-     var playLabel = new Konva.Label({
-        x: 150,
-        y: 10,
-        opacity: 1
-    });
-
-    playLabel.add(new Konva.Tag({
-        fill: 'green',
-        stroke: 'black',
-        strokeWidth: 2
-    }));
-
-    playLabel.add(new Konva.Text({
-        text: 'PLAY',
-        fontFamily: 'Calibri',
-        fontSize: 36,
-        padding: 5,
-        fill: 'black'
-    }));
-    return playLabel;
-}
-
-function createPauseButton(){
-     // pause label
-     var pauseLabel = new Konva.Label({
-        x: 250,
-        y: 10,
-        opacity: 1
-    });
-
-    pauseLabel.add(new Konva.Tag({
-        fill: 'RED',
-        stroke: 'black',
-        strokeWidth: 2
-    }));
-
-    pauseLabel.add(new Konva.Text({
-        text: 'PAUSE',
-        fontFamily: 'Calibri',
-        fontSize: 36,
-        padding: 5,
-        fill: 'black'
-    }));
-    return pauseLabel;
-}
-
-function createResetButton(){
-    // reset label
-    var resetLabel = new Konva.Label({
-       x: 375,
-       y: 10,
-       opacity: 1
-   });
-
-   resetLabel.add(new Konva.Tag({
-       fill: 'BLUE',
-       stroke: 'black',
-       strokeWidth: 2
-   }));
-
-   resetLabel.add(new Konva.Text({
-       text: 'RESET',
-       fontFamily: 'Calibri',
-       fontSize: 36,
-       padding: 5,
-       fill: 'black'
-   }));
-   return resetLabel;
-}
-
 function createSimulatorLabel(){
     // simulator label
     var simulatorLabel = new Konva.Label({
@@ -447,34 +378,13 @@ function createSimulatorLabel(){
     return simulatorLabel;
 }
 
-function createEditModeButton(){
-    // edit mode label
-    var editLabel = new Konva.Label({
-        x: 900,
-        y: 10,
-        opacity: 1
-    });
-
-    editLabel.add(new Konva.Tag({
-        fill: 'white'
-    }));
-
-    editLabel.add(new Konva.Text({
-        text: 'Go back to EDIT mode',
-        fontFamily: 'Calibri',
-        fontSize: 36,
-        padding: 5,
-        fill: 'black'
-    }));
-    return editLabel;
-}
-
 function resetHighlights(){
     for (var i = 0; i < sd_comp_list.length; i++) {
+        sd_comp_list[i].konva_component.stroke('black');
         for (var j = 0; j < sd_comp_list[i].place_list.length; j++){
             // show that the new place has been reached
             sd_comp_list[i].place_list[j].place_konva.stroke('black');
-            sd_comp_list[i].place_list[j].place_konva.strokeWidth(1);
+            //sd_comp_list[i].place_list[j].place_konva.strokeWidth(1);
         }
     }
     layer.draw();
@@ -495,18 +405,6 @@ function resetConnections(){
 function resetDependencyEnabled(provide_dep_obj, use_dep_obj){
     provide_dep_obj.enabled = false;
     use_dep_obj.enabled = false;
-}
-
-function playAllTokenTweens(){
-    for (var i = 0; i < token_tweens.length; i++) {
-        token_tweens[i].play();
-    }
-}
-
-function pauseAllTokenTweens(){
-    for (var i = 0; i < token_tweens.length; i++) {
-        token_tweens[i].pause();
-    }
 }
 
 function destroyTokens(){
