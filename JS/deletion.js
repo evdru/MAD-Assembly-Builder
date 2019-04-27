@@ -184,7 +184,6 @@ function removeConnectionKonva(connection_obj){
 function removeOutboundTransitions(place_obj){
     // remove all outbound transitions from this place_obj
     for (var i = 0; i < place_obj.transition_outbound_list.length; i++){
-        console.log("removeOutBoundTranstions sending Transition " + place_obj.transition_outbound_list[i].name)
         //transitionDeletionHandler(place_obj.transition_outbound_list[i]);
         decrementPlaceTransitionCount(place_obj.transition_outbound_list[i].src);
         removeDependencyAttachedToTransition(place_obj.transition_outbound_list[i]);
@@ -196,7 +195,6 @@ function removeOutboundTransitions(place_obj){
 function removeInboundTransitions(place_obj){
     // remove all inbound transitions from this place_obj
     for (var i = 0; i < place_obj.transition_inbound_list.length; i++){
-        console.log("removeInBoundTranstions sending Transition " + place_obj.transition_inbound_list[i].name)
         //transitionDeletionHandler(place_obj.transition_inbound_list[i]);
         decrementPlaceTransitionCount(place_obj.transition_inbound_list[i].src);
         removeDependencyAttachedToTransition(place_obj.transition_inbound_list[i]);
