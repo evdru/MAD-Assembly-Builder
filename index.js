@@ -276,6 +276,7 @@ ipcMain.on("stub->main", function(event, args) {
 ipcMain.on('open_user_manual_window', function(event, args) {
 	// Create new user manual window
 	var user_manual_window = new BrowserWindow()
+	user_manual_window.setMenuBarVisibility(false)
 	user_manual_window.loadURL(url.format({
 		pathname: path.join(__dirname, './Plugins/User Manual/user_manual.html'),
 		protocol: 'file:',
