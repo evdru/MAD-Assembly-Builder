@@ -85,6 +85,7 @@ function bootstrap() {
         destroyTokens();
         destroyTweenObjList();
         resetConnections();
+        resetTransitionCurrentDuration();
         sd_comp_list = [];
         sd_con_list = [];
         token_list = [];
@@ -240,6 +241,15 @@ function updateTimerLabels(time){
     
     for (var i = 0; i < timer_label_list.length; i++){
         timer_label_list[i].text(Math.trunc(elapsedMinutes) + ":" + Math.trunc(elapsedSeconds));
+    }
+}
+
+// reset every curr duration of every tran obj to 0
+function resetTransitionCurrentDuration(){
+    for (var i = 0; i < sd_comp_list.length; i++) {
+        for (var j = 0; j < sd_comp_list[i].transition_list.length; j++) {
+            sd_comp_list[i].transition_list[j].current_duration = 0;
+        }
     }
 }
 
