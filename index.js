@@ -272,5 +272,16 @@ ipcMain.on("stub->main", function(event, args) {
 	window.webContents.send("stub->renderer", {component: stub_args.component, old_name: stub_args.stub, new_name: args.name});
 });
 
+// Catch readme plugin activation
+ipcMain.on('open_readme_window', function(event, args) {
+	// Create new readme window
+	var readme_window = new BrowserWindow()
+	readme_window.loadURL(url.format({
+		pathname: path.join(__dirname, './HTML/readme.html'),
+		protocol: 'file:',
+		slashes: true
+	}));
+});
+
 // Listen for app to be ready
 app.on('ready', boot);
