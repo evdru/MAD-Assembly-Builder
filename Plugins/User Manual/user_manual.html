@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="User Manual" charset="utf-8">
+        <link rel="stylesheet" href="user_manual.css">
+    </head>
+
+    <body>
+        <h1>Welcome to MAB's User Manual</h1>
+        <hr>
+        <ul>
+            <li><a href="#create_components">Create New Components</a></li>
+            <li><a href="#create_places">Create New Places</a></li>
+            <li><a href="#create_transitions">Create New Transitions</a></li>
+            <li><a href="#create_dependencies">Create New Dependencies</a></li>
+            <li><a href="#create_connections">Create New Connections</a></li>
+            <li><a href="#edit_objects">How To Edit Object Details</a></li>
+            <li><a href="#generate_code">How To Generate Code</a></li>
+            <li><a href="#simulate_deployment">How To Simulate Deployment</a></li>
+            <li><a href="#save_assembly">How To Save an Assembly</a></li>
+            <li><a href="#load_assembly">How To Load an Assembly</a></li>
+        </ul>
+        
+        <hr>
+        <a id="create_components">
+            <h2>How To Create New Components</h2>
+            <ol>
+                <li>Click and hold on the create new component button in the top left 
+                    hand corner of the MAB workspace.
+                </li>
+                <li>Drag and drop your newly created component at any location you 
+                    like.
+                </li>
+                <li>To move a component: click and drag.</li>
+                <li>To resize a component: left click the component in question, use 
+                    the provided handles to resize the component to your desire.
+                </li>
+            </ol>
+            <img src="./Gifs/component_creation.gif" alt="Create New Component">
+        </a>
+
+        <a id="create_places">
+            <h2>How To Create New Places</h2>
+            <ol>
+                <li>Double click inside the desired component at the location you would 
+                    like the new place to reside.
+                </li>
+                <li>To move a place: click and drag.</li>
+            </ol>
+            <img src="./Gifs/place_creation.gif" alt="Create New Places">
+        </a>
+
+        <a id="create_transitions">
+            <h2>How To Create Transitions Between Places</h2>
+            <ol>
+                <li>Left click the origin place you would like the transition to
+                    start from.
+                </li>
+                <li>Right click the destination place you would like the transition 
+                    to end at.
+                </li>
+            </ol>
+            <p>NOTE: There is an index associated with every place that does not allow for 
+                the creation of self loops or any sort of cycle to be created with transitions 
+                inside of any component. If MAB thinks you are trying to create a cycle inside 
+                the component of any kind, the destination place will highlight RED instead of 
+                GREEN.
+            </p>
+            <img src="./Gifs/transition_creation.gif" alt="Create New Transitions">
+        </a>
+
+        <a id="create_dependencies">
+            <h2>How To Create Dependencies</h2>
+            <p>PROVIDE dependencies:</p>
+            <ol>
+                <li>Left click the origin place you wish the dependency to protrude from.</li>
+                <li>Right click the RIGHT side of the same component (the right side of the 
+                    component will highlight green).
+                </li>
+                <li>Select the type of dependency you wish to create in the new dialog popup.</li>
+            </ol>
+            <p>USE dependencies:</p>
+            <ol>
+                <li>Left click the origin transition you wish the dependency to protrude from.</li>
+                <li>Right click the LEFT side of the same component (the left side of the 
+                    component will highlight green).
+                </li>
+                <li>Select the type of dependency you wish to create in the new dialog popup.</li>
+            </ol>
+            <img src="./Gifs/dependency_creation.gif" alt="Create New Depencencies">
+        </a>
+
+        <a id="create_connections">
+            <h2>How To Create Connections Between Depencencies</h2>
+            <ol>
+                <li>Left click the PROVIDE dependency you wish to start a connection at.</li>
+                <li>Right click the USE dependency of the same type you with to end 
+                    the connection at.
+                </li>
+            </ol>
+            <p>NOTE: You can only create connections between dependencies of the same type. 
+                i.e. Data -> Data or Service -> Service.
+            </p>
+            <img src="./Gifs/connection_creation.gif" alt="Create New Connections">
+        </a>
+
+        <a id="edit_objects">
+            <h2>How To Edit Objects in MAB</h2>
+            <ol>
+                <li>Right click the object in question.</li>
+                <li>Edit the fields in the corresponding dialog box.</li>
+            </ol>
+        </a>
+
+        <a id="generate_code">
+            <h2>How To Generate Your Assemblies Diagram into Functioning MAD Code</h2>
+            <ol>
+                <li>Select "Generate Code" from the Plugin dropdown.</li>
+                <li>Save all the newly created files.</li>
+            </ol>
+            <p>NOTE: There should be one more file than the number of components that need 
+                to be saved. i.e. 4 components would equate to 5 files that need to be saved.
+            </p>
+        </a>
+
+        <a id="simulate_deployment">
+            <h2>How To Simulate Your Assemblies Deployment</h2> 
+            <ol>
+                <li>Select "Simulate Deployment" from the Plugin dropdown.</li>
+            </ol>
+            <img src="./Gifs/assembly_simulation.gif" alt="Simulate Deployment">
+        </a>
+
+        <a id="save_assembly">
+            <h2>How To Save Your Assembly</h2> 
+            <ol>
+                <li>Select "Save Assembly" from the Plugin dropdown.</li>
+                <li>Name and save your assembly in the new dialog box.</li>
+            </ol>
+        </a>
+
+        <a id="load_assembly">
+            <h2>How To Load Your Assembly</h2> 
+            <ol>
+                <li>Select "Load Assembly" from the Plugin dropdown.</li>
+                <li>Select your saved assembly in the new dialog box.</li>
+            </ol>
+        </a>
+
+    </body>
+</html>
