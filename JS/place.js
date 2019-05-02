@@ -353,17 +353,20 @@ function addNewPlace(component_obj, placePos) {
             // is there a cycle?
             cyclic = cycle(root_place);
 
+            source_obj.transition_outbound_list.pop();
+            dest_obj.transition_inbound_list.pop();
+
             // remove transition from source and dest
-            for(var trans_index = 0; trans_index < source_obj.transition_outbound_list.length; trans_index++) {
-                if(source_obj.transition_outbound_list[trans_index] === new_trans) {
-                    source_obj.transition_outbound_list.splice(trans_index, 1);
-                }
-            }
-            for(var trans_index = 0; trans_index < dest_obj.transition_inbound_list.length; trans_index++) {
-                if(dest_obj.transition_inbound_list[trans_index] === new_trans) {
-                    dest_obj.transition_inbound_list.splice(trans_index, 1);
-                }
-            }
+            // for(var trans_index = 0; trans_index < source_obj.transition_outbound_list.length; trans_index++) {
+            //     if(source_obj.transition_outbound_list[trans_index] === new_trans) {
+            //         source_obj.transition_outbound_list.splice(trans_index, 1);
+            //     }
+            // }
+            // for(var trans_index = 0; trans_index < dest_obj.transition_inbound_list.length; trans_index++) {
+            //     if(dest_obj.transition_inbound_list[trans_index] === new_trans) {
+            //         dest_obj.transition_inbound_list.splice(trans_index, 1);
+            //     }
+            // }
 
             if(cyclic) {
                 return false;
