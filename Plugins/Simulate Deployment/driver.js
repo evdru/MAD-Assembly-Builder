@@ -145,6 +145,7 @@ function buildTokenTween(tween_obj, animLayer){
     tween_obj.tween_list.push(tweenline);
     // create reference to this tweens parent component
     var component_obj = tween_obj.component;
+    component_obj.place_list = sortPlaceList(component_obj);
 
     // for every place in components place list
     for (var place_num = 0; place_num < component_obj.place_list.length; place_num++){
@@ -210,6 +211,66 @@ function setTransitionMaxDelay(curr_place){
 function getPlaceDelay(place_obj){
     return tween_duration_dict[place_obj.name];
 }
+
+function isInDurationDict(place_obj){
+    return tween_duration_dict[place_obj.name] != undefined;
+}
+
+function addDelayToDict(place_obj, place_delay){
+    tween_duration_dict[place_obj.name] = place_delay;
+}
+
+function sortPlaceList(component_obj){
+    var roots = findRoots(component_obj.place_list);
+    var new_place_list = [];
+    for(var root = 0; root < roots.length; root++){
+        traversePlaces(roots[root], new_place_list);
+    }
+    return new_place_list;
+}
+
+function traversePlaces(place_obj, new_place_list){
+    if(containsObject(place_obj, new_place_list)){
+        new_place_list.move(new_place_list.indexOf(place_obj), new_place_list.length)
+    } else {
+        new_place_list.push(place_obj);
+    }
+    traverseTransitions(place_obj);
+    function traverseTransitions(place_obj){
+        for(var tran_num = 0; tran_num < place_obj.transition_outbound_list.length; tran_num++){
+            traversePlaces(place_obj.transition_outbound_list[tran_num].dest, new_place_list);
+        }
+    }
+}
+
+function containsObject(obj, list) {
+    var x;
+    for (x in list) {
+        if (list.hasOwnProperty(x) && list[x] === obj) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// returns places with empty inbound_transition lists
+function findRoots(place_list) {
+
+    var roots = [];
+
+    for(var place_index = 0; place_index < place_list.length; place_index++) {
+        if(place_list[place_index].transition_inbound_list.length == 0) {
+            roots.push(place_list[place_index]);
+        }
+    }
+
+    return roots;
+
+};
+
+Array.prototype.move = function (from, to) {
+    this.splice(to, 0, this.splice(from, 1)[0]);
+};
 
 function showToken(token){
     token.show();
