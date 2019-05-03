@@ -84,7 +84,7 @@ function bootstrap() {
         //resetHighlights(animLayer); // tween still plays
         destroyTokens();
         destroyTweenObjList();
-        resetConnections();
+        resetConnectionsAndDependencies();
         resetTransitionCurrentDuration();
         sd_comp_list = [];
         sd_con_list = [];
@@ -153,6 +153,8 @@ function buildTokenTween(tween_obj, animLayer){
         setTransitionMaxDelay(component_obj.place_list[place_num]);
         // add label to timeline for when this place's outbound transitions should start
         tweenline.add('place_' + place_num + '_delay', getPlaceDelay(component_obj.place_list[place_num]));
+        // set current place obj reference
+        var curr_place_obj = component_obj.place_list[place_num];
         // for every outbound transition out of the current place
         for (var tran_num = 0; tran_num < component_obj.place_list[place_num].transition_outbound_list.length; tran_num++){
             // set current tran obj reference
@@ -176,7 +178,7 @@ function buildTokenTween(tween_obj, animLayer){
             var dest_post_y = tran_pos.y + transition.points()[5];
             
             // tween to next place
-            var tween = TweenMax.to(token, getDuration, { konva: { bezier: {curviness:3, values:[{x:mid_pos_x, y:mid_post_y}, {x:dest_post_x, y:dest_post_y}] }}, onStartParams:[token], onStart: showToken, onCompleteParams:[token], onComplete: hideToken });
+            var tween = TweenMax.to(token, getDuration, { konva: { bezier: {curviness:3, values:[{x:mid_pos_x, y:mid_post_y}, {x:dest_post_x, y:dest_post_y}] }}, onStartParams:[token, curr_tran_obj], onStart: startTween, onCompleteParams:[token, curr_place_obj], onComplete: endTween });
             // subTweenLine.add(tween, 0);
             tweenline.add(tween, 'place_' + place_num + '_delay');
         }
@@ -272,6 +274,29 @@ Array.prototype.move = function (from, to) {
     this.splice(to, 0, this.splice(from, 1)[0]);
 };
 
+function startTween(token, transition_obj){
+    showToken(token);
+    // check if transition obj has dependency
+    enableDependencyObj(transition_obj);
+    transitionAnim(transition_obj);
+    checkConnectionStatus();
+}
+
+function enableDependencyObj(source_obj){
+    // set every dependency obj connected to this source obj to true
+    for(var dependency = 0; dependency < source_obj.dependency_obj_list.length; dependency++){
+        source_obj.dependency_obj_list[dependency].enabled = true;
+    }
+};
+
+function endTween(token, place_obj){
+    hideToken(token);
+    enableDependencyObj(place_obj);
+    // play place tween
+    //placeFinishedAnim(place_obj.place_konva);
+    checkConnectionStatus();
+}
+
 function showToken(token){
     token.show();
 }
@@ -316,7 +341,7 @@ function resetTransitionCurrentDuration(){
 
 function finishTween(tween_obj){
     stopTimerLabel(tween_obj.timerLabel);
-    componentFinishedAnim(tween_obj.component)
+    componentFinishedAnim(tween_obj.component);
 }
 
 // remove the timerLabel from the list
@@ -331,6 +356,7 @@ function checkConnectionStatus(){
             connectionEnabledAnim(sd_con_list[i]);
         }
     }
+    layer.draw();
 }
 
 function connectionEnabledAnim(connection){
@@ -349,6 +375,24 @@ function connectionEnabledAnim(connection){
     connection_tween.play();
 }
 
+function transitionAnim(transition_obj){
+    console.log("created transition tween");
+    var transition_tween = new Konva.Tween({
+        node: transition_obj.tran_konva,
+        duration: transition_obj.current_duration / 2,
+        stroke: 'blue',
+        strokeWidth: 1,
+        shadowColor: 'black',
+        shadowBlur: 2,
+        shadowOpacity: 1,
+        easing: Konva.Easings.BackEaseOut,
+        onFinish: function() {
+            setTimeout(function(){ transition_tween.reverse(); }, 1000);
+        }
+    });
+    transition_tween.play();
+}
+
 function placeFinishedAnim(place){
     console.log("created place tween");
     var place_tween = new Konva.Tween({
@@ -359,7 +403,7 @@ function placeFinishedAnim(place){
         shadowColor: 'black',
         shadowBlur: 5,
         shadowOpacity: 1,
-        easing: Konva.Easings.EaseOut,
+        easing: Konva.Easings.BackEaseOut,
         onFinish: function() {
             setTimeout(function(){ place_tween.reverse(); }, 4000);
         }
@@ -450,7 +494,7 @@ function resetHighlights(animLayer){
     animLayer.draw();
 }
 
-function resetConnections(){
+function resetConnectionsAndDependencies(){
     for (var i = 0; i < sd_con_list.length; i++){
         if(sd_con_list[i].enabled == true){
             sd_con_list[i].gate1_konva.opacity(1);
@@ -460,6 +504,7 @@ function resetConnections(){
             resetDependencyEnabled(sd_con_list[i].provide_port_obj, sd_con_list[i].use_port_obj);
         }
     }
+    layer.draw();
 }
 
 function resetDependencyEnabled(provide_dep_obj, use_dep_obj){
