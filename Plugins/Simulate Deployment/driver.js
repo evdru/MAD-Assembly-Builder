@@ -81,15 +81,19 @@ function bootstrap() {
         for (var i = 0; i < sd_comp_list.length; i++) {
             setListening(sd_comp_list[i]);
         }
-        resetHighlights();
+        //resetHighlights(animLayer); // tween still plays
         destroyTokens();
         destroyTweenObjList();
-        resetConnections();
-        simulationGroup.destroy();
-        animLayer.destroy();
+        resetConnectionsAndDependencies();
+        resetTransitionCurrentDuration();
         sd_comp_list = [];
         sd_con_list = [];
-        stopwatch.reset();
+        token_list = [];
+        tween_obj_list = [];
+        tween_duration_dict = {};
+        simulationGroup.destroy();
+        animLayer.destroy();
+        stopwatch.stop();
         simulator_mode = false;
         console.log("clicked on edit mode label");
     });
@@ -141,6 +145,7 @@ function buildTokenTween(tween_obj, animLayer){
     tween_obj.tween_list.push(tweenline);
     // create reference to this tweens parent component
     var component_obj = tween_obj.component;
+    component_obj.place_list = sortPlaceList(component_obj);
 
     // for every place in components place list
     for (var place_num = 0; place_num < component_obj.place_list.length; place_num++){
@@ -148,6 +153,8 @@ function buildTokenTween(tween_obj, animLayer){
         setTransitionMaxDelay(component_obj.place_list[place_num]);
         // add label to timeline for when this place's outbound transitions should start
         tweenline.add('place_' + place_num + '_delay', getPlaceDelay(component_obj.place_list[place_num]));
+        // set current place obj reference
+        var curr_place_obj = component_obj.place_list[place_num];
         // for every outbound transition out of the current place
         for (var tran_num = 0; tran_num < component_obj.place_list[place_num].transition_outbound_list.length; tran_num++){
             // set current tran obj reference
@@ -160,6 +167,7 @@ function buildTokenTween(tween_obj, animLayer){
             // create token
             var token = createToken(tokenStartPos, tween_obj.tokenColor);
             animLayer.add(token);
+            token_list.push(token);
             // get reference to transtion konva line
             var transition = component_obj.place_list[place_num].transition_outbound_list[tran_num].tran_konva;
             // get transition konva line position
@@ -170,7 +178,7 @@ function buildTokenTween(tween_obj, animLayer){
             var dest_post_y = tran_pos.y + transition.points()[5];
             
             // tween to next place
-            var tween = TweenMax.to(token, getDuration, { konva: { bezier: {curviness:3, values:[{x:mid_pos_x, y:mid_post_y}, {x:dest_post_x, y:dest_post_y}] }}, onStartParams:[token], onStart: showToken, onCompleteParams:[token], onComplete: hideToken });
+            var tween = TweenMax.to(token, getDuration, { konva: { bezier: {curviness:3, values:[{x:mid_pos_x, y:mid_post_y}, {x:dest_post_x, y:dest_post_y}] }}, onStartParams:[token, curr_tran_obj], onStart: startTween, onCompleteParams:[token, curr_place_obj], onComplete: endTween });
             // subTweenLine.add(tween, 0);
             tweenline.add(tween, 'place_' + place_num + '_delay');
         }
@@ -206,6 +214,89 @@ function getPlaceDelay(place_obj){
     return tween_duration_dict[place_obj.name];
 }
 
+function isInDurationDict(place_obj){
+    return tween_duration_dict[place_obj.name] != undefined;
+}
+
+function addDelayToDict(place_obj, place_delay){
+    tween_duration_dict[place_obj.name] = place_delay;
+}
+
+function sortPlaceList(component_obj){
+    var roots = findRoots(component_obj.place_list);
+    var new_place_list = [];
+    for(var root = 0; root < roots.length; root++){
+        traversePlaces(roots[root], new_place_list);
+    }
+    return new_place_list;
+}
+
+function traversePlaces(place_obj, new_place_list){
+    if(containsObject(place_obj, new_place_list)){
+        new_place_list.move(new_place_list.indexOf(place_obj), new_place_list.length)
+    } else {
+        new_place_list.push(place_obj);
+    }
+    traverseTransitions(place_obj);
+    function traverseTransitions(place_obj){
+        for(var tran_num = 0; tran_num < place_obj.transition_outbound_list.length; tran_num++){
+            traversePlaces(place_obj.transition_outbound_list[tran_num].dest, new_place_list);
+        }
+    }
+}
+
+function containsObject(obj, list) {
+    var x;
+    for (x in list) {
+        if (list.hasOwnProperty(x) && list[x] === obj) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// returns places with empty inbound_transition lists
+function findRoots(place_list) {
+
+    var roots = [];
+
+    for(var place_index = 0; place_index < place_list.length; place_index++) {
+        if(place_list[place_index].transition_inbound_list.length == 0) {
+            roots.push(place_list[place_index]);
+        }
+    }
+
+    return roots;
+
+};
+
+Array.prototype.move = function (from, to) {
+    this.splice(to, 0, this.splice(from, 1)[0]);
+};
+
+function startTween(token, transition_obj){
+    showToken(token);
+    // check if transition obj has dependency
+    enableDependencyObj(transition_obj);
+    transitionAnim(transition_obj);
+    checkConnectionStatus();
+}
+
+function enableDependencyObj(source_obj){
+    // set every dependency obj connected to this source obj to true
+    for(var dependency = 0; dependency < source_obj.dependency_obj_list.length; dependency++){
+        source_obj.dependency_obj_list[dependency].enabled = true;
+    }
+};
+
+function endTween(token, place_obj){
+    hideToken(token);
+    enableDependencyObj(place_obj);
+    // play place tween
+    //placeFinishedAnim(place_obj.place_konva);
+    checkConnectionStatus();
+}
+
 function showToken(token){
     token.show();
 }
@@ -228,17 +319,29 @@ function createToken(tokenPos, tokenColor){
 
 function updateTimerLabels(time){
     var elapsedMilliseconds = time.ms;
-    var elapsedSeconds = elapsedMilliseconds / 1000;
-    var elapsedMinutes = elapsedSeconds / 60;
-    if(elapsedSeconds > 60) {elapsedSeconds -= 60; }
+    var totalSeconds = elapsedMilliseconds / 1000;
+    var totalMinutes = totalSeconds / 60;
+    var elapsedMinutes = Math.trunc(totalMinutes);
+    var elapsedSeconds = totalSeconds;
+    if(totalSeconds >= 60) {elapsedSeconds -= (60 * elapsedMinutes); }
+    
     for (var i = 0; i < timer_label_list.length; i++){
         timer_label_list[i].text(Math.trunc(elapsedMinutes) + ":" + Math.trunc(elapsedSeconds));
     }
 }
 
+// reset every curr duration of every tran obj to 0
+function resetTransitionCurrentDuration(){
+    for (var i = 0; i < sd_comp_list.length; i++) {
+        for (var j = 0; j < sd_comp_list[i].transition_list.length; j++) {
+            sd_comp_list[i].transition_list[j].current_duration = 0;
+        }
+    }
+}
+
 function finishTween(tween_obj){
     stopTimerLabel(tween_obj.timerLabel);
-    componentFinishedAnim(tween_obj.component)
+    componentFinishedAnim(tween_obj.component);
 }
 
 // remove the timerLabel from the list
@@ -253,6 +356,7 @@ function checkConnectionStatus(){
             connectionEnabledAnim(sd_con_list[i]);
         }
     }
+    layer.draw();
 }
 
 function connectionEnabledAnim(connection){
@@ -271,6 +375,24 @@ function connectionEnabledAnim(connection){
     connection_tween.play();
 }
 
+function transitionAnim(transition_obj){
+    console.log("created transition tween");
+    var transition_tween = new Konva.Tween({
+        node: transition_obj.tran_konva,
+        duration: transition_obj.current_duration / 2,
+        stroke: 'blue',
+        strokeWidth: 1,
+        shadowColor: 'black',
+        shadowBlur: 2,
+        shadowOpacity: 1,
+        easing: Konva.Easings.BackEaseOut,
+        onFinish: function() {
+            setTimeout(function(){ transition_tween.reverse(); }, 1000);
+        }
+    });
+    transition_tween.play();
+}
+
 function placeFinishedAnim(place){
     console.log("created place tween");
     var place_tween = new Konva.Tween({
@@ -281,7 +403,7 @@ function placeFinishedAnim(place){
         shadowColor: 'black',
         shadowBlur: 5,
         shadowOpacity: 1,
-        easing: Konva.Easings.EaseOut,
+        easing: Konva.Easings.BackEaseOut,
         onFinish: function() {
             setTimeout(function(){ place_tween.reverse(); }, 4000);
         }
@@ -319,21 +441,6 @@ function getRandomColor() {
     return color;
 }
 
-function start(startTime) {
-  startTime = new Date();
-};
-
-function end(endTime) {
-  endTime = new Date();
-  var timeDiff = endTime - startTime; //in ms
-  // strip the ms
-  timeDiff /= 1000;
-
-  // get seconds 
-  var seconds = Math.round(timeDiff);
-  console.log(seconds + " seconds");
-}
-
 function createTimerLabel(component_konva){
 
     var comp_absolute_pos = component_konva.getAbsolutePosition();
@@ -351,78 +458,6 @@ function createTimerLabel(component_konva){
     });
 
     return timerLabel;
-}
-
-function createPlayButton(){
-     // play label
-     var playLabel = new Konva.Label({
-        x: 150,
-        y: 10,
-        opacity: 1
-    });
-
-    playLabel.add(new Konva.Tag({
-        fill: 'green',
-        stroke: 'black',
-        strokeWidth: 2
-    }));
-
-    playLabel.add(new Konva.Text({
-        text: 'PLAY',
-        fontFamily: 'Calibri',
-        fontSize: 36,
-        padding: 5,
-        fill: 'black'
-    }));
-    return playLabel;
-}
-
-function createPauseButton(){
-     // pause label
-     var pauseLabel = new Konva.Label({
-        x: 250,
-        y: 10,
-        opacity: 1
-    });
-
-    pauseLabel.add(new Konva.Tag({
-        fill: 'RED',
-        stroke: 'black',
-        strokeWidth: 2
-    }));
-
-    pauseLabel.add(new Konva.Text({
-        text: 'PAUSE',
-        fontFamily: 'Calibri',
-        fontSize: 36,
-        padding: 5,
-        fill: 'black'
-    }));
-    return pauseLabel;
-}
-
-function createResetButton(){
-    // reset label
-    var resetLabel = new Konva.Label({
-       x: 375,
-       y: 10,
-       opacity: 1
-   });
-
-   resetLabel.add(new Konva.Tag({
-       fill: 'BLUE',
-       stroke: 'black',
-       strokeWidth: 2
-   }));
-
-   resetLabel.add(new Konva.Text({
-       text: 'RESET',
-       fontFamily: 'Calibri',
-       fontSize: 36,
-       padding: 5,
-       fill: 'black'
-   }));
-   return resetLabel;
 }
 
 function createSimulatorLabel(){
@@ -447,40 +482,19 @@ function createSimulatorLabel(){
     return simulatorLabel;
 }
 
-function createEditModeButton(){
-    // edit mode label
-    var editLabel = new Konva.Label({
-        x: 900,
-        y: 10,
-        opacity: 1
-    });
-
-    editLabel.add(new Konva.Tag({
-        fill: 'white'
-    }));
-
-    editLabel.add(new Konva.Text({
-        text: 'Go back to EDIT mode',
-        fontFamily: 'Calibri',
-        fontSize: 36,
-        padding: 5,
-        fill: 'black'
-    }));
-    return editLabel;
-}
-
-function resetHighlights(){
+function resetHighlights(animLayer){
     for (var i = 0; i < sd_comp_list.length; i++) {
+        sd_comp_list[i].konva_component.stroke('black');
         for (var j = 0; j < sd_comp_list[i].place_list.length; j++){
             // show that the new place has been reached
             sd_comp_list[i].place_list[j].place_konva.stroke('black');
-            sd_comp_list[i].place_list[j].place_konva.strokeWidth(1);
+            //sd_comp_list[i].place_list[j].place_konva.strokeWidth(1);
         }
     }
-    layer.draw();
+    animLayer.draw();
 }
 
-function resetConnections(){
+function resetConnectionsAndDependencies(){
     for (var i = 0; i < sd_con_list.length; i++){
         if(sd_con_list[i].enabled == true){
             sd_con_list[i].gate1_konva.opacity(1);
@@ -490,6 +504,7 @@ function resetConnections(){
             resetDependencyEnabled(sd_con_list[i].provide_port_obj, sd_con_list[i].use_port_obj);
         }
     }
+    layer.draw();
 }
 
 function resetDependencyEnabled(provide_dep_obj, use_dep_obj){
@@ -497,28 +512,21 @@ function resetDependencyEnabled(provide_dep_obj, use_dep_obj){
     use_dep_obj.enabled = false;
 }
 
-function playAllTokenTweens(){
-    for (var i = 0; i < token_tweens.length; i++) {
-        token_tweens[i].play();
-    }
-}
-
-function pauseAllTokenTweens(){
-    for (var i = 0; i < token_tweens.length; i++) {
-        token_tweens[i].pause();
-    }
-}
-
 function destroyTokens(){
     for (var i = 0; i < token_list.length; i++) {
-        token_list[i].konva_circle.destroy();
+        token_list[i].destroy();
         token_list.splice( token_list.indexOf(token_list[i]), 1 );
+        i--;
     }
 }
 
 function destroyTweenObjList(){
     // destory every tween
-    tween_obj_list = [];
+    for (var i = 0; i < tween_obj_list.length; i++) {
+        tween_obj_list[i].tween_list = [];
+        tween_obj_list.splice( tween_obj_list.indexOf(tween_obj_list[i]), 1 );
+        i--;
+    }
 }
 
 function setNotListening(component){

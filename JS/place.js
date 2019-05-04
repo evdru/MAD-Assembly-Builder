@@ -202,10 +202,10 @@ function addNewPlace(component_obj, placePos) {
     // event: mouse leaves place
     place.on('mouseleave', function () {
 
+        stage.container().style.cursor = 'default';
+
         // if the mouse leaves a place that *isn't* the place selected, turn it black.
         if(selected_source != place_obj) {
-
-            stage.container().style.cursor = 'default';
 
             // changes the stroke and stroke width back to default if highlighted
             //if(highlighted == true) {
@@ -313,9 +313,24 @@ function addNewPlace(component_obj, placePos) {
 
     };
 
+    // returns places with empty inbound_transition lists
+    function findRoots(place_list) {
+
+        var roots = [];
+
+        for(var place_index = 0; place_index < place_list.length; place_index++) {
+            if(place_list[place_index].transition_inbound_list.length == 0) {
+                roots.push(place_list[place_index]);
+            }
+        }
+
+        return roots;
+
+    };
+
     function validTransition(place_list, source_obj, source_comp, dest_obj, dest_comp) {
 
-        if(source_comp != dest_comp) {
+        if(source_comp != dest_comp || source_obj == dest_obj) {
             return false;
         }
 
@@ -323,36 +338,44 @@ function addNewPlace(component_obj, placePos) {
             return true;
         }
 
-        // get root place; i.e. place with no in-transitions
-        var root_place;
-        for(var place_index = 0; place_index < place_list.length; place_index++) {
-            if(place_list[place_index].transition_inbound_list.length == 0) {
-                root_place = place_list[place_index];
-            }
-        }
+        // get root places; i.e. places with no in-transitions
+        var root_places = findRoots(place_list);
 
-        // add prospective transition
-        var new_trans = new Transition('Transition', 'TransitionX', source_obj, dest_obj, 'defaultFunctionX');
-        source_obj.transition_outbound_list.push(new_trans);
-        dest_obj.transition_inbound_list.push(new_trans);
+        for(var root_index = 0; root_index < root_places.length; root_index++) {
 
-        // is there a cycle?
-        cyclic = cycle(root_place);
+            var root_place = root_places[root_index];
 
-        // remove transition from source and dest
-        for(var trans_index = 0; trans_index < source_obj.transition_outbound_list.length; trans_index++) {
-            if(source_obj.transition_outbound_list[trans_index] === new_trans) {
-                source_obj.transition_outbound_list.splice(trans_index, 1);
+            // add prospective transition
+            var new_trans = new Transition('Transition', 'TransitionX', source_obj, dest_obj, 'defaultFunctionX');
+            source_obj.transition_outbound_list.push(new_trans);
+            dest_obj.transition_inbound_list.push(new_trans);
+
+            // is there a cycle?
+            cyclic = cycle(root_place);
+
+            source_obj.transition_outbound_list.pop();
+            dest_obj.transition_inbound_list.pop();
+
+            // remove transition from source and dest
+            // for(var trans_index = 0; trans_index < source_obj.transition_outbound_list.length; trans_index++) {
+            //     if(source_obj.transition_outbound_list[trans_index] === new_trans) {
+            //         source_obj.transition_outbound_list.splice(trans_index, 1);
+            //     }
+            // }
+            // for(var trans_index = 0; trans_index < dest_obj.transition_inbound_list.length; trans_index++) {
+            //     if(dest_obj.transition_inbound_list[trans_index] === new_trans) {
+            //         dest_obj.transition_inbound_list.splice(trans_index, 1);
+            //     }
+            // }
+
+            if(cyclic) {
+                return false;
             }
-        }
-        for(var trans_index = 0; trans_index < dest_obj.transition_inbound_list.length; trans_index++) {
-            if(dest_obj.transition_inbound_list[trans_index] === new_trans) {
-                dest_obj.transition_inbound_list.splice(trans_index, 1);
-            }
+
         }
 
         // if a transition doesn't make a cycle, it's valid
-        return !cyclic;
+        return true;
 
     }
 
