@@ -112,8 +112,8 @@ function snapToGrid(pos){
 };
 
 function initialize() {
-    var WIDTH = 7860;
-    var HEIGHT = 4320;
+    var WIDTH = 3840;
+    var HEIGHT = 2160;
 
     stage = new Konva.Stage({
         width: WIDTH,
