@@ -58,10 +58,14 @@ function createComponentString(component) {
         //First: check for provide depencencies
         for (var k = 0; k < con_list.length; k++) {
             if (con_list[k].provide_port_obj.component_obj.name === component.name) {
-                 if (content.includes(con_list[k].provide_port_obj.name)) {
-                         break;
-                     } else {
-                         content += "\t\t\t'" + con_list[k].provide_port_obj.name + "': (DepType." + con_list[k].provide_port_obj.type + ", ['" + con_list[k].provide_port_obj.source_obj.name + "']),\n";
+                console.log("k=" + k);
+                console.log(con_list[k].provide_port_obj.name);
+                if (content.includes(con_list[k].provide_port_obj.name)) {
+                    console.log("Break!!!");
+                    continue;
+                } else {
+                    console.log("Write to content string.");
+                    content += "\t\t\t'" + con_list[k].provide_port_obj.name + "': (DepType." + con_list[k].provide_port_obj.type + ", ['" + con_list[k].provide_port_obj.source_obj.name + "']),\n";
                 };
             };
         };
@@ -70,10 +74,10 @@ function createComponentString(component) {
         for (var l = 0; l < con_list.length; l++) {
             if (con_list[l].use_port_obj.component_obj.name === component.name) {
                 if (content.includes(con_list[l].use_port_obj.name)) {
-                     break;
-                 } else {
-                     content += "\t\t\t'" + con_list[l].use_port_obj.name + "': (DepType." + con_list[l].use_port_obj.type + ", ['" + con_list[l].use_port_obj.source_obj.name + "']),\n";
-                 };
+                    continue;
+                } else {
+                    content += "\t\t\t'" + con_list[l].use_port_obj.name + "': (DepType." + con_list[l].use_port_obj.type + ", ['" + con_list[l].use_port_obj.source_obj.name + "']),\n";
+                };
             };
         };
 
