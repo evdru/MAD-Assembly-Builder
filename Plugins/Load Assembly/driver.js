@@ -70,6 +70,9 @@ function loadComponents(la_comp_list) {
         component_obj.component_group_konva.position({x:posX,y:posY});
         component_obj.name = loaded_component.name;
 
+        // fire component event listener
+        component_obj.konva_component.fire('xChange');
+
         layer.batchDraw();
 
     }
