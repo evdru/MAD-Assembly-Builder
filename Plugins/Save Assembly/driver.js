@@ -105,8 +105,8 @@ function componentToSaveObj(component) {
         transition_list: save_transition_list,
         transition_dictionary: component.transition_dictionary,
         dependency_list: save_dependency_list,
-        posX: component.component_group_konva.x(),
-        posY: component.component_group_konva.y(),
+        posX: component.konva_component.getAbsolutePosition().x,
+        posY: component.konva_component.getAbsolutePosition().y,
         scaleX: component.konva_component.scaleX(),
         scaleY: component.konva_component.scaleY()
     };
@@ -143,8 +143,8 @@ function placeToSaveObj(place, transitions=true) {
         dependency_type: place.dependency_type,
         transition_outbound_list: save_transition_outbound_list,
         transition_inbound_list: save_transition_inbound_list,
-        posX: place.place_konva.x(),
-        posY: place.place_konva.y()
+        posX: place.place_konva.getX(),
+        posY: place.place_konva.getY()
     };
 };
 

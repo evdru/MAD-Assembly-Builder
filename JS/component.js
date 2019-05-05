@@ -96,7 +96,10 @@ function addNewComponent(posX, posY) {
             stage.find('Transformer').destroy();
 
             // create new transformer
-            var tr = new Konva.Transformer({rotateEnabled: false});
+            var tr = new Konva.Transformer({
+                rotateEnabled: false,
+                enabledAnchors: ['middle-right', 'bottom-center', 'bottom-right'] // ¯\_(ツ)_/¯
+            });
             e.target.getParent().add(tr);
             tr.attachTo(e.target);
             layer.draw();

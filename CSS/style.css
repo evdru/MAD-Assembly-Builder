@@ -24,11 +24,11 @@
 }
 
 .main {
-    height: 100%;
-    width: 100%;
+    width: 3840px;
+    height: 2160px;
     overflow: hidden;
 }
 
 body {
-    overflow: hidden;
+    overflow: auto;
 }
