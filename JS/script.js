@@ -116,14 +116,13 @@ function initialize() {
     var HEIGHT = 2160;
 
     stage = new Konva.Stage({
+        container: 'container',
         width: WIDTH,
-        height: HEIGHT,
-        container: 'container'
+        height: HEIGHT
     });
 
     layer = new Konva.Layer();
     stage.add(layer);
-    var container = stage.container();
 };
 
 // Drag N Drop Functions
@@ -136,8 +135,8 @@ function allowDrop(ev) {
 function drop(ev) {
     ev.preventDefault();
     var data = ev.dataTransfer.getData("text");
-    var posX = ev.clientX - 270;
-    var posY = ev.clientY - 180;
+    var posX = ev.pageX - 150;
+    var posY = ev.pageY - 175;
     if(data == "component"){
         addNewComponent(posX, posY);
     }
