@@ -24,8 +24,8 @@
 }
 
 .main {
+    width: 7860px;
     height: 4320px;
-    width: 7680px;
     overflow: hidden;
 }
 
